@@ -1,8 +1,8 @@
-import { Input } from "@/components/ui/input";
+import { Input } from "@/shared/ui/input";
 import { useFormContext } from "react-hook-form";
-import { EyeIcon } from "@/components/ui/eye";
-import { EyeOffIcon } from "@/components/ui/eye-off";
-import { Button } from "@/components/ui/button";
+import { EyeIcon } from "@/shared/ui/eye";
+import { EyeOffIcon } from "@/shared/ui/eye-off";
+import { Button } from "@/shared/ui/button";
 import { cn } from "@/lib/utils";
 import { useAppStore } from "@/stores/useAppStore";
 
@@ -78,7 +78,7 @@ function MCInput({
   };
 
   return (
-    <div className="w-full flex flex-col mb-4 px-0 sm:px-2">
+    <div className="w-full flex flex-col mb-4 px-0">
       {/* Label and Password Toggle */}
       {label && (
         <div className="flex flex-row justify-between items-center mb-1 gap-2">
@@ -93,7 +93,7 @@ function MCInput({
             <Button
               type="button"
               variant="ghost"
-              className=" rounded-2xl text-gray-500 px-2 py-1"
+              className="rounded-2xl text-gray-500 px-2 py-1"
               onClick={handlePasswordToggle}
             >
               {PasswordVisibility ? (
@@ -132,7 +132,7 @@ function MCInput({
             };
           })()}
           className={cn(
-            "w-full   rounded-4xl border  focus:ring-0 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 text-primary placeholder:text-md",
+            "w-full rounded-4xl border focus:ring-0 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 text-primary placeholder:text-md",
             getSizeClasses(),
             handleStatusColor(),
             className

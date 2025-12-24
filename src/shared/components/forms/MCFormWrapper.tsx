@@ -2,7 +2,7 @@ import { type ReactNode } from "react";
 import { useForm, FormProvider } from "react-hook-form";
 import { z, type ZodType } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Form as MCForm } from "@/components/ui/form";
+import { Form as MCForm } from "@/shared/ui/form";
 import { cn } from "@/lib/utils";
 interface MCFormWrapperProps<TSchema extends ZodType<any, any, any>> {
   schema: TSchema;
