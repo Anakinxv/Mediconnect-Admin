@@ -3,7 +3,7 @@ import { useIsMobile } from "@/hooks/useIsMobile";
 
 interface AuthContentContainerProps {
   title: string;
-  subtitle?: string;
+  subtitle?: React.ReactNode; // Cambiado de string a React.ReactNode
   children: React.ReactNode;
 }
 

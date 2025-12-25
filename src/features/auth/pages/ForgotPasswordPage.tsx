@@ -5,9 +5,11 @@ import { ForgotPasswordSchema } from "@/schema/AuthSchema";
 import { useAppStore } from "@/stores/useAppStore";
 import { useTranslation } from "react-i18next";
 import AuthFooterContainer from "../components/AuthFooterContainer";
+import { useNavigate } from "react-router-dom";
 
 function ForgotPasswordPage() {
   const { t } = useTranslation("auth");
+  const navigate = useNavigate();
 
   const forgotPasswordData = useAppStore((state) => state.forgotPassword);
   const setForgotPassword = useAppStore((state) => state.setForgotPassword);
@@ -21,7 +23,8 @@ function ForgotPasswordPage() {
         <MCFormWrapper
           schema={ForgotPasswordSchema((key) => t(key))}
           onSubmit={(data) => {
-            console.log("Forgot Password Data:", data);
+            setForgotPassword({ email: data.email });
+            navigate("/auth/verify-email", { replace: true });
           }}
           defaultValues={forgotPasswordData}
           className="flex flex-col items-center w-full"
@@ -32,10 +35,6 @@ function ForgotPasswordPage() {
               type="email"
               label={t("forgotPassword.emailLabel")}
               placeholder={t("forgotPassword.emailPlaceholder")}
-              value={forgotPasswordData.email}
-              onChange={(e) => {
-                setForgotPassword({ email: e.target.value });
-              }}
             />
             <p className="text-center mt-2 w-full">
               {forgotPasswordData.email}

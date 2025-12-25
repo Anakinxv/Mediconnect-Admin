@@ -1,25 +1,22 @@
 import { ArrowLeftIcon } from "@/shared/ui/arrow-left";
-import { useNavigate } from "react-router-dom";
 
 interface MCBackButtonProps {
   onClick?: () => void;
   size?: number;
   className?: string;
-  disabled?: boolean; // Añadido
+  disabled?: boolean;
 }
 
 function MCBackButton({
   onClick,
   size = 24,
   className = "",
-  disabled = false, // Añadido
+  disabled = false,
 }: MCBackButtonProps) {
-  const navigate = useNavigate();
-
   return (
     <button
       type="button"
-      onClick={onClick ? onClick : () => navigate(-1)}
+      onClick={onClick}
       className={`
         bg-[var(--color-bg-btn-secondary)] text-[var(--color-primary)] 
         flex items-center justify-center
@@ -31,7 +28,7 @@ function MCBackButton({
         ${className}
       `}
       style={{ aspectRatio: "1/1" }}
-      disabled={disabled} // Añadido
+      disabled={disabled}
     >
       <ArrowLeftIcon size={size} />
     </button>

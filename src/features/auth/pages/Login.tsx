@@ -15,11 +15,18 @@ function Login() {
   const isMobile = useIsMobile();
   const loginCredentials = useAppStore((state) => state.loginCredentials);
   const setLoginCredentials = useAppStore((state) => state.setLoginCredentials);
-  const handleSubmit = (data: LoginSchemaType) => {
-    setLoginCredentials(data);
-    console.log("Login data:", data);
-  };
   const navigate = useNavigate();
+
+  const handleSubmit = (data: LoginSchemaType) => {
+    // Validación simple: ambos campos deben tener valor
+    if (data.email && data.password) {
+      setLoginCredentials({ email: data.email, password: data.password });
+      navigate("/dashboard/home");
+    } else {
+      // Aquí podrías mostrar un error si lo deseas
+      alert(t("login.errorFields")); // Asegúrate de tener esta traducción
+    }
+  };
   return (
     <section className="max-h-screen h-screen overflow-hidden w-full bg-white">
       <div
@@ -55,24 +62,12 @@ function Login() {
               name="email"
               label={t("login.email")}
               placeholder={t("login.emailPlaceholder")}
-              onChange={(e) =>
-                setLoginCredentials({
-                  ...loginCredentials,
-                  email: e.target.value,
-                })
-              }
             />
             <MCInput
               type="password"
               label={t("login.password")}
               name="password"
               placeholder={t("login.passwordPlaceholder")}
-              onChange={(e) =>
-                setLoginCredentials({
-                  ...loginCredentials,
-                  password: e.target.value,
-                })
-              }
             />
             <div className="flex justify-end w-full mb-4">
               <a
