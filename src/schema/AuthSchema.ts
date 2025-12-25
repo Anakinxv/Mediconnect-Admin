@@ -9,3 +9,7 @@ export function LoginSchema(t: (key: string) => string) {
     password: z.string().min(6, t("validation.passwordMin")),
   });
 }
+
+// Type inferido del esquema de Login
+export type LoginSchemaType = z.infer<ReturnType<typeof LoginSchema>>;
+// ...existing code...

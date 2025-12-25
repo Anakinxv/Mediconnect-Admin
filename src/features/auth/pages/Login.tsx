@@ -1,23 +1,25 @@
-import LoginAsideimG from "@/assets/LoginAside.png";
+import LoginAsideImg from "@/assets/LoginAside.png";
 import Logo from "@/assets//MediConnectLanding-green.png";
 import MCFormWrapper from "@/shared/components/forms/MCFormWrapper";
 import MCInput from "@/shared/components/forms/MCInput";
 import MCButton from "@/shared/components/forms/MCButton";
 import { LoginSchema } from "@/schema/AuthSchema";
 import { useAppStore } from "@/stores/useAppStore";
-import { type AuthType } from "@/types/AuthTypes";
+import { type LoginSchemaType } from "@/schema/AuthSchema";
 import { useIsMobile } from "@/hooks/useIsMobile";
 import { useTranslation } from "react-i18next";
 import LanguageDropDown from "../components/LanguageDropDown";
+import { useNavigate } from "react-router-dom";
 function Login() {
   const { t } = useTranslation("auth");
   const isMobile = useIsMobile();
   const loginCredentials = useAppStore((state) => state.loginCredentials);
-  const setloginCredentials = useAppStore((state) => state.setloginCredentials);
-  const handleSubmit = (data: AuthType) => {
-    setloginCredentials(data);
+  const setLoginCredentials = useAppStore((state) => state.setLoginCredentials);
+  const handleSubmit = (data: LoginSchemaType) => {
+    setLoginCredentials(data);
     console.log("Login data:", data);
   };
+  const navigate = useNavigate();
   return (
     <section className="max-h-screen h-screen overflow-hidden w-full bg-white">
       <div
@@ -53,9 +55,8 @@ function Login() {
               name="email"
               label={t("login.email")}
               placeholder={t("login.emailPlaceholder")}
-              value={loginCredentials.email}
               onChange={(e) =>
-                setloginCredentials({
+                setLoginCredentials({
                   ...loginCredentials,
                   email: e.target.value,
                 })
@@ -66,9 +67,8 @@ function Login() {
               label={t("login.password")}
               name="password"
               placeholder={t("login.passwordPlaceholder")}
-              value={loginCredentials.password}
               onChange={(e) =>
-                setloginCredentials({
+                setLoginCredentials({
                   ...loginCredentials,
                   password: e.target.value,
                 })
@@ -78,6 +78,7 @@ function Login() {
               <a
                 href="#"
                 className="text-base text-primary font-semibold hover:underline"
+                onClick={() => navigate("/auth/forgot-password")}
               >
                 {t("login.forgot")}
               </a>
@@ -87,22 +88,11 @@ function Login() {
             </MCButton>
             <LanguageDropDown></LanguageDropDown>
           </MCFormWrapper>
-          <div className="mt-3 text-center">
-            <span className="text-base text-muted-foreground">
-              {t("login.noAccount")}{" "}
-              <a
-                href="#"
-                className="text-primary font-semibold hover:underline"
-              >
-                {t("login.register")}
-              </a>
-            </span>
-          </div>
         </main>
         {!isMobile && (
           <aside className="h-full w-full">
             <img
-              src={LoginAsideimG}
+              src={LoginAsideImg}
               alt="Login Aside"
               className="h-full w-full object-cover"
             />
