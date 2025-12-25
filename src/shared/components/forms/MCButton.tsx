@@ -7,6 +7,8 @@ type MediButtonProps = {
   className?: string;
   disabled?: boolean;
   type?: "button" | "submit" | "reset";
+  icon?: React.ReactNode; // Nuevo: icono opcional
+  iconPosition?: "left" | "right"; // Nuevo: posición del icono
 };
 
 function MCButton({
@@ -16,6 +18,8 @@ function MCButton({
   children,
   className,
   type = "button",
+  icon,
+  iconPosition = "left",
 }: MediButtonProps) {
   const baseStyles =
     "px-8 py-5 text-lg md:px-10 md:py-7 md:text-xl font-medium rounded-full transition-colors transition-opacity transition-transform duration-200 focus:outline-none active:scale-99";
@@ -62,6 +66,8 @@ function MCButton({
       className={`${baseStyles} ${variants[variant] || variants.primary} ${
         className || ""
       }`}
+      icon={icon}
+      iconPosition={iconPosition}
     >
       {children}
     </Button>

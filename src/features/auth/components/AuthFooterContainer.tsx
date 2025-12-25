@@ -2,14 +2,15 @@ import React from "react";
 import { useIsMobile } from "@/hooks/useIsMobile";
 import MCBackButton from "@/shared/components/forms/MCBackButton";
 import MCButton from "@/shared/components/forms/MCButton";
-
+import { useTranslation } from "react-i18next";
+import { ArrowRightIcon } from "@/shared/ui/arrow-right";
 interface AuthFooterContainerProps {
   children?: React.ReactNode;
 }
 
 const AuthFooterContainer: React.FC<AuthFooterContainerProps> = () => {
   const isMobile = useIsMobile();
-
+  const { t } = useTranslation("auth");
   return (
     <div
       className={`w-full mt-6  ${
@@ -21,7 +22,9 @@ const AuthFooterContainer: React.FC<AuthFooterContainerProps> = () => {
       <div>
         <MCBackButton />
       </div>
-      <MCButton type="submit">Continuar</MCButton>
+      <MCButton type="submit" icon={<ArrowRightIcon />} iconPosition="right">
+        {t("footer.continue")}
+      </MCButton>
     </div>
   );
 };
