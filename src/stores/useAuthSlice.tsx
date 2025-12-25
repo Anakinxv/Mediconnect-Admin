@@ -1,4 +1,5 @@
 import { type StateCreator } from "zustand";
+
 import type { AuthType } from "../types/AuthTypes";
 
 export interface AuthSlice {
