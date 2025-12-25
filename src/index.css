@@ -31,6 +31,10 @@
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
+
+  /* Añade estas líneas para los nuevos colores */
+  --color-bg-secondary: var(--bg-secondary);
+  --color-bg-btn-secondary: var(--bg-btn-secondary);
 }
 
 :root {
@@ -52,6 +56,10 @@
   --border: #eff2d7;
   --input: #eff2d7;
   --ring: #8bb1ca;
+
+  /* Nuevos colores */
+  --bg-secondary: #fbfbfb;
+  --bg-btn-secondary: #f7f7f7;
 }
 
 [data-theme="dark"] {
@@ -71,6 +79,10 @@
   --border: #1e1e1e;
   --input: #1e1e1e;
   --ring: #8bb1ca;
+
+  /* Nuevos colores para dark */
+  --bg-secondary: #0a0a0a;
+  --bg-btn-secondary: #1e1e1e;
 }
 
 @layer base {

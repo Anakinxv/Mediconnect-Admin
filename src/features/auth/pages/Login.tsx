@@ -76,7 +76,6 @@ function Login() {
             />
             <div className="flex justify-end w-full mb-4">
               <a
-                href="#"
                 className="text-base text-primary font-semibold hover:underline"
                 onClick={() => navigate("/auth/forgot-password")}
               >

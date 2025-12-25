@@ -1,9 +1,14 @@
 import { type StateCreator } from "zustand";
 import { type LoginSchemaType } from "@/schema/AuthSchema";
+import { type ForgotPasswordSchemaType } from "@/schema/AuthSchema";
 
 export interface AuthSlice {
   loginCredentials: LoginSchemaType;
   setLoginCredentials: (data: LoginSchemaType) => void;
+
+  forgotPassword: ForgotPasswordSchemaType;
+  setForgotPassword: (data: ForgotPasswordSchemaType) => void;
+
   isAuthenticated: boolean;
   token: string | null;
 
@@ -18,6 +23,12 @@ export const createAuthSlice: StateCreator<AuthSlice> = (set) => ({
   } as LoginSchemaType,
   isAuthenticated: false,
   token: null,
+
+  forgotPassword: {
+    email: "",
+  } as ForgotPasswordSchemaType,
+
+  setForgotPassword: (data) => set({ forgotPassword: data }),
 
   setLoginCredentials: (data) => set({ loginCredentials: data }),
 

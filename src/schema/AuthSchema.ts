@@ -10,6 +10,13 @@ export function LoginSchema(t: (key: string) => string) {
   });
 }
 
+export function ForgotPasswordSchema(t: (key: string) => string) {
+  return LoginSchema(t).pick({ email: true });
+}
+
 // Type inferido del esquema de Login
 export type LoginSchemaType = z.infer<ReturnType<typeof LoginSchema>>;
+export type ForgotPasswordSchemaType = z.infer<
+  ReturnType<typeof ForgotPasswordSchema>
+>;
 // ...existing code...
