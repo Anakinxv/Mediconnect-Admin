@@ -5,12 +5,14 @@ interface MCBackButtonProps {
   onClick?: () => void;
   size?: number;
   className?: string;
+  disabled?: boolean; // Añadido
 }
 
 function MCBackButton({
   onClick,
   size = 24,
   className = "",
+  disabled = false, // Añadido
 }: MCBackButtonProps) {
   const navigate = useNavigate();
 
@@ -29,6 +31,7 @@ function MCBackButton({
         ${className}
       `}
       style={{ aspectRatio: "1/1" }}
+      disabled={disabled} // Añadido
     >
       <ArrowLeftIcon size={size} />
     </button>

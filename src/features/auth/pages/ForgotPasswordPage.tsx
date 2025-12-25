@@ -41,7 +41,11 @@ function ForgotPasswordPage() {
               {forgotPasswordData.email}
             </p>
           </div>
-          <AuthFooterContainer />
+          <AuthFooterContainer
+            backButtonProps={{
+              disabled: true,
+            }}
+          />
         </MCFormWrapper>
       </AuthContentContainer>
     </div>
