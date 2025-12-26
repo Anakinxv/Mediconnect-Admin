@@ -11,7 +11,7 @@ function AppRouter() {
   return (
     <BrowserRouter>
       <Router>
-        <Route path={ROUTES.LOGIN} element={<Login />} />
+        <Route path={ROUTES.LOGIN} index element={<Login />} />
         <Route element={<AuthLayout />}>
           <Route
             path={ROUTES.FORGOT_PASSWORD}

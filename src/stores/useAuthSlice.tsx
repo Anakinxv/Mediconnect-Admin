@@ -2,49 +2,64 @@ import { type StateCreator } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import { type LoginSchemaType } from "@/schema/AuthSchema";
 import { type ForgotPasswordSchemaType } from "@/schema/AuthSchema";
+import { type ResetPasswordSchemaType } from "@/schema/AuthSchema";
 
 export interface AuthSlice {
+  // Variables
   loginCredentials: LoginSchemaType;
-  setLoginCredentials: (data: LoginSchemaType) => void;
   forgotPassword: ForgotPasswordSchemaType;
   otp: string;
-  setOtp: (otp: string) => void;
-  setForgotPassword: (data: ForgotPasswordSchemaType) => void;
-  clearForgotPassword: () => void;
+  resetPassword: ResetPasswordSchemaType;
   isAuthenticated: boolean;
   token: string | null;
+
+  // Funciones
+  setLoginCredentials: (data: LoginSchemaType) => void;
+  setForgotPassword: (data: ForgotPasswordSchemaType) => void;
+  setOtp: (otp: string) => void;
+  setResetPassword: (data: ResetPasswordSchemaType) => void;
+  clearForgotPassword: () => void;
   login: (token: string) => void;
   logout: () => void;
 }
 
-// Si tienes una interfaz llamada AuthStateInterface, usa esa en vez de AuthSlice
 export const createAuthSlice: StateCreator<
   AuthSlice,
   [],
   [["zustand/persist", unknown]]
 > = persist(
   (set) => ({
+    // Variables
     loginCredentials: {
       email: "",
       password: "",
     } as LoginSchemaType,
-    isAuthenticated: false,
-    token: null,
     forgotPassword: {
       email: "",
     } as ForgotPasswordSchemaType,
     otp: "",
+    resetPassword: {
+      password: "",
+      confirmPassword: "",
+    } as ResetPasswordSchemaType,
+    isAuthenticated: false,
+    token: null,
 
-    setForgotPassword: (data) => set({ forgotPassword: data }),
+    // Funciones
+    setLoginCredentials: (data: LoginSchemaType) =>
+      set({ loginCredentials: data }),
+    setForgotPassword: (data: ForgotPasswordSchemaType) =>
+      set({ forgotPassword: data }),
+    setOtp: (otp: string) => set({ otp }),
+    setResetPassword: (data: ResetPasswordSchemaType) =>
+      set({ resetPassword: data }),
     clearForgotPassword: () =>
       set({
         forgotPassword: {
           email: "",
         } as ForgotPasswordSchemaType,
       }),
-    setLoginCredentials: (data: LoginSchemaType) =>
-      set({ loginCredentials: data }),
-    login: (token) =>
+    login: (token: string) =>
       set({
         token,
         isAuthenticated: true,
@@ -61,8 +76,11 @@ export const createAuthSlice: StateCreator<
           email: "",
         } as ForgotPasswordSchemaType,
         otp: "",
+        resetPassword: {
+          password: "",
+          confirmPassword: "",
+        } as ResetPasswordSchemaType,
       }),
-    setOtp: (otp) => set({ otp }),
   }),
   {
     name: "auth-storage",

@@ -5,12 +5,28 @@ import { useAppStore } from "@/stores/useAppStore";
 import { useTranslation } from "react-i18next";
 import AuthFooterContainer from "../components/AuthFooterContainer";
 import { useNavigate } from "react-router-dom";
-import { z } from "zod";
+import { ResetPasswordSchema } from "@/schema/AuthSchema";
 
 function ResetPasswordPage() {
   const { t } = useTranslation("auth");
   const navigate = useNavigate();
-  const setForgotPassword = useAppStore((state) => state.setForgotPassword);
+  const resetPassword = useAppStore((state) => state.resetPassword);
+  const setResetPassword = useAppStore((state) => state.setResetPassword);
+
+  const handleSubmit = (data: {
+    password: string;
+    confirmPassword: string;
+  }) => {
+    if (data.password && data.confirmPassword) {
+      setResetPassword({
+        password: data.password,
+        confirmPassword: data.confirmPassword,
+      });
+      navigate("/auth/password-success", { replace: true });
+    } else {
+      alert(t("resetPassword.errorFields"));
+    }
+  };
 
   return (
     <AuthContentContainer
@@ -22,11 +38,11 @@ function ResetPasswordPage() {
     >
       <MCFormWrapper
         schema={ResetPasswordSchema((key) => t(key))}
-        onSubmit={(data) => {
-          setForgotPassword({ password: data.password });
-          navigate("/auth/login", { replace: true });
+        onSubmit={(data) => handleSubmit(data)}
+        defaultValues={{
+          password: resetPassword.password,
+          confirmPassword: resetPassword.confirmPassword,
         }}
-        defaultValues={{ password: "", confirmPassword: "" }}
         className="flex flex-col items-center w-full"
       >
         <div className="flex flex-col items-center w-full max-w-md mx-auto">
