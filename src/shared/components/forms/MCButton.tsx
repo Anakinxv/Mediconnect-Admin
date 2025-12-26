@@ -1,14 +1,22 @@
 import { Button } from "@/shared/ui/button";
-
+import { useIsMobile } from "@/hooks/useIsMobile";
 type MediButtonProps = {
   children?: React.ReactNode;
-  variant?: "primary" | "secondary" | "delete" | "success" | "warning" | "link";
+  variant?:
+    | "primary"
+    | "secondary"
+    | "delete"
+    | "success"
+    | "warning"
+    | "link"
+    | "tercero";
   onClick?: () => void;
   className?: string;
   disabled?: boolean;
   type?: "button" | "submit" | "reset";
-  icon?: React.ReactNode; // Nuevo: icono opcional
-  iconPosition?: "left" | "right"; // Nuevo: posición del icono
+  icon?: React.ReactNode;
+  iconPosition?: "left" | "right";
+  size?: "s" | "m" | "l" | "xl"; // Agregado xl
 };
 
 function MCButton({
@@ -20,9 +28,17 @@ function MCButton({
   type = "button",
   icon,
   iconPosition = "left",
+  size = "l", // Default medium
 }: MediButtonProps) {
   const baseStyles =
-    "px-8 py-5 text-lg md:px-10 md:py-7 md:text-xl font-medium rounded-full transition-colors transition-opacity transition-transform duration-200 focus:outline-none active:scale-99";
+    "font-medium rounded-full transition-colors transition-opacity transition-transform duration-200 focus:outline-none active:scale-99";
+
+  const sizeStyles: Record<string, string> = {
+    s: "px-4 py-2 text-sm", // pequeño
+    m: "px-6 py43 text-base md:px-8 md:py-6 md:text-lg", // intermedio real
+    l: "px-8 py-5 text-lg md:px-10 md:py-7 md:text-xl", // era el m anterior
+    xl: "px-12 py-7 text-xl md:px-16 md:py-10 md:text-2xl", // era el l anterior
+  };
 
   const variants: Record<string, string> = {
     primary: `
@@ -56,6 +72,11 @@ function MCButton({
       active:text-primary/60 active:opacity-60
       shadow-none
     `,
+    tercero: `
+      bg-[var(--color-bg-btn-secondary)] text-black border border-[var(--color-bg-btn-secondary)]
+      hover:bg-[var(--color-bg-btn-secondary)]/90 hover:opacity-90
+      active:bg-[var(--color-bg-btn-secondary)]/80 active:opacity-80
+    `,
   };
 
   return (
@@ -63,9 +84,9 @@ function MCButton({
       type={type}
       onClick={onClick}
       disabled={disabled}
-      className={`${baseStyles} ${variants[variant] || variants.primary} ${
-        className || ""
-      }`}
+      className={`${baseStyles} ${sizeStyles[size]} ${
+        variants[variant] || variants.primary
+      } ${className || ""}`}
       icon={icon}
       iconPosition={iconPosition}
     >

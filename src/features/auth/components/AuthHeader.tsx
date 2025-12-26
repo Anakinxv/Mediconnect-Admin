@@ -1,4 +1,3 @@
-import React from "react";
 import { ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import LogoWhite from "@/assets/MediConnectLanding.png";
@@ -23,7 +22,7 @@ function AuthHeader() {
           <img
             src={LogoWhite}
             alt="MediConnect Logo"
-            className="h-20 object-contain"
+            className="h-20 object-contain pointer-events-none"
           />
         </div>
         {/* Right: Empty for spacing */}
