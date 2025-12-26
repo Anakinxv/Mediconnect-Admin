@@ -30,15 +30,12 @@ function ResetPasswordPage() {
 
   return (
     <AuthContentContainer
-      title={t("resetPassword.title", "Establece tu nueva contraseña")}
-      subtitle={t(
-        "resetPassword.subtitle",
-        "Ingresa y confirma una contraseña segura para mantener tu cuenta protegida."
-      )}
+      title={t("resetPassword.title")}
+      subtitle={t("resetPassword.subtitle")}
     >
       <MCFormWrapper
         schema={ResetPasswordSchema((key) => t(key))}
-        onSubmit={(data) => handleSubmit(data)}
+        onSubmit={handleSubmit}
         defaultValues={{
           password: resetPassword.password,
           confirmPassword: resetPassword.confirmPassword,
@@ -49,25 +46,19 @@ function ResetPasswordPage() {
           <MCInput
             name="password"
             type="password"
-            label={t("resetPassword.passwordLabel", "Contraseña")}
-            placeholder={t("resetPassword.passwordPlaceholder", "Contraseña")}
+            label={t("resetPassword.passwordLabel")}
+            placeholder={t("resetPassword.passwordPlaceholder")}
           />
           <MCInput
             name="confirmPassword"
             type="password"
-            label={t(
-              "resetPassword.confirmPasswordLabel",
-              "Confirmar Contraseña"
-            )}
-            placeholder={t(
-              "resetPassword.confirmPasswordPlaceholder",
-              "Confirmar Contraseña"
-            )}
+            label={t("resetPassword.confirmPasswordLabel")}
+            placeholder={t("resetPassword.confirmPasswordPlaceholder")}
           />
         </div>
         <AuthFooterContainer
           continueButtonProps={{
-            children: t("footer.continue", "Continuar"),
+            children: t("footer.continue"),
           }}
         />
       </MCFormWrapper>
