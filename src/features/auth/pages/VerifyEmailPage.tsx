@@ -6,12 +6,24 @@ import { useAppStore } from "@/stores/useAppStore";
 import { useTranslation } from "react-i18next";
 import AuthFooterContainer from "../components/AuthFooterContainer";
 import MCButton from "@/shared/components/forms/MCButton";
+import { useNavigate } from "react-router-dom";
 function VerifyEmailPage() {
   const { t } = useTranslation("auth");
-
+  const navigate = useNavigate();
   const confirmedEmail = useAppStore((state) => state.forgotPassword.email);
   const otpData = useAppStore((state) => state.otp);
   const setOtp = useAppStore((state) => state.setOtp);
+
+  const handleSubmit = (data: { otp: string }) => {
+    if (otpData) {
+      console.log("OTP Data:", data);
+      setOtp(data.otp);
+
+      return navigate("/auth/reset-password", { replace: true });
+    } else {
+      console.log("No OTP entered.");
+    }
+  };
 
   return (
     <AuthContentContainer
@@ -26,9 +38,7 @@ function VerifyEmailPage() {
     >
       <MCFormWrapper
         schema={OtpSchema((key) => t(key))}
-        onSubmit={(data) => {
-          console.log("OTP Data:", data);
-        }}
+        onSubmit={handleSubmit}
         defaultValues={{ otp: otpData }}
         className="flex flex-col items-center w-full"
       >

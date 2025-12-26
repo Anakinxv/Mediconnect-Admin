@@ -20,7 +20,7 @@ function MCBackButton({
       className={`
         bg-[var(--color-bg-btn-secondary)] text-[var(--color-primary)] 
         flex items-center justify-center
-        rounded-full border border-primary/3
+        rounded-full border border-transparent
         w-[40px] h-[40px] md:w-[56px] md:h-[56px]
         hover:bg-[var(--color-bg-btn-secondary)]/80 hover:opacity-90
         active:bg-[var(--color-bg-btn-secondary)]/60 active:opacity-80
