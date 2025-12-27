@@ -2,11 +2,15 @@ import { type StateCreator } from "zustand";
 import i18n from "../i18n/config";
 
 export type GlobalUISlice = {
+  canAccessPage: boolean;
+  allowedPages: string[];
+  setAccessPage: (canAccess: boolean, pages: string[]) => void;
+
   isDarkMode: boolean;
   toggleDarkMode: () => void;
   language: string;
   setLanguage: (lang: string) => void;
-  isloading: boolean;
+  isLoading: boolean;
   setIsLoading: (loading: boolean) => void;
   toast: {
     message: string;
@@ -20,22 +24,26 @@ export type GlobalUISlice = {
   }) => void;
   modalOpen: boolean;
   setModalOpen: (open: boolean) => void;
-  PasswordVisibility: boolean;
-  SetPasswordVisibility: (visibility: boolean) => void;
+  passwordVisibility: boolean;
+  setPasswordVisibility: (visibility: boolean) => void;
 };
 
 export const createGlobalUISlice: StateCreator<GlobalUISlice> = (set) => ({
-  // Variables
+  canAccessPage: false,
+  allowedPages: [],
+  setAccessPage: (canAccess, pages) =>
+    set({ canAccessPage: canAccess, allowedPages: pages }),
+
   isDarkMode: false,
   language: "es",
-  isloading: false,
+  isLoading: false,
   toast: {
     message: "",
     type: "info",
     open: false,
   },
   modalOpen: false,
-  PasswordVisibility: false,
+  passwordVisibility: false,
 
   // Funciones
   toggleDarkMode: () => set((state) => ({ isDarkMode: !state.isDarkMode })),
@@ -43,9 +51,9 @@ export const createGlobalUISlice: StateCreator<GlobalUISlice> = (set) => ({
     i18n.changeLanguage(lang);
     set({ language: lang });
   },
-  setIsLoading: (loading: boolean) => set({ isloading: loading }),
+  setIsLoading: (loading: boolean) => set({ isLoading: loading }),
   setToast: (toast) => set({ toast }),
   setModalOpen: (open: boolean) => set({ modalOpen: open }),
-  SetPasswordVisibility: (visibility: boolean) =>
-    set({ PasswordVisibility: visibility }),
+  setPasswordVisibility: (visibility: boolean) =>
+    set({ passwordVisibility: visibility }),
 });

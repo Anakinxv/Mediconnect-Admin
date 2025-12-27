@@ -12,6 +12,7 @@ function ResetPasswordPage() {
   const navigate = useNavigate();
   const resetPassword = useAppStore((state) => state.resetPassword);
   const setResetPassword = useAppStore((state) => state.setResetPassword);
+  const setAccessPage = useAppStore((state) => state.setAccessPage);
 
   const handleSubmit = (data: {
     password: string;
@@ -22,6 +23,8 @@ function ResetPasswordPage() {
         password: data.password,
         confirmPassword: data.confirmPassword,
       });
+      setAccessPage(true, ["/auth/verify-email"]);
+
       navigate("/auth/password-success", { replace: true });
     } else {
       alert(t("resetPassword.errorFields"));

@@ -7,6 +7,7 @@ import { useTranslation } from "react-i18next";
 import AuthFooterContainer from "../components/AuthFooterContainer";
 import MCButton from "@/shared/components/forms/MCButton";
 import { useNavigate } from "react-router-dom";
+
 function VerifyEmailPage() {
   const { t } = useTranslation("auth");
   const navigate = useNavigate();

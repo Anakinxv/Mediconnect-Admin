@@ -1,11 +1,21 @@
+import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import SuccessImg from "@/assets/successPassword.png";
 import MCButton from "@/shared/components/forms/MCButton";
+import { useAppStore } from "@/stores/useAppStore";
 import { useNavigate } from "react-router-dom";
 
 function PasswordSuccessPage() {
   const { t } = useTranslation("auth");
   const navigate = useNavigate();
+  const canAccessPage = useAppStore((state) => state.canAccessPage);
+  const allowedPages = useAppStore((state) => state.allowedPages);
+
+  useEffect(() => {
+    if (!canAccessPage || !allowedPages.includes("/auth/verify-email")) {
+      navigate("/auth/forgot-password", { replace: true });
+    }
+  }, [canAccessPage, allowedPages, navigate]);
 
   return (
     <div className="flex flex-col items-center justify-center min-h-[60vh] px-4">
