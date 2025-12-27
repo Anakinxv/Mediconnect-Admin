@@ -7,13 +7,19 @@ import { useTranslation } from "react-i18next";
 import AuthFooterContainer from "../components/AuthFooterContainer";
 import MCButton from "@/shared/components/forms/MCButton";
 import { useNavigate } from "react-router-dom";
-
+import { useEffect } from "react";
 function VerifyEmailPage() {
   const { t } = useTranslation("auth");
   const navigate = useNavigate();
   const confirmedEmail = useAppStore((state) => state.forgotPassword.email);
   const otpData = useAppStore((state) => state.otp);
   const setOtp = useAppStore((state) => state.setOtp);
+
+  useEffect(() => {
+    if (!confirmedEmail) {
+      navigate("/auth/forgot-password", { replace: true });
+    }
+  }, [confirmedEmail, navigate]);
 
   const handleSubmit = (data: { otp: string }) => {
     if (otpData) {
@@ -65,6 +71,7 @@ function VerifyEmailPage() {
         <AuthFooterContainer
           backButtonProps={{
             disabled: false,
+            onClick: () => navigate("/auth/forgot-password", { replace: true }),
           }}
         />
       </MCFormWrapper>

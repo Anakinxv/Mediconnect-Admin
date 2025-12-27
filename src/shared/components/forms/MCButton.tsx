@@ -1,5 +1,5 @@
 import { Button } from "@/shared/ui/button";
-import { useIsMobile } from "@/hooks/useIsMobile";
+
 type MediButtonProps = {
   children?: React.ReactNode;
   variant?:

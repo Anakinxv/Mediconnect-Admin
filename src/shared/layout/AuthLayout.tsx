@@ -1,11 +1,14 @@
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 import { useEffect } from "react";
 import AuthHeader from "@/features/auth/components/AuthHeader";
 import { useAppStore } from "@/stores/useAppStore";
 
 function AuthLayout() {
+  const location = useLocation();
   const reset = useAppStore((state) => state.reset);
   const setAccessPage = useAppStore((state) => state.setAccessPage);
+  const email = useAppStore((state) => state.forgotPassword.email);
+  const otp = useAppStore((state) => state.otp);
   useEffect(() => {
     return () => {
       const currentPath = window.location.pathname;
@@ -14,7 +17,7 @@ function AuthLayout() {
         setAccessPage(false, []);
       }
     };
-  }, [reset]);
+  }, [location.pathname, reset, setAccessPage]);
 
   return (
     <div>

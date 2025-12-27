@@ -37,9 +37,9 @@ function MCInput({
   status = "default",
   statusMessage,
 }: MCInputProps) {
-  const PasswordVisibility = useAppStore((state) => state.PasswordVisibility);
+  const PasswordVisibility = useAppStore((state) => state.passwordVisibility);
   const SetPasswordVisibility = useAppStore(
-    (state) => state.SetPasswordVisibility
+    (state) => state.setPasswordVisibility
   );
 
   const {

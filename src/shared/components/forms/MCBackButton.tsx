@@ -25,6 +25,7 @@ function MCBackButton({
         hover:bg-[var(--color-bg-btn-secondary)]/80 hover:opacity-90
         active:bg-[var(--color-bg-btn-secondary)]/60 active:opacity-80
         transition-all
+        ${disabled ? "opacity-50 cursor-not-allowed pointer-events-none" : ""}
         ${className}
       `}
       style={{ aspectRatio: "1/1" }}

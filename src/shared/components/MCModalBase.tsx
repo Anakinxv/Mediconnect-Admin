@@ -1,6 +1,8 @@
-import { useEffect, useRef } from "react";
+import type React from "react";
+
+import { useEffect } from "react";
 import MCButton from "@/shared/components/forms/MCButton";
-import { blendy } from "@/lib/blendy";
+import { X } from "lucide-react";
 
 interface MCModalBaseProps {
   id: string;
@@ -17,130 +19,139 @@ interface MCModalBaseProps {
   secondaryText?: string;
 }
 
-const sizeClasses = {
-  small: "max-w-sm",
-  medium: "max-w-md",
-  large: "max-w-2xl",
-  full: "w-full h-full",
-};
-
-function MCModalBase({
+export function MCModalBase({
   id,
   isOpen,
   onClose,
   children,
   title,
   size = "medium",
-  className,
+  className = "",
   variant = "info",
   onConfirm,
   onSecondary,
-  confirmText = "Confirm",
-  secondaryText = "Cancel",
+  confirmText = "Confirmar",
+  secondaryText = "Cancelar",
 }: MCModalBaseProps) {
-  const modalRef = useRef<HTMLDivElement>(null);
-
-  // OPEN animation
-  useEffect(() => {
-    if (isOpen) {
-      blendy.update();
-      requestAnimationFrame(() => {
-        blendy.toggle(id);
+  const handleClose = () => {
+    if (typeof window !== "undefined" && (window as any).blendy) {
+      (window as any).blendy.untoggle(id, () => {
+        onClose();
       });
+    } else {
+      onClose();
+    }
+  };
+
+  const handleConfirm = () => {
+    if (onConfirm) {
+      onConfirm();
+    }
+    handleClose();
+  };
+
+  useEffect(() => {
+    if (isOpen && typeof window !== "undefined" && (window as any).blendy) {
+      // Small delay to ensure DOM is ready
+      setTimeout(() => {
+        (window as any).blendy.update();
+        (window as any).blendy.toggle(id);
+      }, 10);
     }
   }, [isOpen, id]);
 
-  // ESC key
   useEffect(() => {
-    function handleKeyDown(e: KeyboardEvent) {
-      if (e.key === "Escape") handleClose();
-    }
-    if (isOpen) {
-      window.addEventListener("keydown", handleKeyDown);
-      return () => window.removeEventListener("keydown", handleKeyDown);
-    }
-  }, [isOpen]);
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && isOpen) {
+        handleClose();
+      }
+    };
 
-  function handleClose() {
-    blendy.untoggle(id, onClose);
-  }
+    document.addEventListener("keydown", handleEscape);
+    return () => document.removeEventListener("keydown", handleEscape);
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
+  const sizeClasses = {
+    small: "max-w-md",
+    medium: "max-w-lg",
+    large: "max-w-2xl",
+    full: "max-w-full mx-4",
+  };
+
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
       onClick={handleClose}
-      aria-modal="true"
-      role="dialog"
     >
-      {/* TARGET de Blendy */}
       <div
         data-blendy-to={id}
-        ref={modalRef}
-        className={`bg-white rounded-lg shadow-lg ${sizeClasses[size]} ${
-          className || ""
-        }`}
         onClick={(e) => e.stopPropagation()}
+        className={`${sizeClasses[size]} w-full ${className}`}
       >
-        {/* UN SOLO WRAPPER */}
-        <div className="p-6 relative flex flex-col">
+        <div className="bg-card rounded-xl shadow-2xl border border-border overflow-hidden">
+          {/* Header */}
           {title && (
-            <div className="mb-4 flex justify-between items-center">
-              <h2 className="text-xl font-semibold">{title}</h2>
+            <div className="flex items-center justify-between p-6 border-b border-border">
+              <h2 className="text-2xl font-semibold text-foreground">
+                {title}
+              </h2>
               <button
-                className="text-gray-500 hover:text-gray-700 text-2xl font-bold"
-                onClick={handleClose}
-                aria-label="Close"
-                type="button"
+                onClick={onClose}
+                className="text-muted-foreground hover:text-foreground transition-colors rounded-full p-1 hover:bg-muted"
+                aria-label="Cerrar modal"
               >
-                ×
+                <X size={24} />
               </button>
             </div>
           )}
 
-          <div>{children}</div>
+          {/* Content */}
+          <div className="p-6">{children}</div>
 
-          {/* botones por variante */}
+          {/* Botones por variante */}
           {variant === "warning" && (
-            <div className="flex gap-2 justify-end w-full mt-6">
+            <div className="flex gap-2 justify-end w-full px-6 pb-6">
               <MCButton
                 variant="secondary"
+                size="m"
                 onClick={onSecondary || handleClose}
               >
                 {secondaryText}
               </MCButton>
-              <MCButton variant="delete" onClick={onConfirm}>
+              <MCButton variant="delete" size="m" onClick={handleConfirm}>
                 {confirmText}
               </MCButton>
             </div>
           )}
 
           {variant === "confirm" && (
-            <div className="flex justify-end w-full mt-6">
-              <MCButton variant="primary" onClick={onConfirm}>
+            <div className="flex justify-end w-full px-6 pb-6">
+              <MCButton variant="primary" size="m" onClick={handleConfirm}>
                 {confirmText}
               </MCButton>
             </div>
           )}
 
           {variant === "decide" && (
-            <div className="flex gap-2 justify-end w-full mt-6">
+            <div className="flex gap-2 justify-end w-full px-6 pb-6">
               <MCButton
                 variant="secondary"
+                size="m"
                 onClick={onSecondary || handleClose}
               >
                 {secondaryText}
               </MCButton>
-              <MCButton variant="primary" onClick={onConfirm}>
+              <MCButton variant="primary" size="m" onClick={handleConfirm}>
                 {confirmText}
               </MCButton>
             </div>
           )}
+
+          {/* Info variant doesn't show buttons in footer, content is custom */}
         </div>
       </div>
     </div>
   );
 }
-
-export default MCModalBase;
