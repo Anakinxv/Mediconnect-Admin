@@ -4,4 +4,6 @@ export const ROUTES = {
   VERIFY_EMAIL: "/auth/verify-email",
   RESET_PASSWORD: "/auth/reset-password",
   PASSWORD_SUCCESS: "/auth/password-success",
+
+  DASHBOARD: "/admin/dashboard",
 };
