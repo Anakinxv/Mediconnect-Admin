@@ -5,7 +5,6 @@ import { type ForgotPasswordSchemaType } from "@/schema/AuthSchema";
 import { type ResetPasswordSchemaType } from "@/schema/AuthSchema";
 
 export interface AuthSlice {
-  // Variables
   loginCredentials: LoginSchemaType;
   forgotPassword: ForgotPasswordSchemaType;
   otp: string;
@@ -13,7 +12,6 @@ export interface AuthSlice {
   isAuthenticated: boolean;
   token: string | null;
 
-  // Funciones
   setLoginCredentials: (data: LoginSchemaType) => void;
   setForgotPassword: (data: ForgotPasswordSchemaType) => void;
   setOtp: (otp: string) => void;
@@ -21,6 +19,7 @@ export interface AuthSlice {
   clearForgotPassword: () => void;
   login: (token: string) => void;
   logout: () => void;
+  reset: () => void;
 }
 
 export const createAuthSlice: StateCreator<
@@ -72,6 +71,17 @@ export const createAuthSlice: StateCreator<
           email: "",
           password: "",
         } as LoginSchemaType,
+        forgotPassword: {
+          email: "",
+        } as ForgotPasswordSchemaType,
+        otp: "",
+        resetPassword: {
+          password: "",
+          confirmPassword: "",
+        } as ResetPasswordSchemaType,
+      }),
+    reset: () =>
+      set({
         forgotPassword: {
           email: "",
         } as ForgotPasswordSchemaType,

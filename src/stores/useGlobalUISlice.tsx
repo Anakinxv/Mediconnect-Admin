@@ -13,32 +13,39 @@ export type GlobalUISlice = {
     type: "success" | "error" | "info";
     open: boolean;
   };
-  PasswordVisibility: boolean;
-  SetPasswordVisibility: (visibility: boolean) => void;
   setToast: (toast: {
     message: string;
     type: "success" | "error" | "info";
     open: boolean;
   }) => void;
+  modalOpen: boolean;
+  setModalOpen: (open: boolean) => void;
+  PasswordVisibility: boolean;
+  SetPasswordVisibility: (visibility: boolean) => void;
 };
 
 export const createGlobalUISlice: StateCreator<GlobalUISlice> = (set) => ({
+  // Variables
   isDarkMode: false,
-  toggleDarkMode: () => set((state) => ({ isDarkMode: !state.isDarkMode })),
   language: "es",
-  setLanguage: (lang: string) => {
-    i18n.changeLanguage(lang);
-    set({ language: lang });
-  },
   isloading: false,
-  setIsLoading: (loading: boolean) => set({ isloading: loading }),
-  PasswordVisibility: false,
-  SetPasswordVisibility: (visibility: boolean) =>
-    set({ PasswordVisibility: visibility }),
   toast: {
     message: "",
     type: "info",
     open: false,
   },
+  modalOpen: false,
+  PasswordVisibility: false,
+
+  // Funciones
+  toggleDarkMode: () => set((state) => ({ isDarkMode: !state.isDarkMode })),
+  setLanguage: (lang: string) => {
+    i18n.changeLanguage(lang);
+    set({ language: lang });
+  },
+  setIsLoading: (loading: boolean) => set({ isloading: loading }),
   setToast: (toast) => set({ toast }),
+  setModalOpen: (open: boolean) => set({ modalOpen: open }),
+  SetPasswordVisibility: (visibility: boolean) =>
+    set({ PasswordVisibility: visibility }),
 });
