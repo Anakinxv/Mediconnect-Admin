@@ -17,7 +17,7 @@ function PasswordSuccessPage() {
       <h2 className="text-3xl font-semibold mb-4">
         {t("passwordSuccess.title")}
       </h2>
-      <MCButton className="mt-6" onClick={() => navigate("/auth/login")}>
+      <MCButton className="mt-6" onClick={() => navigate("/login")}>
         {t("passwordSuccess.continue")}
       </MCButton>
     </div>
