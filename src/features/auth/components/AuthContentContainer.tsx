@@ -1,5 +1,5 @@
 import React, { useRef } from "react";
-import { useIsMobile } from "@/hooks/useIsMobile";
+import { useIsMobile } from "@/lib/hooks/useIsMobile";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 

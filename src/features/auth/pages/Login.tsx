@@ -9,7 +9,7 @@ import MCButton from "@/shared/components/forms/MCButton";
 import { LoginSchema } from "@/schema/AuthSchema";
 import { useAppStore } from "@/stores/useAppStore";
 import { type LoginSchemaType } from "@/schema/AuthSchema";
-import { useIsMobile } from "@/hooks/useIsMobile";
+import { useIsMobile } from "@/lib/hooks/useIsMobile";
 import { useTranslation } from "react-i18next";
 import LanguageDropDown from "../components/LanguageDropDown";
 import { useNavigate } from "react-router-dom";

@@ -1,5 +1,5 @@
 import React from "react";
-import { useIsMobile } from "@/hooks/useIsMobile";
+import { useIsMobile } from "@/lib/hooks/useIsMobile";
 import MCBackButton from "@/shared/components/forms/MCBackButton";
 import MCButton from "@/shared/components/forms/MCButton";
 import { useTranslation } from "react-i18next";

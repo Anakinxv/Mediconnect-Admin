@@ -1,14 +1,24 @@
 import type React from "react";
-
 import { useEffect } from "react";
 import MCButton from "@/shared/components/forms/MCButton";
-import { X } from "lucide-react";
+
+import {
+  MorphingDialog,
+  MorphingDialogTrigger,
+  MorphingDialogContent,
+  MorphingDialogTitle,
+  MorphingDialogClose,
+  MorphingDialogDescription,
+  MorphingDialogContainer,
+} from "@/shared/ui/morphing-dialog";
 
 interface MCModalBaseProps {
   id: string;
-  isOpen: boolean;
-  onClose: () => void;
+  trigger?: React.ReactNode;
+  isOpen?: boolean;
+  onClose?: () => void;
   children: React.ReactNode;
+
   title?: string;
   size?: "small" | "medium" | "large" | "full";
   className?: string;
@@ -20,7 +30,7 @@ interface MCModalBaseProps {
 }
 
 export function MCModalBase({
-  id,
+  trigger,
   isOpen,
   onClose,
   children,
@@ -33,45 +43,20 @@ export function MCModalBase({
   confirmText = "Confirmar",
   secondaryText = "Cancelar",
 }: MCModalBaseProps) {
-  const handleClose = () => {
-    if (typeof window !== "undefined" && (window as any).blendy) {
-      (window as any).blendy.untoggle(id, () => {
-        onClose();
-      });
-    } else {
-      onClose();
-    }
-  };
-
-  const handleConfirm = () => {
-    if (onConfirm) {
-      onConfirm();
-    }
-    handleClose();
-  };
+  const isControlled = isOpen !== undefined;
 
   useEffect(() => {
-    if (isOpen && typeof window !== "undefined" && (window as any).blendy) {
-      // Small delay to ensure DOM is ready
-      setTimeout(() => {
-        (window as any).blendy.update();
-        (window as any).blendy.toggle(id);
-      }, 10);
-    }
-  }, [isOpen, id]);
+    if (!isControlled || !isOpen) return;
 
-  useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === "Escape" && isOpen) {
-        handleClose();
+      if (e.key === "Escape") {
+        onClose?.();
       }
     };
 
     document.addEventListener("keydown", handleEscape);
     return () => document.removeEventListener("keydown", handleEscape);
-  }, [isOpen]);
-
-  if (!isOpen) return null;
+  }, [isControlled, isOpen, onClose]);
 
   const sizeClasses = {
     small: "max-w-md",
@@ -80,43 +65,48 @@ export function MCModalBase({
     full: "max-w-full mx-4",
   };
 
+  const handleConfirm = () => {
+    onConfirm?.();
+    onClose?.();
+  };
+
+  if (isControlled && !isOpen) return null;
+
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
-      onClick={handleClose}
+    <MorphingDialog
+      transition={{
+        type: "spring",
+        stiffness: 200,
+        damping: 24,
+      }}
     >
-      <div
-        data-blendy-to={id}
-        onClick={(e) => e.stopPropagation()}
-        className={`${sizeClasses[size]} w-full ${className}`}
-      >
-        <div className="bg-card rounded-xl shadow-2xl border border-border overflow-hidden">
-          {/* Header */}
-          {title && (
-            <div className="flex items-center justify-between p-6 border-b border-border">
-              <h2 className="text-2xl font-semibold text-foreground">
-                {title}
-              </h2>
-              <button
-                onClick={onClose}
-                className="text-muted-foreground hover:text-foreground transition-colors rounded-full p-1 hover:bg-muted"
-                aria-label="Cerrar modal"
-              >
-                <X size={24} />
-              </button>
-            </div>
-          )}
+      {trigger && <MorphingDialogTrigger>{trigger}</MorphingDialogTrigger>}
+      <MorphingDialogContainer className="p-6">
+        <MorphingDialogContent
+          className={`bg-white rounded-lg shadow-lg ${sizeClasses[size]} ${className}`}
+        >
+          {/* Header - Título y botón de cerrar */}
+          <div className="flex justify-between items-center px-6 pt-6 pb-4">
+            {title && (
+              <MorphingDialogTitle>
+                <h2 className="text-xl font-semibold text-primary">{title}</h2>
+              </MorphingDialogTitle>
+            )}
+            <MorphingDialogClose className="text-primary " />
+          </div>
 
           {/* Content */}
-          <div className="p-6">{children}</div>
+          <MorphingDialogDescription className="px-6 py-4">
+            {children}
+          </MorphingDialogDescription>
 
-          {/* Botones por variante */}
+          {/* Footer por variante */}
           {variant === "warning" && (
-            <div className="flex gap-2 justify-end w-full px-6 pb-6">
+            <div className="flex gap-2 justify-end px-6 pb-6 pt-4">
               <MCButton
                 variant="secondary"
                 size="m"
-                onClick={onSecondary || handleClose}
+                onClick={onSecondary || onClose}
               >
                 {secondaryText}
               </MCButton>
@@ -127,7 +117,7 @@ export function MCModalBase({
           )}
 
           {variant === "confirm" && (
-            <div className="flex justify-end w-full px-6 pb-6">
+            <div className="flex justify-end px-6 pb-6 pt-4">
               <MCButton variant="primary" size="m" onClick={handleConfirm}>
                 {confirmText}
               </MCButton>
@@ -135,11 +125,11 @@ export function MCModalBase({
           )}
 
           {variant === "decide" && (
-            <div className="flex gap-2 justify-end w-full px-6 pb-6">
+            <div className="flex gap-2 justify-end px-6 pb-6 pt-4">
               <MCButton
                 variant="secondary"
                 size="m"
-                onClick={onSecondary || handleClose}
+                onClick={onSecondary || onClose}
               >
                 {secondaryText}
               </MCButton>
@@ -148,10 +138,8 @@ export function MCModalBase({
               </MCButton>
             </div>
           )}
-
-          {/* Info variant doesn't show buttons in footer, content is custom */}
-        </div>
-      </div>
-    </div>
+        </MorphingDialogContent>
+      </MorphingDialogContainer>
+    </MorphingDialog>
   );
 }
