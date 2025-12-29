@@ -7,7 +7,7 @@ function DashboardLayout() {
   const isMobile = useIsMobile();
 
   return (
-    <div>
+    <div className="p-10 bg-bg-btn-secondary min-h-screen">
       {isMobile ? <AdminNavbarMobile /> : <AdminNavbar />}
       <div>
         <Outlet />

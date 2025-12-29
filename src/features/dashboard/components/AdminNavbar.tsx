@@ -6,13 +6,13 @@ import {
   NavigationMenuList,
   NavigationMenuLink,
 } from "@/shared/ui/navigation-menu";
-import { ChevronDown } from "lucide-react";
+
 function AdminNavbar() {
   return (
-    <nav className="w-full flex items-center justify-between px-6 py-3 bg-white border-b shadow-sm">
+    <nav className="w-full flex items-center justify-between px-6 py-3 bg-white rounded-full ">
       {/* Logo */}
       <div className="flex items-center gap-3">
-        <img src={LogoImg} alt="MediConnect" className="h-15  w-auto" />
+        <img src={LogoImg} alt="MediConnect" className="h-16  w-auto" />
       </div>
       {/* Main Navigation */}
       <NavigationMenu>

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -36,10 +36,10 @@ export function AdminUserMenu() {
         <Button
           variant="outline"
           className={`flex items-center gap-3 outline-none border-none shadow-none ring-0 focus:ring-0 h-fit transition-colors ${
-            open ? "bg-gray-100" : ""
+            open ? "bg-gray-100 rounded-full" : ""
           }`}
         >
-          <Avatar className="h-14 w-14 rounded-full shadow-lg transition-all">
+          <Avatar className="h-13 w-13 rounded-full shadow-lg transition-all">
             <AvatarImage
               src="https://i.pinimg.com/736x/ff/e7/3f/ffe73ffe75682fec82ccd320ccb43fe9.jpg"
               alt="José Almirante"
@@ -47,30 +47,33 @@ export function AdminUserMenu() {
             />
             <AvatarFallback className="text-xl">JA</AvatarFallback>
           </Avatar>
-          <div className="flex flex-col items-start leading-tight text-left">
-            <span className="text-base font-semibold">José Almirante</span>
-            <span
-              className="text-sm font-medium max-w-[140px] truncate"
-              title="jose@gmail.com"
-            >
-              jose@gmail.com
-            </span>
-          </div>
-          <div className="flex flex-col h-full w-full items-start justify-start">
-            <ChevronDown
-              className={`w-5 h-5 text-muted-foreground transition-transform duration-200 ${
-                open ? "rotate-180" : ""
-              }`}
-            />
+          <div className="flex items-start gap-3 0">
+            <div className="flex flex-col items-start leading-tight text-left">
+              <span className="text-base font-semibold">José Almirante</span>
+              <span
+                className="text-sm font-normal max-w-35 truncate"
+                style={{ textOverflow: "clip" }}
+                title="jose@gmail.com"
+              >
+                Admin
+              </span>
+            </div>
+            <div className="flex flex-col h-full w-full items-start justify-start">
+              <ChevronDown
+                className={`w-7 h-7 text-muted-foreground mt-0.5 stroke-2.5 transition-transform duration-200 ${
+                  open ? "rotate-180" : ""
+                }`}
+              />
+            </div>
           </div>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent
-        className="w-72 bg-background border border-primary/20"
+        className="w-80 rounded-2xl bg-background border border-primary/20"
         align="end"
       >
         <DropdownMenuLabel className="flex items-center gap-3 px-4 py-3">
-          <Avatar className="h-16 w-16 rounded-full shadow-lg">
+          <Avatar className="h-13 w-13 rounded-full shadow-lg">
             <AvatarImage
               src="https://i.pinimg.com/736x/ff/e7/3f/ffe73ffe75682fec82ccd320ccb43fe9.jpg"
               alt="José Almirante"
@@ -81,10 +84,11 @@ export function AdminUserMenu() {
           <div className="flex flex-col items-start leading-tight text-left">
             <span className="text-base font-semibold">José Almirante</span>
             <span
-              className="text-sm font-medium max-w-[140px] truncate"
+              className="text-sm font-normal max-w-55 overflow-hidden truncate"
+              style={{ textOverflow: "clip" }}
               title="jose@gmail.com"
             >
-              jose@gmail.com
+              emmanuel03250310@gmail.com
             </span>
           </div>
         </DropdownMenuLabel>
@@ -101,7 +105,7 @@ export function AdminUserMenu() {
             <DropdownMenuShortcut>{cmdOrCtrl}+E</DropdownMenuShortcut>
           </DropdownMenuItem>
         </DropdownMenuGroup>
-        <DropdownMenuSeparator className="bg-primary/15" />
+        {/* <DropdownMenuSeparator className="bg-primary/15" /> */}
         <DropdownMenuGroup>
           <DropdownMenuItem>
             <Languages className="w-4 h-4 mr-2" />
@@ -114,7 +118,7 @@ export function AdminUserMenu() {
             <DropdownMenuShortcut>{cmdOrCtrl}+T</DropdownMenuShortcut>
           </DropdownMenuItem>
         </DropdownMenuGroup>
-        <DropdownMenuSeparator className="bg-primary/15" />
+        {/* <DropdownMenuSeparator className="bg-primary/15" /> */}
         <DropdownMenuGroup>
           <DropdownMenuItem>
             <Settings className="w-4 h-4 mr-2" />
