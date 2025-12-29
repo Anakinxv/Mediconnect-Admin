@@ -1,5 +1,3 @@
-/* 4️⃣ ACTUALIZA TU CSS - index.css */
-
 @import "tailwindcss";
 @import "tw-animate-css";
 
@@ -35,6 +33,7 @@
   /* Añade estas líneas para los nuevos colores */
   --color-bg-secondary: var(--bg-secondary);
   --color-bg-btn-secondary: var(--bg-btn-secondary);
+  --color-destructive: var(--destructive);
 }
 
 :root {
@@ -60,6 +59,7 @@
   /* Nuevos colores */
   --bg-secondary: #fbfbfb;
   --bg-btn-secondary: #f7f7f7;
+  --destructive: #ffebe9;
 }
 
 [data-theme="dark"] {
@@ -79,6 +79,7 @@
   --border: #1e1e1e;
   --input: #1e1e1e;
   --ring: #8bb1ca;
+  --destructive: #3b0a0a;
 
   /* Nuevos colores para dark */
   --bg-secondary: #0a0a0a;

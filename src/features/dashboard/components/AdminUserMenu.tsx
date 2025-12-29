@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -6,28 +6,133 @@ import {
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
+  DropdownMenuShortcut,
   DropdownMenuTrigger,
-} from "@/shared/ui/dropdown-menu";
+} from "@/shared/animate-ui/components/radix/dropdown-menu";
+import { Button } from "@/shared/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/shared/ui/avatar";
+import {
+  User,
+  Pencil,
+  Languages,
+  Moon,
+  Settings,
+  Shield,
+  LogOut,
+  ChevronDown,
+} from "lucide-react";
 
-function AdminUserMenu() {
+const isMac =
+  typeof window !== "undefined" &&
+  /Mac|iPod|iPhone|iPad/.test(navigator.platform);
+const cmdOrCtrl = isMac ? "⌘" : "Ctrl";
+
+export function AdminUserMenu() {
+  const [open, setOpen] = useState(false);
+
   return (
-    <DropdownMenu>
+    <DropdownMenu open={open} onOpenChange={setOpen}>
       <DropdownMenuTrigger asChild>
-        <Avatar className="cursor-pointer h-10 w-10">
-          <AvatarImage src="" alt="José Almirante" />
-          <AvatarFallback>JA</AvatarFallback>
-        </Avatar>
+        <Button
+          variant="outline"
+          className={`flex items-center gap-3 outline-none border-none shadow-none ring-0 focus:ring-0 h-fit transition-colors ${
+            open ? "bg-gray-100" : ""
+          }`}
+        >
+          <Avatar className="h-14 w-14 rounded-full shadow-lg transition-all">
+            <AvatarImage
+              src="https://i.pinimg.com/736x/ff/e7/3f/ffe73ffe75682fec82ccd320ccb43fe9.jpg"
+              alt="José Almirante"
+              className="object-cover"
+            />
+            <AvatarFallback className="text-xl">JA</AvatarFallback>
+          </Avatar>
+          <div className="flex flex-col items-start leading-tight text-left">
+            <span className="text-base font-semibold">José Almirante</span>
+            <span
+              className="text-sm font-medium max-w-[140px] truncate"
+              title="jose@gmail.com"
+            >
+              jose@gmail.com
+            </span>
+          </div>
+          <div className="flex flex-col h-full w-full items-start justify-start">
+            <ChevronDown
+              className={`w-5 h-5 text-muted-foreground transition-transform duration-200 ${
+                open ? "rotate-180" : ""
+              }`}
+            />
+          </div>
+        </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-56">
-        <DropdownMenuLabel>Mi cuenta</DropdownMenuLabel>
-        <DropdownMenuSeparator />
+      <DropdownMenuContent
+        className="w-72 bg-background border border-primary/20"
+        align="end"
+      >
+        <DropdownMenuLabel className="flex items-center gap-3 px-4 py-3">
+          <Avatar className="h-16 w-16 rounded-full shadow-lg">
+            <AvatarImage
+              src="https://i.pinimg.com/736x/ff/e7/3f/ffe73ffe75682fec82ccd320ccb43fe9.jpg"
+              alt="José Almirante"
+              className="object-cover"
+            />
+            <AvatarFallback className="text-xl">JA</AvatarFallback>
+          </Avatar>
+          <div className="flex flex-col items-start leading-tight text-left">
+            <span className="text-base font-semibold">José Almirante</span>
+            <span
+              className="text-sm font-medium max-w-[140px] truncate"
+              title="jose@gmail.com"
+            >
+              jose@gmail.com
+            </span>
+          </div>
+        </DropdownMenuLabel>
+        <DropdownMenuSeparator className="bg-primary/15" />
         <DropdownMenuGroup>
-          <DropdownMenuItem>Perfil</DropdownMenuItem>
-          <DropdownMenuItem>Configuración</DropdownMenuItem>
+          <DropdownMenuItem>
+            <User className="w-4 h-4 mr-2" />
+            Ver Perfil
+            <DropdownMenuShortcut>⇧{cmdOrCtrl}+P</DropdownMenuShortcut>
+          </DropdownMenuItem>
+          <DropdownMenuItem>
+            <Pencil className="w-4 h-4 mr-2" />
+            Editar Perfil
+            <DropdownMenuShortcut>{cmdOrCtrl}+E</DropdownMenuShortcut>
+          </DropdownMenuItem>
         </DropdownMenuGroup>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem className="text-red-600">Salir</DropdownMenuItem>
+        <DropdownMenuSeparator className="bg-primary/15" />
+        <DropdownMenuGroup>
+          <DropdownMenuItem>
+            <Languages className="w-4 h-4 mr-2" />
+            Cambiar Idioma
+            <DropdownMenuShortcut>{cmdOrCtrl}+L</DropdownMenuShortcut>
+          </DropdownMenuItem>
+          <DropdownMenuItem>
+            <Moon className="w-4 h-4 mr-2" />
+            Cambiar Tema
+            <DropdownMenuShortcut>{cmdOrCtrl}+T</DropdownMenuShortcut>
+          </DropdownMenuItem>
+        </DropdownMenuGroup>
+        <DropdownMenuSeparator className="bg-primary/15" />
+        <DropdownMenuGroup>
+          <DropdownMenuItem>
+            <Settings className="w-4 h-4 mr-2" />
+            Configuración
+            <DropdownMenuShortcut>{cmdOrCtrl}+S</DropdownMenuShortcut>
+          </DropdownMenuItem>
+          <DropdownMenuItem>
+            <Shield className="w-4 h-4 mr-2" />
+            Privacidad y Seguridad
+            <DropdownMenuShortcut>{cmdOrCtrl}+P</DropdownMenuShortcut>
+          </DropdownMenuItem>
+        </DropdownMenuGroup>
+        <DropdownMenuSeparator className="bg-primary/15" />
+        <DropdownMenuItem variant="destructive">
+          <LogOut className="w-4 h-4 mr-2" />
+          Cerrar Sesión
+          <DropdownMenuShortcut>⇧{cmdOrCtrl}+Q</DropdownMenuShortcut>
+        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );

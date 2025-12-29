@@ -9,7 +9,8 @@ type MediButtonProps = {
     | "success"
     | "warning"
     | "link"
-    | "tercero";
+    | "tercero"
+    | "outline";
   onClick?: () => void;
   className?: string;
   disabled?: boolean;
@@ -76,6 +77,10 @@ function MCButton({
       bg-[var(--color-bg-btn-secondary)] text-black border border-[var(--color-bg-btn-secondary)]
       hover:bg-[var(--color-bg-btn-secondary)]/90 hover:opacity-90
       active:bg-[var(--color-bg-btn-secondary)]/80 active:opacity-80
+    `,
+    outline: `
+      bg-transparent border-none text-primary
+      active:opacity-60 
     `,
   };
 
