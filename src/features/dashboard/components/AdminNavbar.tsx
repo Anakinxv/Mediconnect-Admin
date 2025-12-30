@@ -10,7 +10,7 @@ import {
   NavigationMenuContent,
 } from "@/shared/ui/navigation-menu";
 import { useLocation } from "react-router-dom";
-
+import AdminNavbarBell from "./AdminNavbarBell";
 function AdminNavbar() {
   const location = useLocation();
 
@@ -43,10 +43,9 @@ function AdminNavbar() {
     <nav className="w-full flex items-center justify-between px-10 py-3 bg-white rounded-full">
       {/* Logo */}
       <div className="flex items-center gap-3">
-        <img src={LogoImg} alt="MediConnect" className="h-16 w-auto" />
+        <img src={LogoImg} alt="MediConnect" className="h-18 w-auto" />
       </div>
-
-      <main className="bg-bg-btn-secondary px-6 py-3 rounded-full">
+      <main className="bg-bg-btn-secondary px-6 py-2 rounded-full">
         {/* Main Navigation */}
         <NavigationMenu viewport={false}>
           <NavigationMenuList className="gap-6">
@@ -55,7 +54,7 @@ function AdminNavbar() {
               <NavigationMenuLink
                 href="/"
                 active={isDashboardActive}
-                className={`text-base px-4 py-7 rounded-full hover:rounded-full ${
+                className={`text-base px-4 py-6  rounded-full hover:rounded-full ${
                   isDashboardActive
                     ? "font-medium"
                     : "font-normal opacity-50 hover:opacity-100"
@@ -71,7 +70,7 @@ function AdminNavbar() {
             >
               <div className="relative">
                 <NavigationMenuTrigger
-                  className={`${navigationMenuTriggerStyle()} text-base px-4 py-7 ${
+                  className={`${navigationMenuTriggerStyle()} text-base px-4 py-6 ${
                     isUsuariosActive
                       ? "font-medium"
                       : "font-normal opacity-50 hover:opacity-100"
@@ -129,7 +128,7 @@ function AdminNavbar() {
               <NavigationMenuLink
                 href="/reporte-cuentas"
                 active={isReporteActive}
-                className={`text-base px-4 py-7 rounded-full hover:rounded-full ${
+                className={`text-base px-4 py-6 rounded-full hover:rounded-full ${
                   isReporteActive
                     ? "font-medium"
                     : "font-normal opacity-50 hover:opacity-100"
@@ -145,7 +144,7 @@ function AdminNavbar() {
             >
               <div className="relative">
                 <NavigationMenuTrigger
-                  className={`${navigationMenuTriggerStyle()} text-base px-4 py-7 ${
+                  className={`${navigationMenuTriggerStyle()} text-base px-4 py-6 ${
                     isContenidoActive
                       ? "font-medium"
                       : "font-normal opacity-50 hover:opacity-100"
@@ -234,6 +233,7 @@ function AdminNavbar() {
 
       {/* User Menu */}
       <div className="flex items-center gap-3">
+        <AdminNavbarBell />
         <AdminUserMenu />
       </div>
     </nav>

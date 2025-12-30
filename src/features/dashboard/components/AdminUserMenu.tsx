@@ -36,10 +36,10 @@ export function AdminUserMenu() {
         <Button
           variant="outline"
           className={`flex items-center gap-3 outline-none border-none shadow-none ring-0 focus:ring-0 h-fit transition-colors ${
-            open ? "bg-gray-100 rounded-full" : ""
+            open ? "bg-accent/70 rounded-full" : ""
           }`}
         >
-          <Avatar className="h-13 w-13 rounded-full shadow-lg transition-all">
+          <Avatar className="h-14 w-14 rounded-full shadow-lg transition-all">
             <AvatarImage
               src="https://i.pinimg.com/736x/ff/e7/3f/ffe73ffe75682fec82ccd320ccb43fe9.jpg"
               alt="José Almirante"
