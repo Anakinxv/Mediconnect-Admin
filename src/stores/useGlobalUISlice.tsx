@@ -6,8 +6,8 @@ export type GlobalUISlice = {
   allowedPages: string[];
   setAccessPage: (canAccess: boolean, pages: string[]) => void;
 
-  isDarkMode: boolean;
-  toggleDarkMode: () => void;
+  theme: "light" | "dark" | "system";
+  setTheme: (theme: "light" | "dark" | "system") => void;
   language: string;
   setLanguage: (lang: string) => void;
   isLoading: boolean;
@@ -34,7 +34,7 @@ export const createGlobalUISlice: StateCreator<GlobalUISlice> = (set) => ({
   setAccessPage: (canAccess, pages) =>
     set({ canAccessPage: canAccess, allowedPages: pages }),
 
-  isDarkMode: false,
+  theme: "system",
   language: "es",
   isLoading: false,
   toast: {
@@ -46,7 +46,11 @@ export const createGlobalUISlice: StateCreator<GlobalUISlice> = (set) => ({
   passwordVisibility: false,
 
   // Funciones
-  toggleDarkMode: () => set((state) => ({ isDarkMode: !state.isDarkMode })),
+  setTheme: (theme) => set({ theme }),
+  toggleDarkMode: () =>
+    set((state) => ({
+      theme: state.theme === "dark" ? "light" : "dark",
+    })),
   setLanguage: (lang: string) => {
     i18n.changeLanguage(lang);
     set({ language: lang });

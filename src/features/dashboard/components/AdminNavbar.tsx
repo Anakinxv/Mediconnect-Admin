@@ -11,8 +11,11 @@ import {
 } from "@/shared/ui/navigation-menu";
 import { useLocation } from "react-router-dom";
 import AdminNavbarBell from "./AdminNavbarBell";
+import { useTranslation } from "react-i18next"; // <-- Añadido
+
 function AdminNavbar() {
   const location = useLocation();
+  const { t } = useTranslation("dashboard"); // <-- Añadido
 
   const usuariosRoutes = [
     "/a",
@@ -60,7 +63,7 @@ function AdminNavbar() {
                     : "font-normal opacity-50 hover:opacity-100"
                 }`}
               >
-                Dashboard
+                {t("navbar.dashboard")}
               </NavigationMenuLink>
             </NavigationMenuItem>
 
@@ -78,7 +81,7 @@ function AdminNavbar() {
                   active={isUsuariosActive}
                   hasActiveChild={hasActiveChildUsuarios}
                 >
-                  Usuarios
+                  {t("navbar.usuarios")}
                 </NavigationMenuTrigger>
                 <NavigationMenuContent className="absolute left-0 z-50 border-primary/15">
                   <ul className="p-2 flex flex-col gap-1">
@@ -88,7 +91,7 @@ function AdminNavbar() {
                         active={location.pathname === "/a"}
                         isChild
                       >
-                        Admins
+                        {t("navbar.admins")}
                       </NavigationMenuLink>
                     </li>
                     <li>
@@ -97,7 +100,7 @@ function AdminNavbar() {
                         active={location.pathname === "/usuarios/pacientes"}
                         isChild
                       >
-                        Pacientes
+                        {t("navbar.pacientes")}
                       </NavigationMenuLink>
                     </li>
                     <li>
@@ -106,7 +109,7 @@ function AdminNavbar() {
                         active={location.pathname === "/usuarios/doctores"}
                         isChild
                       >
-                        Doctores
+                        {t("navbar.doctores")}
                       </NavigationMenuLink>
                     </li>
                     <li>
@@ -115,7 +118,7 @@ function AdminNavbar() {
                         active={location.pathname === "/usuarios/centros"}
                         isChild
                       >
-                        Centros de Salud
+                        {t("navbar.centros")}
                       </NavigationMenuLink>
                     </li>
                   </ul>
@@ -134,7 +137,7 @@ function AdminNavbar() {
                     : "font-normal opacity-50 hover:opacity-100"
                 }`}
               >
-                Reporte de cuentas
+                {t("navbar.reporteCuentas")}
               </NavigationMenuLink>
             </NavigationMenuItem>
 
@@ -152,7 +155,7 @@ function AdminNavbar() {
                   active={isContenidoActive}
                   hasActiveChild={hasActiveChildContenido}
                 >
-                  Contenido
+                  {t("navbar.contenido")}
                 </NavigationMenuTrigger>
                 <NavigationMenuContent className="absolute left-0 z-50 border-primary/15">
                   <ul className="p-2 flex flex-col gap-1">
@@ -164,7 +167,7 @@ function AdminNavbar() {
                         }
                         isChild
                       >
-                        Tipo Centro Salud
+                        {t("navbar.tipoCentroSalud")}
                       </NavigationMenuLink>
                     </li>
                     <li>
@@ -173,7 +176,7 @@ function AdminNavbar() {
                         active={location.pathname === "/contenido/profesion"}
                         isChild
                       >
-                        Profesión
+                        {t("navbar.profesion")}
                       </NavigationMenuLink>
                     </li>
                     <li>
@@ -184,7 +187,7 @@ function AdminNavbar() {
                         }
                         isChild
                       >
-                        Tipo Servicio
+                        {t("navbar.tipoServicio")}
                       </NavigationMenuLink>
                     </li>
                     <li>
@@ -193,7 +196,7 @@ function AdminNavbar() {
                         active={location.pathname === "/contenido/pais"}
                         isChild
                       >
-                        País
+                        {t("navbar.pais")}
                       </NavigationMenuLink>
                     </li>
                     <li>
@@ -202,7 +205,7 @@ function AdminNavbar() {
                         active={location.pathname === "/contenido/tipo-seguro"}
                         isChild
                       >
-                        Tipo Seguro
+                        {t("navbar.tipoSeguro")}
                       </NavigationMenuLink>
                     </li>
                     <li>
@@ -211,7 +214,7 @@ function AdminNavbar() {
                         active={location.pathname === "/contenido/seguros"}
                         isChild
                       >
-                        Seguros
+                        {t("navbar.seguros")}
                       </NavigationMenuLink>
                     </li>
                     <li>
@@ -220,7 +223,7 @@ function AdminNavbar() {
                         active={location.pathname === "/contenido/alergias"}
                         isChild
                       >
-                        Alergias
+                        {t("navbar.alergias")}
                       </NavigationMenuLink>
                     </li>
                   </ul>

@@ -19,6 +19,7 @@ import { Badge } from "@/shared/ui/badge";
 import { Button } from "@/shared/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/ui/tabs";
 import { cn } from "@/lib/utils";
+import { useTranslation } from "react-i18next";
 
 const notifications = [
   {
@@ -78,6 +79,7 @@ const typeIcon: Record<string, React.ReactNode> = {
 };
 
 function AdminNavbarBell() {
+  const { t } = useTranslation("dashboard");
   const [open, setOpen] = useState(false);
   const [notis, setNotis] = useState(notifications);
 
@@ -97,7 +99,7 @@ function AdminNavbarBell() {
   return (
     <DropdownMenu open={open} onOpenChange={setOpen}>
       <DropdownMenuTrigger asChild>
-        <button
+        <div
           className={cn(
             "relative rounded-full p-3 transition-transform duration-300 h-14 w-14 flex items-center justify-center group",
             "hover:bg-accent/70 text-primary ", // Efecto hover
@@ -123,12 +125,12 @@ function AdminNavbarBell() {
               {unread.length}
             </Badge>
           )}
-        </button>
+        </div>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-96 p-0">
         <DropdownMenuLabel className="flex items-center justify-between px-4 py-2">
           <span className="text-base font-semibold text-foreground">
-            Notifications
+            {t("notifications.title")}
           </span>
           <Button
             size="sm"
@@ -137,7 +139,7 @@ function AdminNavbarBell() {
             disabled={unread.length === 0}
             className="text-xs font-medium text-muted-foreground hover:text-foreground"
           >
-            Mark all as read
+            {t("notifications.markAllAsRead")}
           </Button>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
@@ -159,7 +161,7 @@ function AdminNavbarBell() {
                     : "bg-accent text-primary opacity-60"
                 )}
               >
-                Unread
+                {t("notifications.unread")}
               </TabsTrigger>
               <TabsTrigger
                 value="read"
@@ -170,7 +172,7 @@ function AdminNavbarBell() {
                     : "bg-accent text-primary opacity-60"
                 )}
               >
-                Read
+                {t("notifications.read")}
               </TabsTrigger>
             </TabsList>
             <div className="border-b border-border my-1" />
@@ -179,7 +181,7 @@ function AdminNavbarBell() {
               <div className="max-h-72 overflow-y-auto">
                 {unread.length === 0 ? (
                   <div className="py-8 text-center text-sm text-muted-foreground">
-                    No unread notifications
+                    {t("notifications.noUnread")}
                   </div>
                 ) : (
                   <div className="divide-y divide-border/50">
@@ -223,7 +225,7 @@ function AdminNavbarBell() {
                               " text-primary/70  ",
                               "hover:bg-red-500/10 hover:text-red-500 "
                             )}
-                            title="Delete"
+                            title={t("notifications.delete")}
                           >
                             <Trash2Icon className="w-3.5 h-3.5" />
                           </button>
@@ -238,7 +240,7 @@ function AdminNavbarBell() {
               <div className="max-h-72 overflow-y-auto">
                 {read.length === 0 ? (
                   <div className="py-8 text-center text-sm text-muted-foreground">
-                    No read notifications
+                    {t("notifications.noRead")}
                   </div>
                 ) : (
                   <div className="divide-y divide-border/50">
@@ -283,7 +285,7 @@ function AdminNavbarBell() {
                               " text-primary/70  ",
                               "hover:bg-red-500/10 hover:text-red-500 "
                             )}
-                            title="Delete"
+                            title={t("notifications.delete")}
                           >
                             <Trash2Icon className="w-3.5 h-3.5" />
                           </button>

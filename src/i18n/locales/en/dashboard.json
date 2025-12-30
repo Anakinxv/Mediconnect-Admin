@@ -1,0 +1,39 @@
+{
+  "navbar": {
+    "dashboard": "Dashboard",
+    "usuarios": "Users",
+    "admins": "Admins",
+    "pacientes": "Patients",
+    "doctores": "Doctors",
+    "centros": "Health Centers",
+    "reporteCuentas": "Account Report",
+    "contenido": "Content",
+    "tipoCentroSalud": "Health Center Type",
+    "profesion": "Profession",
+    "tipoServicio": "Service Type",
+    "pais": "Country",
+    "tipoSeguro": "Insurance Type",
+    "seguros": "Insurances",
+    "alergias": "Allergies"
+  },
+
+  "userMenu": {
+    "admin": "Admin",
+    "viewProfile": "View Profile",
+    "editProfile": "Edit Profile",
+    "changeLanguage": "Change Language",
+    "changeTheme": "Change Theme",
+    "settings": "Settings",
+    "privacy": "Privacy & Security",
+    "logout": "Log Out"
+  },
+  "notifications": {
+    "title": "Notifications",
+    "markAllAsRead": "Mark all as read",
+    "unread": "Unread",
+    "read": "Read",
+    "noUnread": "No unread notifications",
+    "noRead": "No read notifications",
+    "delete": "Delete"
+  }
+}
