@@ -11,11 +11,12 @@ import {
 } from "@/shared/ui/navigation-menu";
 import { useLocation } from "react-router-dom";
 import AdminNavbarBell from "./AdminNavbarBell";
-import { useTranslation } from "react-i18next"; // <-- Añadido
+import { useTranslation } from "react-i18next";
+import { Monitor, Moon, Sun } from "lucide-react";
 
 function AdminNavbar() {
   const location = useLocation();
-  const { t } = useTranslation("dashboard"); // <-- Añadido
+  const { t } = useTranslation("dashboard");
 
   const usuariosRoutes = [
     "/a",

@@ -1,63 +1,96 @@
 import { type StateCreator } from "zustand";
+import { persist } from "zustand/middleware";
 import i18n from "../i18n/config";
 
-export type GlobalUISlice = {
-  canAccessPage: boolean;
-  allowedPages: string[];
-  setAccessPage: (canAccess: boolean, pages: string[]) => void;
+export type Theme = "light" | "dark" | "system";
+export type ResolvedTheme = "light" | "dark";
 
-  theme: "light" | "dark" | "system";
-  setTheme: (theme: "light" | "dark" | "system") => void;
+const getSystemTheme = (): ResolvedTheme => {
+  if (typeof window === "undefined") return "light";
+  return window.matchMedia("(prefers-color-scheme: dark)").matches
+    ? "dark"
+    : "light";
+};
+
+export type GlobalUISlice = {
+  theme: Theme;
+  resolvedTheme: ResolvedTheme;
+  setTheme: (theme: Theme) => void;
+  toggleTheme: () => void;
   language: string;
   setLanguage: (lang: string) => void;
-  isLoading: boolean;
+
+  isloading: boolean;
   setIsLoading: (loading: boolean) => void;
+
   toast: {
     message: string;
     type: "success" | "error" | "info";
     open: boolean;
   };
+
+  PasswordVisibility: boolean;
+  SetPasswordVisibility: (visibility: boolean) => void;
+
   setToast: (toast: {
     message: string;
     type: "success" | "error" | "info";
     open: boolean;
   }) => void;
-  modalOpen: boolean;
-  setModalOpen: (open: boolean) => void;
-  passwordVisibility: boolean;
-  setPasswordVisibility: (visibility: boolean) => void;
 };
 
-export const createGlobalUISlice: StateCreator<GlobalUISlice> = (set) => ({
-  canAccessPage: false,
-  allowedPages: [],
-  setAccessPage: (canAccess, pages) =>
-    set({ canAccessPage: canAccess, allowedPages: pages }),
+export const createGlobalUISlice: StateCreator<
+  GlobalUISlice,
+  [],
+  [["zustand/persist", GlobalUISlice]],
+  GlobalUISlice
+> = persist(
+  (set, get) => ({
+    theme: "light",
+    resolvedTheme: getSystemTheme(),
+    setTheme: (theme) => {
+      set({ theme });
+      if (theme === "system") {
+        set({ resolvedTheme: getSystemTheme() });
+      } else {
+        set({ resolvedTheme: theme as ResolvedTheme });
+      }
+    },
+    toggleTheme: () => {
+      const current = get().theme;
+      let nextTheme: Theme;
+      if (current === "light") nextTheme = "dark";
+      else if (current === "dark") nextTheme = "system";
+      else nextTheme = "light";
+      get().setTheme(nextTheme);
+    },
 
-  theme: "system",
-  language: "es",
-  isLoading: false,
-  toast: {
-    message: "",
-    type: "info",
-    open: false,
-  },
-  modalOpen: false,
-  passwordVisibility: false,
+    language: "es",
+    setLanguage: (lang: string) => {
+      i18n.changeLanguage(lang);
+      set({ language: lang });
+    },
 
-  // Funciones
-  setTheme: (theme) => set({ theme }),
-  toggleDarkMode: () =>
-    set((state) => ({
-      theme: state.theme === "dark" ? "light" : "dark",
-    })),
-  setLanguage: (lang: string) => {
-    i18n.changeLanguage(lang);
-    set({ language: lang });
-  },
-  setIsLoading: (loading: boolean) => set({ isLoading: loading }),
-  setToast: (toast) => set({ toast }),
-  setModalOpen: (open: boolean) => set({ modalOpen: open }),
-  setPasswordVisibility: (visibility: boolean) =>
-    set({ passwordVisibility: visibility }),
-});
+    isloading: false,
+    setIsLoading: (loading: boolean) => set({ isloading: loading }),
+
+    PasswordVisibility: false,
+    SetPasswordVisibility: (visibility: boolean) =>
+      set({ PasswordVisibility: visibility }),
+
+    toast: {
+      message: "",
+      type: "info",
+      open: false,
+    },
+    setToast: (toast: {
+      message: string;
+      type: "success" | "error" | "info";
+      open: boolean;
+    }) => set({ toast }),
+  }),
+
+  {
+    name: "global-ui-slice",
+  }
+);

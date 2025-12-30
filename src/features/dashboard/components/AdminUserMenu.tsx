@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback, useRef } from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -27,10 +27,11 @@ import {
   ChevronDown,
   Sun,
   Laptop2,
-  Check,
+  Monitor,
 } from "lucide-react";
 
 import { useTranslation } from "react-i18next";
+import { flushSync } from "react-dom";
 import flagSpain from "@/assets/flag-spain.png";
 import flagUSA from "@/assets/flag-usa.png";
 import flagFrance from "@/assets/flag-france.png";
@@ -40,6 +41,8 @@ import flagJapan from "@/assets/flag-japan.png";
 import flagPortugal from "@/assets/flag-portugal.png";
 import flagChina from "@/assets/flag-china.png";
 import { useAppStore } from "@/stores/useAppStore";
+import type { Theme } from "@/stores/useGlobalUISlice";
+import { cn } from "@/lib/utils";
 
 const isMac =
   typeof window !== "undefined" &&
@@ -57,21 +60,21 @@ const languages = [
   { code: "zh", label: "中文", flag: flagChina },
 ];
 
-const themes = [
+const themeOptions: { value: Theme; label: string; icon: React.ReactNode }[] = [
   {
     value: "light",
     label: "Claro",
-    icon: <Sun className="w-4 h-4 mr-2 text-yellow-500" />,
+    icon: <Sun className="w-4 h-4 text-yellow-500" />,
   },
   {
     value: "dark",
     label: "Oscuro",
-    icon: <Moon className="w-4 h-4 mr-2 text-primary" />,
+    icon: <Moon className="w-4 h-4 text-primary" />,
   },
   {
     value: "system",
     label: "Sistema",
-    icon: <Laptop2 className="w-4 h-4 mr-2 text-secondary" />,
+    icon: <Monitor className="w-4 h-4 text-secondary" />,
   },
 ];
 
@@ -82,7 +85,51 @@ export function AdminUserMenu() {
   const setLanguage = useAppStore((state) => state.setLanguage);
   const theme = useAppStore((state) => state.theme);
   const setTheme = useAppStore((state) => state.setTheme);
+  const themeButtonRef = useRef<HTMLDivElement>(null);
+
   const selectedLang = languages.find((l) => l.code === language);
+  const currentThemeOption = themeOptions.find((t) => t.value === theme);
+
+  const handleThemeChange = useCallback(
+    async (newTheme: Theme, event: React.MouseEvent) => {
+      const target = event.currentTarget as HTMLElement;
+
+      // Check if View Transitions API is supported
+      if (!document.startViewTransition) {
+        setTheme(newTheme);
+        return;
+      }
+
+      await document.startViewTransition(() => {
+        flushSync(() => {
+          setTheme(newTheme);
+        });
+      }).ready;
+
+      const { top, left, width, height } = target.getBoundingClientRect();
+      const x = left + width / 2;
+      const y = top + height / 2;
+      const maxRadius = Math.hypot(
+        Math.max(left, window.innerWidth - left),
+        Math.max(top, window.innerHeight - top)
+      );
+
+      document.documentElement.animate(
+        {
+          clipPath: [
+            `circle(0px at ${x}px ${y}px)`,
+            `circle(${maxRadius}px at ${x}px ${y}px)`,
+          ],
+        },
+        {
+          duration: 500,
+          easing: "ease-in-out",
+          pseudoElement: "::view-transition-new(root)",
+        }
+      );
+    },
+    [setTheme]
+  );
 
   return (
     <DropdownMenu open={open} onOpenChange={setOpen}>
@@ -198,38 +245,36 @@ export function AdminUserMenu() {
               </DropdownMenuRadioGroup>
             </DropdownMenuSubContent>
           </DropdownMenuSub>
-          {/* Submenú de tema */}
+          {/* Submenú de tema mejorado */}
           <DropdownMenuSub>
-            <DropdownMenuSubTrigger>
-              <Moon className="w-4 h-4 mr-2" />
+            <DropdownMenuSubTrigger
+              className="cursor-pointer"
+              ref={themeButtonRef}
+            >
+              <Sun className="w-4 h-4 mr-2" />
               {t("userMenu.changeTheme")}
-              <span className="ml-2 flex items-center gap-1">
-                {themes.find((th) => th.value === theme)?.icon}
-                <span className="text-xs">
-                  {themes.find((th) => th.value === theme)?.label}
-                </span>
+              <span className="ml-auto flex items-center gap-1.5 text-xs text-foreground/60">
+                {currentThemeOption?.icon}
+                {currentThemeOption?.label}
               </span>
             </DropdownMenuSubTrigger>
-            <DropdownMenuSubContent className="w-56 p-1">
-              <DropdownMenuRadioGroup
-                value={theme}
-                onValueChange={(value) =>
-                  setTheme(value as "light" | "dark" | "system")
-                }
-              >
-                {themes.map((th) => (
-                  <DropdownMenuRadioItem
-                    key={th.value}
-                    value={th.value}
-                    className={`focus:outline-none focus:ring-0 ${
-                      theme === th.value ? "text-primary" : ""
-                    }`}
-                  >
-                    {th.icon}
-                    {th.label}
-                  </DropdownMenuRadioItem>
-                ))}
-              </DropdownMenuRadioGroup>
+            <DropdownMenuSubContent className="w-56 p-1 bg-card border-border">
+              {themeOptions.map((option) => (
+                <DropdownMenuItem
+                  key={option.value}
+                  onClick={(e) => handleThemeChange(option.value, e)}
+                  className={cn(
+                    "cursor-pointer flex items-center gap-2 focus:outline-none focus:ring-0 relative",
+                    theme === option.value && "bg-accent text-primary"
+                  )}
+                >
+                  {theme === option.value && (
+                    <span className="absolute left-2 h-1.5 w-1.5 rounded-full bg-primary" />
+                  )}
+                  <span className="ml-4">{option.icon}</span>
+                  {option.label}
+                </DropdownMenuItem>
+              ))}
             </DropdownMenuSubContent>
           </DropdownMenuSub>
         </DropdownMenuGroup>

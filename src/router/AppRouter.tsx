@@ -8,6 +8,7 @@ import VerifyEmailPage from "@/features/auth/pages/VerifyEmailPage";
 import ResetPasswordPage from "@/features/auth/pages/ResetPasswordPage";
 import PasswordSuccessPage from "@/features/auth/pages/PasswordSuccessPage";
 import AdminDashboardPage from "@/features/dashboard/pages/AdminDashboardPage";
+import DarkLayout from "@/shared/layout/DarkLayout";
 function AppRouter() {
   return (
     <BrowserRouter>
@@ -25,8 +26,10 @@ function AppRouter() {
             element={<PasswordSuccessPage />}
           />
         </Route>
-        <Route element={<DashboardLayout />}>
-          <Route path={ROUTES.DASHBOARD} element={<AdminDashboardPage />} />
+        <Route element={<DarkLayout />}>
+          <Route element={<DashboardLayout />}>
+            <Route path={ROUTES.DASHBOARD} element={<AdminDashboardPage />} />
+          </Route>
         </Route>
       </Router>
     </BrowserRouter>
