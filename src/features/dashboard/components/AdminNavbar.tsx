@@ -44,25 +44,26 @@ function AdminNavbar() {
   const hasActiveChildContenido = contenidoRoutes.includes(location.pathname);
 
   return (
-    <nav className="w-full flex items-center justify-between px-10 py-3 bg-background rounded-full">
+    <nav className="w-full flex items-center justify-between px-4 sm:px-6 lg:px-10 py-3 bg-background rounded-full">
       {/* Logo */}
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-2 sm:gap-3">
         <img
           src={theme === "dark" ? LogoImgdDark : LogoImg}
           alt="MediConnect"
-          className="h-18 w-auto"
+          className="h-12 sm:h-16 lg:h-18 w-auto"
         />
       </div>
-      <main className="bg-bg-btn-secondary px-6 py-2 rounded-full">
+
+      <main className="bg-bg-btn-secondary px-3 sm:px-4 lg:px-6 py-2 rounded-full hidden md:block">
         {/* Main Navigation */}
         <NavigationMenu viewport={false}>
-          <NavigationMenuList className="gap-6">
+          <NavigationMenuList className="gap-2 lg:gap-6">
             {/* Dashboard */}
             <NavigationMenuItem>
               <NavigationMenuLink
                 href="/"
                 active={isDashboardActive}
-                className={`text-base px-4 py-6  rounded-full hover:rounded-full ${
+                className={`text-sm lg:text-base px-2 lg:px-4 py-4 lg:py-6 rounded-full hover:rounded-full ${
                   isDashboardActive
                     ? "font-medium"
                     : "font-normal opacity-50 hover:opacity-100"
@@ -78,7 +79,7 @@ function AdminNavbar() {
             >
               <div className="relative">
                 <NavigationMenuTrigger
-                  className={`${navigationMenuTriggerStyle()} text-base px-4 py-6 ${
+                  className={`${navigationMenuTriggerStyle()} text-sm lg:text-base px-2 lg:px-4 py-4 lg:py-6 ${
                     isUsuariosActive
                       ? "font-medium"
                       : "font-normal opacity-50 hover:opacity-100"
@@ -88,13 +89,14 @@ function AdminNavbar() {
                 >
                   {t("navbar.usuarios")}
                 </NavigationMenuTrigger>
-                <NavigationMenuContent className="absolute left-0 z-50 border-primary/15">
+                <NavigationMenuContent className="absolute left-0 z-50 border-primary/15 w-48 lg:w-auto">
                   <ul className="p-2 flex flex-col gap-1">
                     <li>
                       <NavigationMenuLink
                         href="/a"
                         active={location.pathname === "/a"}
                         isChild
+                        className="text-sm"
                       >
                         {t("navbar.admins")}
                       </NavigationMenuLink>
@@ -104,6 +106,7 @@ function AdminNavbar() {
                         href="/usuarios/pacientes"
                         active={location.pathname === "/usuarios/pacientes"}
                         isChild
+                        className="text-sm"
                       >
                         {t("navbar.pacientes")}
                       </NavigationMenuLink>
@@ -113,6 +116,7 @@ function AdminNavbar() {
                         href="/usuarios/doctores"
                         active={location.pathname === "/usuarios/doctores"}
                         isChild
+                        className="text-sm"
                       >
                         {t("navbar.doctores")}
                       </NavigationMenuLink>
@@ -122,6 +126,7 @@ function AdminNavbar() {
                         href="/usuarios/centros"
                         active={location.pathname === "/usuarios/centros"}
                         isChild
+                        className="text-sm"
                       >
                         {t("navbar.centros")}
                       </NavigationMenuLink>
@@ -136,7 +141,7 @@ function AdminNavbar() {
               <NavigationMenuLink
                 href="/reporte-cuentas"
                 active={isReporteActive}
-                className={`text-base px-4 py-6 rounded-full hover:rounded-full ${
+                className={`text-sm lg:text-base px-2 lg:px-4 py-4 lg:py-6 rounded-full hover:rounded-full ${
                   isReporteActive
                     ? "font-medium"
                     : "font-normal opacity-50 hover:opacity-100"
@@ -152,7 +157,7 @@ function AdminNavbar() {
             >
               <div className="relative">
                 <NavigationMenuTrigger
-                  className={`${navigationMenuTriggerStyle()} text-base px-4 py-6 ${
+                  className={`${navigationMenuTriggerStyle()} text-sm lg:text-base px-2 lg:px-4 py-4 lg:py-6 ${
                     isContenidoActive
                       ? "font-medium"
                       : "font-normal opacity-50 hover:opacity-100"
@@ -162,7 +167,7 @@ function AdminNavbar() {
                 >
                   {t("navbar.contenido")}
                 </NavigationMenuTrigger>
-                <NavigationMenuContent className="absolute left-0 z-50 border-primary/15">
+                <NavigationMenuContent className="absolute left-0 z-50 border-primary/15 w-56 lg:w-auto">
                   <ul className="p-2 flex flex-col gap-1">
                     <li>
                       <NavigationMenuLink
@@ -171,6 +176,7 @@ function AdminNavbar() {
                           location.pathname === "/contenido/tipo-centro-salud"
                         }
                         isChild
+                        className="text-sm"
                       >
                         {t("navbar.tipoCentroSalud")}
                       </NavigationMenuLink>
@@ -180,6 +186,7 @@ function AdminNavbar() {
                         href="/contenido/profesion"
                         active={location.pathname === "/contenido/profesion"}
                         isChild
+                        className="text-sm"
                       >
                         {t("navbar.profesion")}
                       </NavigationMenuLink>
@@ -191,6 +198,7 @@ function AdminNavbar() {
                           location.pathname === "/contenido/tipo-servicio"
                         }
                         isChild
+                        className="text-sm"
                       >
                         {t("navbar.tipoServicio")}
                       </NavigationMenuLink>
@@ -200,6 +208,7 @@ function AdminNavbar() {
                         href="/contenido/pais"
                         active={location.pathname === "/contenido/pais"}
                         isChild
+                        className="text-sm"
                       >
                         {t("navbar.pais")}
                       </NavigationMenuLink>
@@ -209,6 +218,7 @@ function AdminNavbar() {
                         href="/contenido/tipo-seguro"
                         active={location.pathname === "/contenido/tipo-seguro"}
                         isChild
+                        className="text-sm"
                       >
                         {t("navbar.tipoSeguro")}
                       </NavigationMenuLink>
@@ -218,6 +228,7 @@ function AdminNavbar() {
                         href="/contenido/seguros"
                         active={location.pathname === "/contenido/seguros"}
                         isChild
+                        className="text-sm"
                       >
                         {t("navbar.seguros")}
                       </NavigationMenuLink>
@@ -227,6 +238,7 @@ function AdminNavbar() {
                         href="/contenido/alergias"
                         active={location.pathname === "/contenido/alergias"}
                         isChild
+                        className="text-sm"
                       >
                         {t("navbar.alergias")}
                       </NavigationMenuLink>
@@ -240,9 +252,11 @@ function AdminNavbar() {
       </main>
 
       {/* User Menu */}
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-2 sm:gap-3">
         <AdminNavbarBell />
-        <AdminUserMenu />
+        <div className="hidden md:block">
+          <AdminUserMenu />
+        </div>
       </div>
     </nav>
   );
