@@ -65,7 +65,7 @@ function DropdownMenuContent({
       )}
       {...props}
     >
-      <DropdownMenuHighlightPrimitive className="absolute inset-0 bg-accent z-0 rounded-sm">
+      <DropdownMenuHighlightPrimitive className="absolute inset-0  z-0 rounded-sm">
         {children}
       </DropdownMenuHighlightPrimitive>
     </DropdownMenuContentPrimitive>
@@ -102,7 +102,18 @@ function DropdownMenuItem({
         data-inset={inset}
         data-variant={variant}
         className={cn(
-          "focus:text-accent-foreground data-[variant=destructive]:text-red-600 data-[variant=destructive]:focus:text-red-600 data-[variant=destructive]:*:[svg]:!text-red-600 [&_svg:not([class*='text-'])]:text-muted-foreground relative flex cursor-default items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-hidden select-none data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50 data-[inset]:pl-8 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+          // Estilos base
+          "bg-background relative flex cursor-default items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-hidden select-none",
+          "data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50 data-[inset]:pl-8",
+          "[&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+          // Estilos normales (default)
+          "hover:bg-accent hover:text-accent-foreground focus:bg-accent/80 focus:text-accent-foreground",
+          "[&_svg:not([class*='text-'])]:text-muted-foreground",
+          // Estilos destructivos (sobrescriben los normales)
+          "data-[variant=destructive]:text-red-600",
+          "data-[variant=destructive]:hover:bg-red-600/10 data-[variant=destructive]:hover:text-red-600",
+          "data-[variant=destructive]:focus:bg-red-600/15 data-[variant=destructive]:focus:text-red-600",
+          "data-[variant=destructive]:[&_svg]:!text-red-600",
           className
         )}
         {...props}
@@ -125,6 +136,8 @@ function DropdownMenuCheckboxItem({
       <DropdownMenuCheckboxItemPrimitive
         disabled={disabled}
         className={cn(
+          // Centraliza aquí los estilos de hover, focus y bg
+          "hover:bg-accent hover:text-accent-foreground focus:bg-accent/80 focus:text-accent-foreground bg-background",
           "focus:text-accent-foreground relative flex cursor-default items-center gap-2 rounded-sm py-1.5 pr-2 pl-8 text-sm outline-hidden select-none data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
           className
         )}
@@ -164,6 +177,8 @@ function DropdownMenuRadioItem({
       <DropdownMenuRadioItemPrimitive
         disabled={disabled}
         className={cn(
+          // Centraliza aquí los estilos de hover, focus y bg
+          "hover:bg-accent hover:text-accent-foreground focus:bg-accent/80 focus:text-accent-foreground bg-background",
           "focus:text-accent-foreground relative flex cursor-default items-center gap-2 rounded-sm py-1.5 pr-2 pl-8 text-sm outline-hidden select-none data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
           className
         )}
@@ -255,7 +270,9 @@ function DropdownMenuSubTrigger({
         disabled={disabled}
         data-inset={inset}
         className={cn(
-          "focus:text-accent-foreground data-[state=open]:text-accent-foreground flex cursor-default items-center rounded-sm px-2 py-1.5 text-sm outline-hidden select-none data-[inset]:pl-8",
+          // Centraliza aquí los estilos de hover, focus y bg
+          "hover:bg-accent hover:text-accent-foreground focus:bg-accent/80 focus:text-accent-foreground bg-background",
+          "focus:text-accent-foreground flex cursor-default items-center rounded-sm px-2 py-1.5 text-sm outline-hidden select-none data-[inset]:pl-8",
           "data-[state=open]:[&_[data-slot=chevron]]:rotate-90 [&_[data-slot=chevron]]:transition-transform [&_[data-slot=chevron]]:duration-300 [&_[data-slot=chevron]]:ease-in-out",
           className
         )}
@@ -277,7 +294,7 @@ function DropdownMenuSubContent({
   return (
     <DropdownMenuSubContentPrimitive
       className={cn(
-        "bg-popover text-popover-foreground z-50 min-w-[8rem] origin-(--radix-dropdown-menu-content-transform-origin) overflow-hidden rounded-md border p-1 shadow-lg outline-none",
+        "text-primary z-50 min-w-[8rem] origin-(--radix-dropdown-menu-content-transform-origin) overflow-hidden rounded-md border p-1 shadow-lg outline-none",
         className
       )}
       {...props}

@@ -132,16 +132,26 @@ const NavigationMenuLink = React.forwardRef<
     ref={ref}
     data-active={active}
     className={cn(
-      "flex items-center gap-2 text-sm font-medium transition-colors",
-      isChild
-        ? "rounded-lg px-3 py-2.5 hover:bg-accent/60 hover:text-accent-foreground focus:bg-accent focus:outline-none"
-        : [
-            // Igualamos el padding y altura al trigger
-            "rounded-full px-4 py-2 h-10 focus:bg-primary-light focus:outline-none",
-            !active && "hover:bg-accent/70   hover:text-accent-foreground",
-            active && "bg-primary text-primary-foreground hover:bg-primary",
-          ],
-      active && isChild && "bg-accent/50 text-accent-foreground",
+      "flex items-center gap-2 text-sm font-medium transition-colors focus:outline-none",
+
+      // ───── CHILD ─────
+      isChild &&
+        cn(
+          "rounded-lg px-3 py-2.5 text-primary/80",
+          "hover:bg-accent/60 hover:text-primary",
+          "focus:bg-accent",
+          active && "bg-accent/50 text-primary"
+        ),
+
+      // ───── PARENT ─────
+      !isChild &&
+        cn(
+          "rounded-full px-4 py-2 h-10 text-primary",
+          "hover:bg-accent/70",
+          !active && "hover:text-primary",
+          active && "bg-primary text-primary hover:bg-primary"
+        ),
+
       className
     )}
     {...props}

@@ -64,7 +64,7 @@ const themeOptions: { value: Theme; label: string; icon: React.ReactNode }[] = [
   {
     value: "light",
     label: "Claro",
-    icon: <Sun className="w-4 h-4 text-yellow-500" />,
+    icon: <Sun className="w-4 h-4 text-primary" />,
   },
   {
     value: "dark",
@@ -74,7 +74,7 @@ const themeOptions: { value: Theme; label: string; icon: React.ReactNode }[] = [
   {
     value: "system",
     label: "Sistema",
-    icon: <Monitor className="w-4 h-4 text-secondary" />,
+    icon: <Monitor className="w-4 h-4 text-primary" />,
   },
 ];
 
@@ -86,9 +86,6 @@ export function AdminUserMenu() {
   const theme = useAppStore((state) => state.theme);
   const setTheme = useAppStore((state) => state.setTheme);
   const themeButtonRef = useRef<HTMLDivElement>(null);
-
-  const selectedLang = languages.find((l) => l.code === language);
-  const currentThemeOption = themeOptions.find((t) => t.value === theme);
 
   const handleThemeChange = useCallback(
     async (newTheme: Theme, event: React.MouseEvent) => {
@@ -136,8 +133,8 @@ export function AdminUserMenu() {
       <DropdownMenuTrigger asChild>
         <Button
           variant="outline"
-          className={`flex items-center gap-3 outline-none border-none shadow-none ring-0 focus:ring-0 h-fit transition-colors ${
-            open ? "bg-accent/70 rounded-full" : ""
+          className={`flex items-center gap-3 rounded-full bg-transparent hover:bg-accent/80   outline-none border-none shadow-none ring-0 focus:ring-0 h-fit transition-colors ${
+            open ? "bg-primary rounded-full text-primary" : ""
           }`}
         >
           <Avatar className="h-14 w-14 rounded-full shadow-lg transition-all">
@@ -150,9 +147,17 @@ export function AdminUserMenu() {
           </Avatar>
           <div className="flex items-start gap-3 0">
             <div className="flex flex-col items-start leading-tight text-left">
-              <span className="text-base font-semibold">José Almirante</span>
               <span
-                className="text-sm font-normal max-w-35 truncate"
+                className={`text-base font-semibold ${
+                  !open ? "text-primary" : "text-background"
+                }`}
+              >
+                José Almirante
+              </span>
+              <span
+                className={`text-sm font-normal max-w-35 truncate ${
+                  !open ? "text-primary" : "text-background"
+                }`}
                 style={{ textOverflow: "clip" }}
                 title="jose@gmail.com"
               >
@@ -161,8 +166,8 @@ export function AdminUserMenu() {
             </div>
             <div className="flex flex-col h-full w-full items-start justify-start">
               <ChevronDown
-                className={`w-7 h-7 text-muted-foreground mt-0.5 stroke-2.5 transition-transform duration-200 ${
-                  open ? "rotate-180" : ""
+                className={`w-7 h-7 mt-0.5 stroke-2.5 transition-transform duration-200 ${
+                  open ? "rotate-180 text-background" : "text-primary"
                 }`}
               />
             </div>
@@ -212,35 +217,34 @@ export function AdminUserMenu() {
             <DropdownMenuSubTrigger>
               <Languages className="w-4 h-4 mr-2" />
               {t("userMenu.changeLanguage")}
-              <span className="ml-2 flex items-center gap-1">
-                <img
-                  src={selectedLang?.flag}
-                  alt={selectedLang?.label}
-                  className="w-5 h-5 rounded-full"
-                />
-                <span className="text-xs">{selectedLang?.label}</span>
-              </span>
             </DropdownMenuSubTrigger>
-            <DropdownMenuSubContent className="w-56 p-1">
+            <DropdownMenuSubContent
+              className="w-56 p-1 bg-background border border-primary/20 rounded-xl shadow-lg"
+              sideOffset={8}
+              alignOffset={-4}
+            >
               <DropdownMenuRadioGroup
                 value={language}
                 onValueChange={setLanguage}
               >
-                {languages.map((lang) => (
-                  <DropdownMenuRadioItem
-                    key={lang.code}
-                    value={lang.code}
-                    className={`focus:outline-none focus:ring-0 ${
-                      language === lang.code ? "text-primary" : ""
-                    }`}
-                  >
-                    <img
-                      src={lang.flag}
-                      alt={lang.label}
-                      className="w-5 h-5 rounded-full"
-                    />
-                    {lang.label}
-                  </DropdownMenuRadioItem>
+                {languages.map((lang, idx) => (
+                  <>
+                    <DropdownMenuRadioItem
+                      key={lang.code}
+                      value={lang.code}
+                      className={cn(
+                        "focus:outline-none focus:ring-0",
+                        language === lang.code ? "text-primary" : ""
+                      )}
+                    >
+                      <img
+                        src={lang.flag}
+                        alt={lang.label}
+                        className="w-5 h-5 rounded-full"
+                      />
+                      {lang.label}
+                    </DropdownMenuRadioItem>
+                  </>
                 ))}
               </DropdownMenuRadioGroup>
             </DropdownMenuSubContent>
@@ -253,27 +257,29 @@ export function AdminUserMenu() {
             >
               <Sun className="w-4 h-4 mr-2" />
               {t("userMenu.changeTheme")}
-              <span className="ml-auto flex items-center gap-1.5 text-xs text-foreground/60">
-                {currentThemeOption?.icon}
-                {currentThemeOption?.label}
-              </span>
             </DropdownMenuSubTrigger>
-            <DropdownMenuSubContent className="w-56 p-1 bg-card border-border">
-              {themeOptions.map((option) => (
-                <DropdownMenuItem
-                  key={option.value}
-                  onClick={(e) => handleThemeChange(option.value, e)}
-                  className={cn(
-                    "cursor-pointer flex items-center gap-2 focus:outline-none focus:ring-0 relative",
-                    theme === option.value && "bg-accent text-primary"
-                  )}
-                >
-                  {theme === option.value && (
-                    <span className="absolute left-2 h-1.5 w-1.5 rounded-full bg-primary" />
-                  )}
-                  <span className="ml-4">{option.icon}</span>
-                  {option.label}
-                </DropdownMenuItem>
+            <DropdownMenuSubContent
+              className="w-56 p-1 bg-background  border border-primary/20 rounded-xl shadow-lg"
+              sideOffset={8}
+              alignOffset={-4}
+            >
+              {themeOptions.map((option, idx) => (
+                <>
+                  <DropdownMenuItem
+                    key={option.value}
+                    onClick={(e) => handleThemeChange(option.value, e)}
+                    className={cn(
+                      "cursor-pointer flex items-center gap-2 focus:outline-none focus:ring-0 relative",
+                      theme === option.value && " text-primary"
+                    )}
+                  >
+                    {theme === option.value && (
+                      <span className="absolute left-2 h-1.5 w-1.5 rounded-full bg-primary" />
+                    )}
+                    <span className="ml-4">{option.icon}</span>
+                    {option.label}
+                  </DropdownMenuItem>
+                </>
               ))}
             </DropdownMenuSubContent>
           </DropdownMenuSub>

@@ -7,7 +7,7 @@ import {
   Trash2Icon,
   Check,
 } from "lucide-react";
-4;
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -19,7 +19,6 @@ import { Badge } from "@/shared/ui/badge";
 import { Button } from "@/shared/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/ui/tabs";
 import { cn } from "@/lib/utils";
-import { useTranslation } from "react-i18next";
 
 const notifications = [
   {
@@ -79,7 +78,6 @@ const typeIcon: Record<string, React.ReactNode> = {
 };
 
 function AdminNavbarBell() {
-  const { t } = useTranslation("dashboard");
   const [open, setOpen] = useState(false);
   const [notis, setNotis] = useState(notifications);
 
@@ -99,10 +97,10 @@ function AdminNavbarBell() {
   return (
     <DropdownMenu open={open} onOpenChange={setOpen}>
       <DropdownMenuTrigger asChild>
-        <div
+        <button
           className={cn(
             "relative rounded-full p-3 transition-transform duration-300 h-14 w-14 flex items-center justify-center group",
-            "hover:bg-accent/70 text-primary ", // Efecto hover
+            "hover:bg-accent/70 text-primary  ", // Efecto hover
             open ? "bg-primary" : "bg-bg-btn-secondary"
           )}
           aria-label="Notifications"
@@ -125,12 +123,12 @@ function AdminNavbarBell() {
               {unread.length}
             </Badge>
           )}
-        </div>
+        </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-96 p-0">
         <DropdownMenuLabel className="flex items-center justify-between px-4 py-2">
           <span className="text-base font-semibold text-foreground">
-            {t("notifications.title")}
+            Notifications
           </span>
           <Button
             size="sm"
@@ -139,7 +137,7 @@ function AdminNavbarBell() {
             disabled={unread.length === 0}
             className="text-xs font-medium text-muted-foreground hover:text-foreground"
           >
-            {t("notifications.markAllAsRead")}
+            Mark all as read
           </Button>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
@@ -151,28 +149,28 @@ function AdminNavbarBell() {
             value={activeTab}
             onValueChange={(value) => setActiveTab(value as "unread" | "read")}
           >
-            <TabsList className="flex w-full gap-1 bg-muted/50 rounded-lg p-1">
+            <TabsList className="flex w-full gap-1 rounded-lg p-2">
               <TabsTrigger
                 value="unread"
                 className={cn(
-                  "flex-1 text-xs font-medium py-1.5 px-3 rounded-md transition-all duration-200",
+                  "flex-1 text-xs font-medium py-3 rounded-md transition-all duration-200",
                   activeTab === "unread"
                     ? "bg-primary text-white shadow"
-                    : "bg-accent text-primary opacity-60"
+                    : "bg-accent text-accent-foreground "
                 )}
               >
-                {t("notifications.unread")}
+                Unread
               </TabsTrigger>
               <TabsTrigger
                 value="read"
                 className={cn(
-                  "flex-1 text-xs font-medium py-1.5 px-3 rounded-md transition-all duration-200",
+                  "flex-1 text-xs font-medium py-3 px-3 rounded-md transition-all duration-200",
                   activeTab === "read"
                     ? "bg-primary text-white shadow"
-                    : "bg-accent text-primary opacity-60"
+                    : "bg-accent text-accent-foreground "
                 )}
               >
-                {t("notifications.read")}
+                Read
               </TabsTrigger>
             </TabsList>
             <div className="border-b border-border my-1" />
@@ -181,7 +179,7 @@ function AdminNavbarBell() {
               <div className="max-h-72 overflow-y-auto">
                 {unread.length === 0 ? (
                   <div className="py-8 text-center text-sm text-muted-foreground">
-                    {t("notifications.noUnread")}
+                    No unread notifications
                   </div>
                 ) : (
                   <div className="divide-y divide-border/50">
@@ -225,7 +223,7 @@ function AdminNavbarBell() {
                               " text-primary/70  ",
                               "hover:bg-red-500/10 hover:text-red-500 "
                             )}
-                            title={t("notifications.delete")}
+                            title="Delete"
                           >
                             <Trash2Icon className="w-3.5 h-3.5" />
                           </button>
@@ -240,7 +238,7 @@ function AdminNavbarBell() {
               <div className="max-h-72 overflow-y-auto">
                 {read.length === 0 ? (
                   <div className="py-8 text-center text-sm text-muted-foreground">
-                    {t("notifications.noRead")}
+                    No read notifications
                   </div>
                 ) : (
                   <div className="divide-y divide-border/50">
@@ -285,7 +283,7 @@ function AdminNavbarBell() {
                               " text-primary/70  ",
                               "hover:bg-red-500/10 hover:text-red-500 "
                             )}
-                            title={t("notifications.delete")}
+                            title="Delete"
                           >
                             <Trash2Icon className="w-3.5 h-3.5" />
                           </button>

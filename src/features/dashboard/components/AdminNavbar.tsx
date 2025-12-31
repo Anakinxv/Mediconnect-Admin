@@ -1,4 +1,5 @@
 import LogoImg from "@/assets/MediConnectLanding-green.png";
+import LogoImgdDark from "@/assets/MediConnectLanding.png";
 import AdminUserMenu from "./AdminUserMenu";
 import {
   NavigationMenu,
@@ -12,12 +13,11 @@ import {
 import { useLocation } from "react-router-dom";
 import AdminNavbarBell from "./AdminNavbarBell";
 import { useTranslation } from "react-i18next";
-import { Monitor, Moon, Sun } from "lucide-react";
-
+import { useAppStore } from "@/stores/useAppStore";
 function AdminNavbar() {
   const location = useLocation();
   const { t } = useTranslation("dashboard");
-
+  const theme = useAppStore((state) => state.theme);
   const usuariosRoutes = [
     "/a",
     "/usuarios/pacientes",
@@ -44,10 +44,14 @@ function AdminNavbar() {
   const hasActiveChildContenido = contenidoRoutes.includes(location.pathname);
 
   return (
-    <nav className="w-full flex items-center justify-between px-10 py-3 bg-white rounded-full">
+    <nav className="w-full flex items-center justify-between px-10 py-3 bg-background rounded-full">
       {/* Logo */}
       <div className="flex items-center gap-3">
-        <img src={LogoImg} alt="MediConnect" className="h-18 w-auto" />
+        <img
+          src={theme === "dark" ? LogoImgdDark : LogoImg}
+          alt="MediConnect"
+          className="h-18 w-auto"
+        />
       </div>
       <main className="bg-bg-btn-secondary px-6 py-2 rounded-full">
         {/* Main Navigation */}
