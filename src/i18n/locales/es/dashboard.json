@@ -34,5 +34,13 @@
     "noUnread": "No hay notificaciones sin leer",
     "noRead": "No hay notificaciones leídas",
     "delete": "Eliminar"
+  },
+  "metrics": {
+    "totalPatients": "Total de Pacientes",
+    "totalDoctors": "Total de Doctores",
+    "totalHealthCenters": "Total de Centros de Salud",
+    "patientsSubtitle": "Cantidad total de pacientes registrados en la aplicación.",
+    "doctorsSubtitle": "Cantidad total de doctores registrados en la aplicación.",
+    "healthCentersSubtitle": "Cantidad total de centros de salud registrados en la aplicación."
   }
 }

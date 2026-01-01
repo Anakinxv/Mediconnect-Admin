@@ -1,32 +1,34 @@
 import MCMetricCard from "@/shared/components/MCMetricCard";
 import { User, Stethoscope, Hospital } from "lucide-react";
-
-const metricsData = [
-  {
-    id: 1,
-    title: "Total de Pacientes",
-    icon: <User size={30} />,
-    value: 412,
-    subtitle: "Cantidad total de pacientes registrados en la aplicación.",
-  },
-  {
-    id: 2,
-    title: "Total de Doctores",
-    icon: <Stethoscope size={30} />,
-    value: 602,
-    subtitle: "Cantidad total de doctores registrados en la aplicación.",
-  },
-  {
-    id: 3,
-    title: "Total de Centros de salud",
-    icon: <Hospital size={30} />,
-    value: 100,
-    subtitle:
-      "Cantidad total de centros de salud registrados en la aplicación.",
-  },
-];
+import { useTranslation } from "react-i18next";
 
 function AdminDashboardPage() {
+  const { t } = useTranslation("dashboard");
+
+  const metricsData = [
+    {
+      id: 1,
+      title: t("metrics.totalPatients"),
+      icon: <User size={30} />,
+      value: 412,
+      subtitle: t("metrics.patientsSubtitle"),
+    },
+    {
+      id: 2,
+      title: t("metrics.totalDoctors"),
+      icon: <Stethoscope size={30} />,
+      value: 602,
+      subtitle: t("metrics.doctorsSubtitle"),
+    },
+    {
+      id: 3,
+      title: t("metrics.totalHealthCenters"),
+      icon: <Hospital size={30} />,
+      value: 100,
+      subtitle: t("metrics.healthCentersSubtitle"),
+    },
+  ];
+
   return (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
       {metricsData.map((metric) => (

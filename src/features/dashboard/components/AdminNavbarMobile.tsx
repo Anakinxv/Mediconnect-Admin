@@ -138,7 +138,7 @@ function AdminNavbarMobile() {
                     <CollapsibleTrigger asChild>
                       <Button
                         variant="ghost"
-                        className={`w-full justify-between text-left h-12 px-4 rounded-xl transition-all duration-200 active:scale-95 ${
+                        className={`w-full justify-between text-left h-12 px-4 rounded-full transition-all duration-200 active:scale-95 ${
                           isUsuariosActive
                             ? "bg-primary text-primary-foreground hover:bg-primary focus:bg-primary"
                             : "text-primary hover:bg-accent/70 hover:text-primary focus:bg-accent"
@@ -221,7 +221,7 @@ function AdminNavbarMobile() {
                     <CollapsibleTrigger asChild>
                       <Button
                         variant="ghost"
-                        className={`w-full justify-between text-left h-12 px-4 rounded-xl transition-all duration-200 active:scale-95 ${
+                        className={`w-full justify-between text-left h-12 px-4 rounded-full transition-all duration-200 active:scale-95 ${
                           isContenidoActive
                             ? "bg-primary text-primary-foreground hover:bg-primary focus:bg-primary"
                             : "text-primary hover:bg-accent/70 hover:text-primary focus:bg-accent"
@@ -330,7 +330,15 @@ function AdminNavbarMobile() {
                   variant="ghost"
                   onClick={handleLogout}
                   data-variant="destructive"
-                  className="w-full justify-start text-left h-12 px-4 rounded-xl transition-all duration-200 active:scale-95 text-red-600 hover:bg-red-600/10 hover:text-red-600 focus:bg-red-600/15 focus:text-red-600 [&_svg]:!text-red-600"
+                  className="
+    w-full justify-start text-left h-12 px-4 rounded-xl transition-all duration-200 active:scale-95
+    text-red-600
+    hover:bg-red-600/10 hover:text-red-600
+    focus:bg-red-600/15 focus:text-red-600
+    [&_svg]:!text-red-600
+    dark:hover:bg-red-600/20 dark:hover:text-red-500
+    dark:focus:bg-red-600/30 dark:focus:text-red-500
+  "
                 >
                   <LogOut className="w-4 h-4 mr-2" />
                   {t("userMenu.logout")}

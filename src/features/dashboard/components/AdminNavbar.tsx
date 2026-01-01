@@ -89,7 +89,7 @@ function AdminNavbar() {
                 >
                   {t("navbar.usuarios")}
                 </NavigationMenuTrigger>
-                <NavigationMenuContent className="absolute left-0 z-50 border-primary/15 w-48 lg:w-auto">
+                <NavigationMenuContent className="absolute left-0 z-50 border-primary/15 w-48 lg:w-52">
                   <ul className="p-2 flex flex-col gap-1">
                     <li>
                       <NavigationMenuLink
@@ -167,7 +167,7 @@ function AdminNavbar() {
                 >
                   {t("navbar.contenido")}
                 </NavigationMenuTrigger>
-                <NavigationMenuContent className="absolute left-0 z-50 border-primary/15 w-56 lg:w-auto">
+                <NavigationMenuContent className="absolute left-0 z-50 border-primary/15 w-52 lg:w-56">
                   <ul className="p-2 flex flex-col gap-1">
                     <li>
                       <NavigationMenuLink
