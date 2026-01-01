@@ -8,7 +8,7 @@ import { MCModalBase } from "@/shared/components/MCModalBase";
 function AuthHeader() {
   const navigate = useNavigate();
   const { t } = useTranslation("auth");
-  const email = useAppStore((state) => state.forgotPassword.email);
+  const email = useAppStore((state) => state.forgotPassword?.email);
   const otp = useAppStore((state) => state.otp);
 
   const hasProgress = email || otp;
@@ -21,14 +21,12 @@ function AuthHeader() {
     navigate("/login");
   };
 
-  const backButton = (
-    <button
-      className="group flex items-center gap-2 text-white transition-all duration-150 hover:opacity-80 active:scale-95"
-      type="button"
-    >
+  // Solo el contenido del botón, sin el button tag
+  const backButtonContent = (
+    <>
       <ArrowLeft className="text-white transition-transform duration-200 group-hover:-translate-x-1 group-hover:scale-110" />
       <span className="font-medium text-lg">{t("header.back")}</span>
-    </button>
+    </>
   );
 
   return (
@@ -38,7 +36,7 @@ function AuthHeader() {
           {hasProgress ? (
             <MCModalBase
               id="cancel-process-modal"
-              trigger={backButton}
+              trigger={backButtonContent}
               title="¿Deseas cancelar el proceso?"
               variant="warning"
               onConfirm={handleConfirmCancel}

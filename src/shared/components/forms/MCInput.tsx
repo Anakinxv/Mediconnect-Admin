@@ -4,7 +4,7 @@ import { EyeIcon } from "@/shared/ui/eye";
 import { EyeOffIcon } from "@/shared/ui/eye-off";
 import { Button } from "@/shared/ui/button";
 import { cn } from "@/lib/utils";
-import { useAppStore } from "@/stores/useAppStore";
+import { useState } from "react";
 
 interface MCInputProps {
   name: string;
@@ -37,15 +37,11 @@ function MCInput({
   status = "default",
   statusMessage,
 }: MCInputProps) {
-  const PasswordVisibility = useAppStore((state) => state.passwordVisibility);
-  const SetPasswordVisibility = useAppStore(
-    (state) => state.setPasswordVisibility
-  );
-
   const {
     register,
     formState: { errors },
   } = useFormContext();
+  const [PasswordVisibility, SetPasswordVisibility] = useState(false);
 
   const handleStatusColor = () => {
     switch (status) {

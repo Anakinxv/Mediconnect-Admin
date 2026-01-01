@@ -7,8 +7,7 @@ function AuthLayout() {
   const location = useLocation();
   const reset = useAppStore((state) => state.reset);
   const setAccessPage = useAppStore((state) => state.setAccessPage);
-  const email = useAppStore((state) => state.forgotPassword.email);
-  const otp = useAppStore((state) => state.otp);
+
   useEffect(() => {
     return () => {
       const currentPath = window.location.pathname;

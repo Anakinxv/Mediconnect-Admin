@@ -18,10 +18,9 @@ const MCMetricCard: React.FC<MCMetricCardProps> = ({
 }) => {
   return (
     <div className="relative flex flex-col justify-start w-full rounded-4xl bg-background    p-6 transition-colors">
-      {/* Header - Icon bubble + Title + Subtitle */}
       <div className="flex items-start gap-4 mb-5">
         <div className="flex items-center justify-center rounded-full w-15 h-15 bg-accent flex-shrink-0">
-          <span className="text-xl text-primary flex items-center justify-center">
+          <span className="text-xl text-accent-accent-foreground flex items-center justify-center">
             {icon}
           </span>
         </div>
@@ -37,17 +36,15 @@ const MCMetricCard: React.FC<MCMetricCardProps> = ({
         </div>
       </div>
 
-      {/* Value */}
       <div className="text-4xl font-bold mb-4 leading-none text-primary">
         {value}
       </div>
 
-      {/* Stats - Percentage bubble + text */}
       <div className="flex items-center gap-2 mt-auto">
         <div className="flex items-center justify-center rounded-full w-fit h-fit py-2 px-3 bg-accent">
-          <span className="text-xs font-medium text-primary flex items-center justify-center   ">
-            <ArrowUp className="w-4 h-4 text-primary" />
-            <p> {percentage}</p>
+          <span className="text-xs font-medium text-accent-accent-foreground flex items-center justify-center   ">
+            <ArrowUp className="w-4 h-4 text-accent-foreground" />
+            <p className="text-accent-foreground"> {percentage}</p>
           </span>
         </div>
         <div className="flex items-center">

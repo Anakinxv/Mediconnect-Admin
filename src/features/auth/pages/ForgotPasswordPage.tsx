@@ -14,6 +14,11 @@ function ForgotPasswordPage() {
   const forgotPasswordData = useAppStore((state) => state.forgotPassword);
   const setForgotPassword = useAppStore((state) => state.setForgotPassword);
 
+  const handlesubmit = (data: { email: string }) => {
+    setForgotPassword({ email: data.email });
+    navigate("/auth/verify-email", { replace: true });
+  };
+
   return (
     <AuthContentContainer
       title={t("forgotPassword.title")}
@@ -22,10 +27,11 @@ function ForgotPasswordPage() {
       <MCFormWrapper
         schema={ForgotPasswordSchema((key) => t(key))}
         onSubmit={(data) => {
-          setForgotPassword({ email: data.email });
-          navigate("/auth/verify-email", { replace: true });
+          handlesubmit(data);
         }}
-        defaultValues={forgotPasswordData}
+        defaultValues={{
+          email: forgotPasswordData?.email || "",
+        }}
         className="flex flex-col items-center w-full"
       >
         <div className="flex flex-col items-center w-full max-w-md mx-auto">
@@ -35,7 +41,7 @@ function ForgotPasswordPage() {
             label={t("forgotPassword.emailLabel")}
             placeholder={t("forgotPassword.emailPlaceholder")}
           />
-          <p className="text-center mt-2 w-full">{forgotPasswordData.email}</p>
+          <p className="text-center mt-2 w-full">{forgotPasswordData?.email}</p>
         </div>
         <AuthFooterContainer
           backButtonProps={{
