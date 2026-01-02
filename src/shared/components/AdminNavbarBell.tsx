@@ -1,12 +1,5 @@
 import React, { useState } from "react";
-import {
-  Bell,
-  User,
-  AlertTriangle,
-  FileText,
-  Trash2Icon,
-  Check,
-} from "lucide-react";
+import { Bell, User, AlertTriangle, FileText, Trash2Icon } from "lucide-react";
 
 import {
   DropdownMenu,

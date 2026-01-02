@@ -62,18 +62,17 @@ function AdminDashboardPage() {
             />
           ))}
         </div>
-        {/* Bar chart grande */}
+
         <BarChart />
-        {/* Line chart grande */}
+
         <LineChart />
       </div>
-      {/* Right column (30%) */}
+
       <div className="w-[25%] flex flex-col ">
-        {/* Pie chart arriba */}
         <PieChart />
-        {/* Pie chart abajo */}
+
         <PieChart />
-        {/* Small chart */}
+
         <PieChart />
       </div>
     </div>

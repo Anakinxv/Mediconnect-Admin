@@ -1,14 +1,14 @@
 import { Route, Routes as Router, BrowserRouter } from "react-router-dom";
 import { ROUTES } from "./routes";
-import AuthLayout from "@/shared/layout/AuthLayout";
-import DashboardLayout from "@/shared/layout/DashboardLayout";
+import AuthLayout from "@/layout/AuthLayout";
+import DashboardLayout from "@/layout/DashboardLayout";
 import Login from "@/features/auth/pages/Login";
 import ForgotPasswordPage from "@/features/auth/pages/ForgotPasswordPage";
 import VerifyEmailPage from "@/features/auth/pages/VerifyEmailPage";
 import ResetPasswordPage from "@/features/auth/pages/ResetPasswordPage";
 import PasswordSuccessPage from "@/features/auth/pages/PasswordSuccessPage";
 import AdminDashboardPage from "@/features/dashboard/pages/AdminDashboardPage";
-import DarkLayout from "@/shared/layout/DarkLayout";
+import DarkLayout from "@/layout/DarkLayout";
 function AppRouter() {
   return (
     <BrowserRouter>

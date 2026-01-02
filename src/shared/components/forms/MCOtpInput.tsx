@@ -1,4 +1,3 @@
-import React from "react";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/shared/ui/input-otp";
 import { useFormContext, Controller } from "react-hook-form";
 

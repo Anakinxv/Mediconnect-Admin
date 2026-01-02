@@ -1,6 +1,6 @@
 import { Outlet } from "react-router-dom";
-import AdminNavbar from "@/features/dashboard/components/AdminNavbar";
-import AdminNavbarMobile from "@/features/dashboard/components/AdminNavbarMobile";
+import AdminNavbar from "@/shared/navigation/AdminNavbar";
+import AdminNavbarMobile from "@/shared/navigation/AdminNavbarMobile";
 
 function DashboardLayout() {
   return (

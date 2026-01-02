@@ -1,12 +1,8 @@
-import React from "react";
 import { useAppStore } from "@/stores/useAppStore";
 import { useEffect } from "react";
 import { Outlet } from "react-router-dom";
-interface DarkLayoutProps {
-  children?: React.ReactNode;
-}
 
-function DarkLayout({ children }: DarkLayoutProps) {
+function DarkLayout() {
   const theme = useAppStore((state) => state.theme);
   const resolvedTheme = useAppStore((state) => state.resolvedTheme);
 

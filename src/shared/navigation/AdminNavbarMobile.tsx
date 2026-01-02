@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Menu, X, ChevronDown, ChevronRight, LogOut } from "lucide-react";
 import { Button } from "@/shared/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/shared/ui/sheet";
@@ -8,7 +8,7 @@ import {
   CollapsibleTrigger,
 } from "@/shared/ui/collapsible";
 import AdminUserMenu from "./AdminUserMenu";
-import AdminNavbarBell from "./AdminNavbarBell";
+import AdminNavbarBell from "@/shared/components/AdminNavbarBell";
 import LogoImg from "@/assets/MediConnectLanding-green.png";
 import LogoImgdDark from "@/assets/MediConnectLanding.png";
 import { useAppStore } from "@/stores/useAppStore";
