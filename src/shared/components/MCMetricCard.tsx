@@ -17,7 +17,7 @@ const MCMetricCard: React.FC<MCMetricCardProps> = ({
   percentage = "12%",
 }) => {
   return (
-    <div className="relative flex flex-col justify-start w-full rounded-4xl bg-background    p-6 transition-colors">
+    <div className="relative flex flex-col justify-start w-full rounded-3xl bg-background    p-6 transition-colors">
       <div className="flex items-start gap-4 mb-5">
         <div className="flex items-center justify-center rounded-full w-15 h-15 bg-accent flex-shrink-0">
           <span className="text-xl text-accent-accent-foreground flex items-center justify-center">

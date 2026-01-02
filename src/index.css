@@ -60,6 +60,14 @@
   --bg-secondary: #fbfbfb;
   --bg-btn-secondary: #f7f7f7;
   --destructive: #ffebe9;
+
+  /* Pie Chart Colors (Light Mode) */
+  --chart-1: 120 86% 7%; /* #0B2C12 */
+  --chart-2: 146 28% 24%; /* #2F5233 */
+  --chart-3: 139 17% 50%; /* #6B8F71 */
+  --chart-4: 120 19% 69%; /* #A8C3A0 */
+  --chart-5: 90 38% 89%; /* #D7E3C9 */
+  --chart-6: 72 41% 92%; /* #EFF2D7 */
 }
 
 [data-theme="dark"] {
@@ -84,6 +92,14 @@
   /* Nuevos colores para dark */
   --bg-secondary: #0a0a0a;
   --bg-btn-secondary: #1e1e1e;
+
+  /* Pie Chart Colors (Dark Mode) */
+  --chart-1: 207 44% 60%; /* #8BB1CA */
+  --chart-2: 200 36% 76%; /* #A1C2D4 */
+  --chart-3: 192 38% 80%; /* #B7D0DD */
+  --chart-4: 197 35% 86%; /* #C9DCE6 */
+  --chart-5: 197 34% 90%; /* #D9E7ED */
+  --chart-6: 197 41% 94%; /* #EAF2F6 */
 }
 
 @layer base {
@@ -95,7 +111,8 @@
   }
 }
 
-::view-transition-old(root), ::view-transition-new(root) {
-    animation: none;
-    mix-blend-mode: normal;
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
 }
