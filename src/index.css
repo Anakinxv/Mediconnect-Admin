@@ -68,6 +68,7 @@
   --chart-4: 120 19% 69%; /* #A8C3A0 */
   --chart-5: 90 38% 89%; /* #D7E3C9 */
   --chart-6: 72 41% 92%; /* #EFF2D7 */
+  --chart-7: 120 86% 7%; /* #0B2C12 */
 }
 
 [data-theme="dark"] {
@@ -78,7 +79,7 @@
   --primary-foreground: #000000;
   --secondary: #8bb1ca;
   --secondary-foreground: #000000;
-  --accent: #d7e3c9;
+  --accent: hsl(88, 32%, 84%);
   --accent-foreground: #000000;
   --neutral: #1e1e1e;
   --neutral-foreground: #ffffff;
@@ -100,6 +101,7 @@
   --chart-4: 197 35% 86%; /* #C9DCE6 */
   --chart-5: 197 34% 90%; /* #D9E7ED */
   --chart-6: 197 41% 94%; /* #EAF2F6 */
+  --chart-7: 88, 32%, 84%; /* #8BB1CA */
 }
 
 @layer base {

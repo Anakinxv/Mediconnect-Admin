@@ -18,10 +18,10 @@ import {
 } from "@/shared/ui/chart";
 
 interface PieChartProps {
-  data?: { name: string; value: number; color: string }[];
+  data: { name: string; value: number; color: string }[];
   config?: ChartConfig;
-  title?: string;
-  description?: string;
+  title: string;
+  description: string;
   width?: number; // Nuevo prop
   height?: number; // Nuevo prop
 }
