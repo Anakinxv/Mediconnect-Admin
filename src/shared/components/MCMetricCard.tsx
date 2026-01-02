@@ -25,11 +25,11 @@ const MCMetricCard: React.FC<MCMetricCardProps> = ({
           </span>
         </div>
         <div className="flex-1 overflow-hidden">
-          <div className="text-[1.1rem] font-semibold mb-1.5 leading-tight text-foreground">
+          <div className="text-base md:text-lg font-semibold mb-1.5 leading-tight text-foreground">
             {title}
           </div>
           {subtitle && (
-            <div className="text-sm  text-muted-foreground font-normal leading-tight line-clamp-2 max-w-[90%] ">
+            <div className="text-xs md:text-sm text-muted-foreground font-normal leading-tight line-clamp-2 max-w-[90%]">
               {subtitle}
             </div>
           )}

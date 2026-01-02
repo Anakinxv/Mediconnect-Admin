@@ -2,6 +2,23 @@ import MCMetricCard from "@/shared/components/MCMetricCard";
 import { User, Stethoscope, Hospital } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
+// Placeholder chart components
+const PieChart = () => (
+  <div className="bg-muted rounded-xl h-full mb-4 flex items-center justify-center bg-amber-500">
+    Pie Chart
+  </div>
+);
+const BarChart = () => (
+  <div className="bg-muted rounded-xl h-64 mb-4 flex items-center justify-center bg-amber-500">
+    Bar Chart
+  </div>
+);
+const LineChart = () => (
+  <div className="bg-muted rounded-xl h-64 mb-4 flex items-center justify-center bg-amber-500">
+    Line Chart
+  </div>
+);
+
 function AdminDashboardPage() {
   const { t } = useTranslation("dashboard");
 
@@ -30,16 +47,35 @@ function AdminDashboardPage() {
   ];
 
   return (
-    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
-      {metricsData.map((metric) => (
-        <MCMetricCard
-          key={metric.id}
-          title={metric.title}
-          icon={metric.icon}
-          value={metric.value}
-          subtitle={metric.subtitle}
-        />
-      ))}
+    <div className="flex gap-6">
+      {/* Left column (70%) */}
+      <div className="w-full md:w-[75%] flex flex-col gap-4">
+        {/* KPIs */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+          {metricsData.map((metric) => (
+            <MCMetricCard
+              key={metric.id}
+              title={metric.title}
+              icon={metric.icon}
+              value={metric.value}
+              subtitle={metric.subtitle}
+            />
+          ))}
+        </div>
+        {/* Bar chart grande */}
+        <BarChart />
+        {/* Line chart grande */}
+        <LineChart />
+      </div>
+      {/* Right column (30%) */}
+      <div className="w-[25%] flex flex-col ">
+        {/* Pie chart arriba */}
+        <PieChart />
+        {/* Pie chart abajo */}
+        <PieChart />
+        {/* Small chart */}
+        <PieChart />
+      </div>
     </div>
   );
 }
