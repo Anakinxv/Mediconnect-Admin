@@ -69,10 +69,10 @@ function PieChart({
                 <Cell key={i} fill={entry.color} />
               ))}
             </Pie>
-            <ChartLegend
+            {/* <ChartLegend
               content={<ChartLegendContent nameKey="name" />}
               className="grid grid-cols-2 gap-2 justify-between items-center"
-            />
+            /> */}
           </RechartsPieChart>
         </ChartContainer>
       </CardContent>

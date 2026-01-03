@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import PieChart from "../components/PieChart";
 import BarChart from "../components/BarChart";
 import AreaChart from "../components/AreaChart";
-
+import TopSpecialtiesChart from "../components/TopSpecialtiesChart";
 import {
   Select,
   SelectContent,
@@ -14,7 +14,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/shared/ui/select"; // Cambiado el import aquí
-import React, { useState } from "react";
+import { useState } from "react";
+
 type DataType = "All" | "Year" | "Monthly" | "ThreeMonths" | "Weekly";
 interface ChartRow {
   label: string;
@@ -223,17 +224,35 @@ function AdminDashboardPage() {
     { name: "TeleConsulta", value: 35, color: "hsl(var(--chart-4))" },
   ];
 
+  const dataByPeriod: Record<
+    string,
+    { especialidad: string; rating: number }[]
+  > = {
+    "7d": [
+      { especialidad: "Psicología", rating: 4.9 },
+      { especialidad: "Medicina General", rating: 4.3 },
+      { especialidad: "Nutrición", rating: 4.6 },
+      { especialidad: "Pediatría", rating: 4.5 },
+      { especialidad: "Cardiología", rating: 4.2 },
+      { especialidad: "Dermatología", rating: 4.1 },
+      { especialidad: "Ginecología", rating: 4.1 },
+      { especialidad: "Traumatología", rating: 3.9 },
+      { especialidad: "Oftalmología", rating: 3.8 },
+      { especialidad: "Neurología", rating: 3.6 },
+    ],
+  };
+
   const [consultationsFilter, setConsultationsFilter] =
     useState<DataType>("Year");
   // Estado para el filtro de usuarios
   const [usersFilter, setUsersFilter] = useState<DataType>("Year");
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-4 gap-6 h-full">
+    <div className="grid grid-cols-1 md:grid-cols-4 gap-4 h-full">
       {/* Main content: 3/4 columns */}
       <div className="col-span-1 md:col-span-3 flex flex-col gap-4">
         {/* KPIs */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {metricsData.map((metric) => (
             <MCMetricCard
               key={metric.id}
@@ -246,10 +265,10 @@ function AdminDashboardPage() {
         </div>
 
         {/* Filtros y BarChart */}
-        <div className="bg-card rounded-lg p-4 flex flex-col gap-4 w-full">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+        <div className="bg-card rounded-3xl  p-4 flex flex-col shadow-sm gap-4 w-full">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <h2 className="text-lg font-semibold">
-              {t("charts.consultationsTitle") || "Consultas"}
+              {t("charts.consultationsTitle")}
             </h2>
             <Select
               value={consultationsFilter}
@@ -258,51 +277,53 @@ function AdminDashboardPage() {
               }
             >
               <SelectTrigger className="w-40">
-                <SelectValue placeholder="Filtrar" />
+                <SelectValue placeholder={t("filters.filterBy")} />
               </SelectTrigger>
               <SelectContent position="popper" side="bottom">
                 <SelectGroup>
-                  <SelectLabel>Filtrar por</SelectLabel>
-                  <SelectItem value="Weekly">Semana</SelectItem>
-                  <SelectItem value="Monthly">Mes</SelectItem>
-                  <SelectItem value="ThreeMonths">3 Meses</SelectItem>
-                  <SelectItem value="Year">Año</SelectItem>
-                  <SelectItem value="All">Todo</SelectItem>
+                  <SelectLabel>{t("filters.filterBy")}</SelectLabel>
+                  <SelectItem value="Weekly">{t("filters.week")}</SelectItem>
+                  <SelectItem value="Monthly">{t("filters.month")}</SelectItem>
+                  <SelectItem value="ThreeMonths">
+                    {t("filters.threeMonths")}
+                  </SelectItem>
+                  <SelectItem value="Year">{t("filters.year")}</SelectItem>
+                  <SelectItem value="All">{t("filters.all")}</SelectItem>
                 </SelectGroup>
               </SelectContent>
             </Select>
           </div>
-          <div className="h-[320px] w-full">
+          <div className="h-[350px] w-full">
             <BarChart data={consultationsData[consultationsFilter]} />
           </div>
         </div>
 
         {/* AreaChart */}
-        <div className="bg-card rounded-lg p-4 flex flex-col gap-4 w-full">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-            <h2 className="text-lg font-semibold">
-              {t("charts.usersTitle") || "Usuarios"}
-            </h2>
+        <div className="bg-card rounded-3xl  p-4 flex flex-col gap-4 w-full shadow-sm">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <h2 className="text-lg font-semibold">{t("charts.usersTitle")}</h2>
             <Select
               value={usersFilter}
               onValueChange={(value) => setUsersFilter(value as DataType)}
             >
               <SelectTrigger className="w-40">
-                <SelectValue placeholder="Filtrar" />
+                <SelectValue placeholder={t("filters.filterBy")} />
               </SelectTrigger>
               <SelectContent position="popper" side="bottom">
                 <SelectGroup>
-                  <SelectLabel>Filtrar por</SelectLabel>
-                  <SelectItem value="Weekly">Semana</SelectItem>
-                  <SelectItem value="Monthly">Mes</SelectItem>
-                  <SelectItem value="ThreeMonths">3 Meses</SelectItem>
-                  <SelectItem value="Year">Año</SelectItem>
-                  <SelectItem value="All">Todo</SelectItem>
+                  <SelectLabel>{t("filters.filterBy")}</SelectLabel>
+                  <SelectItem value="Weekly">{t("filters.week")}</SelectItem>
+                  <SelectItem value="Monthly">{t("filters.month")}</SelectItem>
+                  <SelectItem value="ThreeMonths">
+                    {t("filters.threeMonths")}
+                  </SelectItem>
+                  <SelectItem value="Year">{t("filters.year")}</SelectItem>
+                  <SelectItem value="All">{t("filters.all")}</SelectItem>
                 </SelectGroup>
               </SelectContent>
             </Select>
           </div>
-          <div className="h-[320px] w-full">
+          <div className="h-[350px] w-full">
             <AreaChart
               data={usersData[usersFilter].map(({ label, users }) => ({
                 label,
@@ -318,22 +339,22 @@ function AdminDashboardPage() {
         <div className="flex-1">
           <PieChart
             data={pieData1}
-            title="Servicios"
-            description="Distribución de servicios"
+            title={t("charts.services")}
+            description={t("charts.servicesDescription")}
           />
         </div>
         <div className="flex-1">
           <PieChart
             data={pieData2}
-            title="Consultas"
-            description="Tipo de consulta"
+            title={t("charts.consultations")}
+            description={t("charts.consultationsDescription")}
           />
         </div>
         <div className="flex-1">
-          <PieChart
-            data={pieData2}
-            title="Consultas"
-            description="Tipo de consulta"
+          <TopSpecialtiesChart
+            data={dataByPeriod["7d"]}
+            title={t("charts.topSpecialties")}
+            description={t("charts.topSpecialtiesDescription")}
           />
         </div>
       </div>

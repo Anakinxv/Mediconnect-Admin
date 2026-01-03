@@ -43,5 +43,23 @@
     "patientsSubtitle": "Total number of patients registered in the application.",
     "doctorsSubtitle": "Total number of doctors registered in the application.",
     "healthCentersSubtitle": "Total number of health centers registered in the application."
+  },
+  "charts": {
+    "consultationsTitle": "Consultations",
+    "usersTitle": "Users",
+    "services": "Services",
+    "servicesDescription": "Service distribution",
+    "consultations": "Consultations",
+    "consultationsDescription": "Consultation type",
+    "topSpecialties": "Top Specialties",
+    "topSpecialtiesDescription": "Specialties with best reviews"
+  },
+  "filters": {
+    "filterBy": "Filter by",
+    "week": "Week",
+    "month": "Month",
+    "threeMonths": "3 Months",
+    "year": "Year",
+    "all": "All"
   }
 }

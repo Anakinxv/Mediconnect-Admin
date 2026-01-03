@@ -42,5 +42,23 @@
     "patientsSubtitle": "Cantidad total de pacientes registrados en la aplicación.",
     "doctorsSubtitle": "Cantidad total de doctores registrados en la aplicación.",
     "healthCentersSubtitle": "Cantidad total de centros de salud registrados en la aplicación."
+  },
+  "charts": {
+    "consultationsTitle": "Consultas",
+    "usersTitle": "Usuarios",
+    "services": "Servicios",
+    "servicesDescription": "Distribución de servicios",
+    "consultations": "Consultas",
+    "consultationsDescription": "Tipo de consulta",
+    "topSpecialties": "Top Especialidades",
+    "topSpecialtiesDescription": "Especialidades con mejor reseñas"
+  },
+  "filters": {
+    "filterBy": "Filtrar por",
+    "week": "Semana",
+    "month": "Mes",
+    "threeMonths": "3 Meses",
+    "year": "Año",
+    "all": "Todo"
   }
 }
