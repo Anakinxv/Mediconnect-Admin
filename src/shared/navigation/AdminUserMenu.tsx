@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -44,7 +44,7 @@ import { useAppStore } from "@/stores/useAppStore";
 import type { Theme } from "@/stores/useGlobalUISlice";
 import { useIsMobile } from "@/lib/hooks/useIsMobile";
 import { cn } from "@/lib/utils";
-
+import MCSheetProfile from "@/shared/components/MCSheetProfile";
 const isMac =
   typeof window !== "undefined" &&
   /Mac|iPod|iPhone|iPad/.test(navigator.platform);
@@ -82,6 +82,7 @@ const themeOptions: { value: Theme; label: string; icon: React.ReactNode }[] = [
 export function AdminUserMenu() {
   const [open, setOpen] = useState(false);
   const [subMenuOpen, setSubMenuOpen] = useState<string | null>(null);
+  const [isEditProfileOpen, setIsEditProfileOpen] = useState(false); // Nuevo estado
   const { t } = useTranslation("dashboard");
   const language = useAppStore((state) => state.language);
   const setLanguage = useAppStore((state) => state.setLanguage);
@@ -184,6 +185,17 @@ export function AdminUserMenu() {
   const currentThemeOption = themeOptions.find(
     (option) => option.value === theme
   );
+
+  // Opcional: atajo de teclado Ctrl+E o Cmd+E para abrir editar perfil
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === "e") {
+        setIsEditProfileOpen(true);
+      }
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, []);
 
   return (
     <>
@@ -309,7 +321,12 @@ export function AdminUserMenu() {
                 <DropdownMenuShortcut>⇧{cmdOrCtrl}+P</DropdownMenuShortcut>
               )}
             </DropdownMenuItem>
-            <DropdownMenuItem>
+            <DropdownMenuItem
+              onSelect={(e) => {
+                e.preventDefault(); // Evita que se cierre antes de tiempo
+                setIsEditProfileOpen(true);
+              }}
+            >
               <Pencil className="w-4 h-4 mr-2" />
               {t("userMenu.editProfile")}
               {!isMobile && (
@@ -457,7 +474,12 @@ export function AdminUserMenu() {
         </DropdownMenuContent>
       </DropdownMenu>
 
-      {/* Mobile Sub-menus */}
+      {/* Sheet controlado por estado */}
+      <MCSheetProfile
+        open={isEditProfileOpen}
+        onOpenChange={setIsEditProfileOpen}
+      />
+
       {isMobile && (
         <>
           <MobileSubMenu
