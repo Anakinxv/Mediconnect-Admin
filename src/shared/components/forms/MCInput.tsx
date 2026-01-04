@@ -36,7 +36,9 @@ function MCInput({
   size = "medium",
   status = "default",
   statusMessage,
-}: MCInputProps) {
+  variant, // <-- Agrega esta prop
+}: MCInputProps & { variant?: "edit" }) {
+  // <-- Extiende las variantes
   const {
     register,
     formState: { errors },
@@ -71,6 +73,13 @@ function MCInput({
 
   const handlePasswordToggle = () => {
     SetPasswordVisibility(!PasswordVisibility);
+  };
+
+  const getVariantClasses = () => {
+    if (variant === "edit") {
+      return "border-none bg-accent text-primary/80 placeholder:text-primary/60";
+    }
+    return "";
   };
 
   return (
@@ -128,9 +137,10 @@ function MCInput({
             };
           })()}
           className={cn(
-            "w-full rounded-4xl border focus:ring-0 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 text-primary placeholder:text-md",
+            "w-full rounded-4xl focus:ring-0 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 text-primary placeholder:text-md",
             getSizeClasses(),
             handleStatusColor(),
+            getVariantClasses(), // <-- Aplica la variante
             className
           )}
         />
