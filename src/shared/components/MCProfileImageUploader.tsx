@@ -1,5 +1,5 @@
 import "react-image-crop/dist/ReactCrop.css";
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import ReactCrop, {
   type Crop,
   type PixelCrop,
@@ -53,6 +53,7 @@ export default function MCProfileImageUploader({
   const [completedCrop, setCompletedCrop] = useState<PixelCrop>();
   const [scale, setScale] = useState(1);
   const imgRef = useRef<HTMLImageElement>(null);
+  const cropContainerRef = useRef<HTMLDivElement>(null);
 
   const onImageLoad = (e: React.SyntheticEvent<HTMLImageElement>) => {
     const { width, height } = e.currentTarget;
@@ -123,44 +124,56 @@ export default function MCProfileImageUploader({
         </DialogHeader>
         <div className="p-4 space-y-4">
           {/* Crop Area */}
-          <div className="relative rounded-xl p-4 flex justify-center max-h-[400px] overflow-hidden">
-            <ReactCrop
-              crop={crop}
-              onChange={(_, percentCrop) => setCrop(percentCrop)}
-              onComplete={(c) => setCompletedCrop(c)}
-              aspect={aspectRatio}
-              circularCrop={isCircular}
+          <div className="space-y-6">
+            <div
+              className="relative rounded-4xl p-4 flex justify-center max-h-[400px] overflow-hidden border border-primary/5"
+              ref={cropContainerRef}
+              tabIndex={0} // Para permitir foco si quieres
             >
-              <img
-                ref={imgRef}
-                src={imageSrc}
-                alt="Crop preview"
-                onLoad={onImageLoad}
-                style={{ transform: `scale(${scale})`, maxHeight: "350px" }}
-                className="max-w-full rounded-lg transition-transform origin-center"
+              <div className="rounded-4xl overflow-hidden">
+                <ReactCrop
+                  crop={crop}
+                  onChange={(_, percentCrop) => setCrop(percentCrop)}
+                  onComplete={(c) => setCompletedCrop(c)}
+                  aspect={aspectRatio}
+                  circularCrop={isCircular}
+                >
+                  <img
+                    ref={imgRef}
+                    src={imageSrc}
+                    alt="Crop preview"
+                    onLoad={onImageLoad}
+                    style={{ transform: `scale(${scale})`, maxHeight: "400px" }}
+                    className="max-w-full transition-transform origin-center"
+                  />
+                </ReactCrop>
+              </div>
+            </div>
+            {/* Zoom Control */}
+            <div className="flex items-center gap-4 px-2 w-[95%] mx-auto">
+              <ZoomOut
+                className="w-4 h-4 text-muted-foreground cursor-pointer"
+                onClick={() => setScale((prev) => Math.max(prev - 0.05, 0.5))}
               />
-            </ReactCrop>
+              <Slider
+                value={[scale]}
+                onValueChange={(value) => setScale(value[0])}
+                min={0.5}
+                max={2}
+                step={0.05}
+                className="flex-1"
+              />
+              <ZoomIn
+                className="w-4 h-4 text-muted-foreground cursor-pointer"
+                onClick={() => setScale((prev) => Math.min(prev + 0.05, 2))}
+              />
+              <span className="text-sm text-muted-foreground min-w-[3rem] text-right">
+                {Math.round(scale * 100)}%
+              </span>
+            </div>
           </div>
-
-          {/* Zoom Control */}
-          <div className="flex items-center gap-4 px-2">
-            <ZoomOut className="w-4 h-4 text-muted-foreground" />
-            <Slider
-              value={[scale]}
-              onValueChange={(value) => setScale(value[0])}
-              min={0.5}
-              max={2}
-              step={0.05}
-              className="flex-1"
-            />
-            <ZoomIn className="w-4 h-4 text-muted-foreground" />
-            <span className="text-sm text-muted-foreground min-w-[3rem] text-right">
-              {Math.round(scale * 100)}%
-            </span>
-          </div>
-
           {/* Actions */}
-          <DialogFooter className="flex gap-3 pt-2">
+          <DialogFooter className="flex gap-3 pt-2 mt-10">
             <MCButton variant="secondary" size="m" onClick={handleReset}>
               <RotateCcw className="w-4 h-4 mr-2" />
               Reiniciar
