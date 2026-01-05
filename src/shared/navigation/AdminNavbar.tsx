@@ -19,7 +19,7 @@ function AdminNavbar() {
   const { t } = useTranslation("dashboard");
   const theme = useAppStore((state) => state.theme);
   const usuariosRoutes = [
-    "/a",
+    "/usuarios/admins",
     "/usuarios/pacientes",
     "/usuarios/doctores",
     "/usuarios/centros",
@@ -37,14 +37,14 @@ function AdminNavbar() {
 
   const isUsuariosActive = usuariosRoutes.includes(location.pathname);
   const isContenidoActive = contenidoRoutes.includes(location.pathname);
-  const isDashboardActive = location.pathname === "/";
+  const isDashboardActive = location.pathname === "/admin/dashboard";
   const isReporteActive = location.pathname === "/reporte-cuentas";
 
   const hasActiveChildUsuarios = usuariosRoutes.includes(location.pathname);
   const hasActiveChildContenido = contenidoRoutes.includes(location.pathname);
 
   return (
-    <nav className="w-full flex items-center justify-between px-4 sm:px-6 lg:px-10 py-3 bg-background rounded-full">
+    <nav className="w-full flex items-center justify-between px-4 sm:px-6 lg:px-10 py-3 bg-background rounded-full shadow-md border border-border">
       {/* Logo */}
       <div className="flex items-center gap-2 sm:gap-3">
         <img
@@ -61,7 +61,7 @@ function AdminNavbar() {
             {/* Dashboard */}
             <NavigationMenuItem>
               <NavigationMenuLink
-                href="/"
+                href="/admin/dashboard"
                 active={isDashboardActive}
                 className={`text-sm lg:text-base px-2 lg:px-4 py-4 lg:py-6 rounded-full hover:rounded-full ${
                   isDashboardActive
@@ -93,8 +93,8 @@ function AdminNavbar() {
                   <ul className="p-2 flex flex-col gap-1">
                     <li>
                       <NavigationMenuLink
-                        href="/a"
-                        active={location.pathname === "/a"}
+                        href="/usuarios/admins"
+                        active={location.pathname === "/usuarios/admins"}
                         isChild
                         className="text-sm"
                       >

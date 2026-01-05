@@ -59,7 +59,7 @@ function AdminNavbarMobile() {
   };
 
   return (
-    <div className="flex items-center justify-between w-full px-6 py-4 md:hidden bg-background rounded-full">
+    <div className="flex items-center justify-between w-full px-6 py-4 md:hidden bg-background rounded-full shadow-md border border-border">
       {/* Logo/Brand */}
       <div className="flex items-center gap-3">
         <img

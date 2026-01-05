@@ -5,5 +5,5 @@ export const ROUTES = {
   RESET_PASSWORD: "/auth/reset-password",
   PASSWORD_SUCCESS: "/auth/password-success",
 
-  DASHBOARD: "/a",
+  DASHBOARD: "/admin/dashboard",
 };

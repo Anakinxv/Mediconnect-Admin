@@ -73,8 +73,7 @@ const NavigationMenuTrigger = React.forwardRef<
         (hasActiveChild
           ? "hover:bg-accent/60 hover:text-accent-foreground"
           : "hover:bg-accent/70 hover:text-primary text-primary"),
-      active &&
-        "bg-primary text-primary-foreground hover:bg-primary focus:bg-primary",
+      active && "bg-primary text-primary-foreground hover:bg-primary",
       className
     )}
     {...props}
@@ -149,7 +148,7 @@ const NavigationMenuLink = React.forwardRef<
           "rounded-full px-4 py-2 h-10 text-primary",
           "hover:bg-accent/70",
           !active && "hover:text-primary",
-          active && "bg-primary text-primary hover:bg-primary"
+          active && "bg-primary text-primary-foreground hover:bg-primary"
         ),
 
       className
