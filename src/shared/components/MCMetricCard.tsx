@@ -7,6 +7,7 @@ type MCMetricCardProps = {
   value: string | number;
   subtitle?: string;
   percentage?: string;
+  bordered?: boolean;
 };
 
 const MCMetricCard: React.FC<MCMetricCardProps> = ({
@@ -15,9 +16,14 @@ const MCMetricCard: React.FC<MCMetricCardProps> = ({
   value,
   subtitle,
   percentage = "12%",
+  bordered = true,
 }) => {
   return (
-    <div className="relative flex flex-col justify-start w-full rounded-3xl bg-background shadow-sm   p-6 transition-colors">
+    <div
+      className={`relative flex flex-col justify-start w-full rounded-3xl bg-background shadow-sm   p-4 transition-colors ${
+        bordered ? "border border-primary/10" : ""
+      }`}
+    >
       <div className="flex items-start gap-4 mb-5">
         <div className="flex items-center justify-center rounded-full w-15 h-15 bg-accent flex-shrink-0">
           <span className="text-xl text-accent-accent-foreground flex items-center justify-center">
@@ -25,7 +31,7 @@ const MCMetricCard: React.FC<MCMetricCardProps> = ({
           </span>
         </div>
         <div className="flex-1 overflow-hidden">
-          <div className="text-base md:text-lg font-semibold mb-1.5 leading-tight text-foreground">
+          <div className="text-base md:text-base font-semibold mb-1.5 leading-tight text-foreground">
             {title}
           </div>
           {subtitle && (
@@ -40,7 +46,7 @@ const MCMetricCard: React.FC<MCMetricCardProps> = ({
         {value}
       </div>
 
-      <div className="flex items-center gap-2 mt-auto">
+      {/* <div className="flex items-center gap-2 mt-auto">
         <div className="flex items-center justify-center rounded-full w-fit h-fit py-2 px-3 bg-accent">
           <span className="text-xs font-medium text-accent-accent-foreground flex items-center justify-center   ">
             <ArrowUp className="w-4 h-4 text-accent-foreground" />
@@ -52,7 +58,7 @@ const MCMetricCard: React.FC<MCMetricCardProps> = ({
             más que el mes pasado
           </span>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 };

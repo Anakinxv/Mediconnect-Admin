@@ -37,7 +37,7 @@ function AdminNavbar() {
 
   const isUsuariosActive = usuariosRoutes.includes(location.pathname);
   const isContenidoActive = contenidoRoutes.includes(location.pathname);
-  const isDashboardActive = location.pathname === "/admin/dashboard";
+  const isDashboardActive = location.pathname === "/dashboard";
   const isReporteActive = location.pathname === "/reporte-cuentas";
 
   const hasActiveChildUsuarios = usuariosRoutes.includes(location.pathname);
@@ -61,7 +61,7 @@ function AdminNavbar() {
             {/* Dashboard */}
             <NavigationMenuItem>
               <NavigationMenuLink
-                href="/admin/dashboard"
+                href="/dashboard"
                 active={isDashboardActive}
                 className={`text-sm lg:text-base px-2 lg:px-4 py-4 lg:py-6 rounded-full hover:rounded-full ${
                   isDashboardActive

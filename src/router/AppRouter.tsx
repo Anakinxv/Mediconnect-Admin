@@ -8,6 +8,7 @@ import VerifyEmailPage from "@/features/auth/pages/VerifyEmailPage";
 import ResetPasswordPage from "@/features/auth/pages/ResetPasswordPage";
 import PasswordSuccessPage from "@/features/auth/pages/PasswordSuccessPage";
 import AdminDashboardPage from "@/features/dashboard/pages/AdminDashboardPage";
+import PatientsPage from "@/features/users/pages/PatientsPage";
 import DarkLayout from "@/layout/DarkLayout";
 function AppRouter() {
   return (
@@ -29,6 +30,7 @@ function AppRouter() {
         <Route element={<DarkLayout />}>
           <Route element={<DashboardLayout />}>
             <Route path={ROUTES.DASHBOARD} element={<AdminDashboardPage />} />
+            <Route path={ROUTES.PATIENTS} element={<PatientsPage />} />
           </Route>
         </Route>
       </Router>
