@@ -119,13 +119,13 @@ function MorphingPopoverTrigger({
   const context = useContext(MorphingPopoverContext);
   if (!context) {
     throw new Error(
-      "MorphingPopoverTrigger must be used within MorphingPopover"
+      "MorphingPopoverTrigger must be used within MorphingPopover",
     );
   }
 
   if (asChild && isValidElement(children)) {
     const MotionComponent = motion.create(
-      children.type as React.ForwardRefExoticComponent<any>
+      children.type as React.ForwardRefExoticComponent<any>,
     );
     const childProps = children.props as Record<string, unknown>;
 
@@ -175,7 +175,7 @@ function MorphingPopoverContent({
   const context = useContext(MorphingPopoverContext);
   if (!context)
     throw new Error(
-      "MorphingPopoverContent must be used within MorphingPopover"
+      "MorphingPopoverContent must be used within MorphingPopover",
     );
 
   const ref = useRef<HTMLDivElement>(null);
@@ -206,7 +206,7 @@ function MorphingPopoverContent({
             aria-modal="true"
             className={cn(
               "absolute overflow-hidden rounded-md border border-zinc-950/10 bg-white p-2 text-zinc-950 shadow-md dark:border-zinc-50/10 dark:bg-zinc-700 dark:text-zinc-50",
-              className
+              className,
             )}
             initial="initial"
             animate="animate"

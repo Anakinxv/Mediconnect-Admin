@@ -4,7 +4,8 @@ import { EyeIcon } from "@/shared/ui/eye";
 import { EyeOffIcon } from "@/shared/ui/eye-off";
 import { Button } from "@/shared/ui/button";
 import { cn } from "@/lib/utils";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 
 interface MCInputProps {
   name: string;
@@ -20,6 +21,42 @@ interface MCInputProps {
   size?: "small" | "medium" | "large";
   status?: "default" | "error" | "success" | "warning" | "loading";
   statusMessage?: string;
+  variant?:
+    | "edit"
+    | "default"
+    | "cedula"
+    | "time"
+    | "decideHour"
+    | "internal-vertical"
+    | "internal-horizontal";
+  standalone?: boolean;
+  icon?: React.ReactNode;
+  internalTitle?: string;
+  internalPlaceholder?: string;
+  displayMode?: "placeholder" | "value";
+  isPrice?: boolean;
+  customDisplayValue?: string;
+  maxLength?: number;
+}
+
+function formatCedula(value: string) {
+  const digits = value.replace(/\D/g, "").slice(0, 11);
+  if (digits.length <= 3) return digits;
+  if (digits.length <= 10) return `${digits.slice(0, 3)}-${digits.slice(3)}`;
+  return `${digits.slice(0, 3)}-${digits.slice(3, 10)}-${digits.slice(10)}`;
+}
+
+function formatTime(value: string): string {
+  const digits = value.replace(/\D/g, "");
+  const limitedDigits = digits.slice(0, 6);
+
+  if (limitedDigits.length <= 2) {
+    return limitedDigits;
+  } else if (limitedDigits.length <= 4) {
+    return `${limitedDigits.slice(0, 2)}:${limitedDigits.slice(2)}`;
+  } else {
+    return `${limitedDigits.slice(0, 2)}:${limitedDigits.slice(2, 4)}:${limitedDigits.slice(4)}`;
+  }
 }
 
 function MCInput({
@@ -36,14 +73,22 @@ function MCInput({
   size = "medium",
   status = "default",
   statusMessage,
-  variant, // <-- Agrega esta prop
-}: MCInputProps & { variant?: "edit" }) {
-  // <-- Extiende las variantes
-  const {
-    register,
-    formState: { errors },
-  } = useFormContext();
-  const [PasswordVisibility, SetPasswordVisibility] = useState(false);
+  variant = "default",
+  standalone = false,
+  icon,
+  internalTitle,
+  internalPlaceholder,
+  displayMode = "placeholder",
+  isPrice = false,
+  customDisplayValue,
+  maxLength = 10,
+}: MCInputProps) {
+  const formContext = standalone ? null : useFormContext();
+  const { t } = useTranslation("common");
+  const [passwordVisibility, setPasswordVisibility] = useState(false);
+  const [cedulaValue, setCedulaValue] = useState(value || "");
+  const [timeValue, setTimeValue] = useState(value || "");
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const handleStatusColor = () => {
     switch (status) {
@@ -71,21 +116,228 @@ function MCInput({
     }
   };
 
+  const getIconPaddingClasses = () => {
+    if (!icon) return "";
+    switch (size) {
+      case "small":
+        return "pl-10";
+      case "large":
+        return "pl-14";
+      default:
+        return "pl-10 sm:pl-12";
+    }
+  };
+
+  const getIconSizeClasses = () => {
+    switch (size) {
+      case "small":
+        return "w-10 h-10";
+      case "large":
+        return "w-16 h-16";
+      default:
+        return "w-12 sm:w-[60px] h-12 sm:h-[60px]";
+    }
+  };
+
   const handlePasswordToggle = () => {
-    SetPasswordVisibility(!PasswordVisibility);
+    setPasswordVisibility(!passwordVisibility);
   };
 
   const getVariantClasses = () => {
     if (variant === "edit") {
       return "border-none bg-accent text-primary/80 placeholder:text-primary/60";
     }
+    if (variant === "internal-vertical" || variant === "internal-horizontal") {
+      return "border-none bg-transparent text-primary/80 placeholder:text-primary/60";
+    }
     return "";
   };
 
+  const handleNumberKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (["e", "E", "+", "-", "."].includes(e.key)) {
+      e.preventDefault();
+    }
+  };
+
+  const handleNumberInput = (e: React.FormEvent<HTMLInputElement>) => {
+    const input = e.currentTarget;
+    const cleanValue = input.value.replace(/[^0-9]/g, "");
+    if (input.value !== cleanValue) {
+      input.value = cleanValue;
+      const event = new Event("input", { bubbles: true });
+      input.dispatchEvent(event);
+    }
+  };
+
+  const handleTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const formatted = formatTime(e.target.value);
+    setTimeValue(formatted);
+
+    if (standalone) {
+      const syntheticEvent = {
+        ...e,
+        target: { ...e.target, value: formatted },
+        currentTarget: { ...e.currentTarget, value: formatted },
+      } as React.ChangeEvent<HTMLInputElement>;
+      onChange?.(syntheticEvent);
+    } else {
+      formContext?.setValue(name, formatted, { shouldValidate: true });
+    }
+  };
+
+  const handleDecideHourChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const rawValue = e.target.value;
+
+    // Si el campo está vacío, enviar string vacío
+    if (!rawValue || rawValue.trim() === "") {
+      setTimeValue("");
+
+      // Fix específico para Safari: forzar el reset del input
+      if (inputRef.current) {
+        inputRef.current.value = "";
+      }
+
+      if (!standalone && formContext) {
+        formContext.setValue(name, "", { shouldValidate: true });
+      }
+
+      if (onChange) {
+        const syntheticEvent = {
+          ...e,
+          target: { ...e.target, value: "" },
+          currentTarget: { ...e.currentTarget, value: "" },
+        } as React.ChangeEvent<HTMLInputElement>;
+        onChange(syntheticEvent);
+      }
+      return;
+    }
+
+    // Normalizar al formato HH:mm:ss si solo tiene HH:mm
+    const normalizedValue =
+      rawValue.length === 5 && rawValue.includes(":")
+        ? `${rawValue}:00`
+        : rawValue;
+
+    setTimeValue(rawValue);
+
+    if (!standalone && formContext) {
+      formContext.setValue(name, normalizedValue, { shouldValidate: true });
+    }
+
+    if (onChange) {
+      const syntheticEvent = {
+        ...e,
+        target: { ...e.target, value: normalizedValue },
+        currentTarget: { ...e.currentTarget, value: normalizedValue },
+      } as React.ChangeEvent<HTMLInputElement>;
+      onChange(syntheticEvent);
+    }
+  };
+
+  // Effect para sincronizar el valor del input en Safari cuando timeValue cambia a vacío
+  useEffect(() => {
+    if (variant === "decideHour" && timeValue === "" && inputRef.current) {
+      inputRef.current.value = "";
+    }
+  }, [timeValue, variant]);
+
+  const isCedulaVariant = variant === "cedula";
+  const isTimeVariant = variant === "time";
+  const isDecideHourVariant = variant === "decideHour";
+  const isInternalVariant =
+    variant === "internal-vertical" || variant === "internal-horizontal";
+  const isVerticalLayout = variant === "internal-vertical";
+  const isHorizontalLayout = variant === "internal-horizontal";
+
+  const handleCedulaChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const formatted = formatCedula(e.target.value);
+    setCedulaValue(formatted);
+    const onlyDigits = formatted.replace(/\D/g, "");
+
+    if (standalone) {
+      const syntheticEvent = {
+        ...e,
+        target: { ...e.target, value: onlyDigits },
+        currentTarget: { ...e.currentTarget, value: onlyDigits },
+      } as React.ChangeEvent<HTMLInputElement>;
+      onChange?.(syntheticEvent);
+    } else {
+      formContext?.setValue(name, onlyDigits, { shouldValidate: true });
+    }
+  };
+
+  // Props del input según el modo
+  const inputProps = isCedulaVariant
+    ? {
+        value: cedulaValue,
+        onChange: handleCedulaChange,
+      }
+    : isTimeVariant
+      ? {
+          value: timeValue,
+          onChange: handleTimeChange,
+          placeholder: "00:00:00",
+        }
+      : isDecideHourVariant
+        ? {
+            value: timeValue,
+            onChange: handleDecideHourChange,
+            placeholder: "hh:mm o hh:mm am/pm",
+          }
+        : standalone
+          ? {
+              value: value || "",
+              onChange: onChange,
+            }
+          : (() => {
+              if (!formContext) return {};
+
+              const field = formContext.register(
+                name,
+                type === "number" ? { valueAsNumber: true } : {},
+              );
+              return {
+                ...field,
+                onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
+                  field.onChange(e);
+                  onChange?.(e);
+                },
+              };
+            })();
+
+  const error = !standalone && formContext?.formState?.errors?.[name];
+
+  const getCurrentValue = () => {
+    if (isCedulaVariant) return cedulaValue;
+    if (isTimeVariant) return timeValue;
+    if (isDecideHourVariant && !standalone)
+      return formContext?.watch(name) || "";
+    if (standalone) return value || "";
+    return formContext?.watch(name) || "";
+  };
+
+  const currentValue = getCurrentValue();
+
+  const getDisplayPlaceholder = () => {
+    if (displayMode === "value" && currentValue) {
+      return "";
+    }
+    return internalPlaceholder || placeholder;
+  };
+
+  const getDisplayValue = () => {
+    if (customDisplayValue !== undefined) {
+      return customDisplayValue;
+    }
+    return currentValue;
+  };
+
+  const isInternalDisabled = isInternalVariant;
+
   return (
     <div className="w-full flex flex-col mb-4 px-0">
-      {/* Label and Password Toggle */}
-      {label && (
+      {/* Label externo */}
+      {label && !isInternalVariant && (
         <div className="flex flex-row justify-between items-center mb-1 gap-2">
           <label
             htmlFor={name}
@@ -100,16 +352,17 @@ function MCInput({
               variant="ghost"
               className="rounded-2xl text-gray-500 px-2 py-1"
               onClick={handlePasswordToggle}
+              disabled={disabled}
             >
-              {PasswordVisibility ? (
+              {passwordVisibility ? (
                 <span className="flex items-center gap-1">
                   <EyeOffIcon size={18} />
-                  <p className="hidden sm:inline">Ocultar</p>
+                  <p className="hidden sm:inline">{t("validation.hide")}</p>
                 </span>
               ) : (
                 <span className="flex items-center gap-1">
                   <EyeIcon size={18} />
-                  <p className="hidden sm:inline">Mostrar</p>
+                  <p className="hidden sm:inline">{t("validation.show")}</p>
                 </span>
               )}
             </Button>
@@ -117,34 +370,137 @@ function MCInput({
         </div>
       )}
 
-      {/* Input Container */}
-      <div className="relative">
-        <Input
-          id={name}
-          placeholder={placeholder}
-          type={type === "password" && PasswordVisibility ? "text" : type}
-          required={required}
-          value={value}
-          disabled={disabled}
-          {...(() => {
-            const field = register(name);
-            return {
-              ...field,
-              onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
-                field.onChange(e);
-                onChange?.(e);
-              },
-            };
-          })()}
-          className={cn(
-            "w-full rounded-4xl focus:ring-0 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 text-primary placeholder:text-md",
-            getSizeClasses(),
-            handleStatusColor(),
-            getVariantClasses(), // <-- Aplica la variante
-            className
+      {/* LAYOUT VERTICAL */}
+      {isVerticalLayout ? (
+        <div className="border border-primary/50 rounded-full px-4 sm:px-5 py-3 cursor-pointer">
+          {internalTitle && (
+            <label
+              htmlFor={name}
+              className="text-left text-sm sm:text-base text-primary font-medium block mb-1"
+            >
+              {internalTitle}
+              {required && <span className="text-red-500 ml-1">*</span>}
+            </label>
           )}
-        />
-      </div>
+          <div className="relative">
+            {displayMode === "value" && getDisplayValue() ? (
+              <div className="w-full text-primary/60 text-right text-sm sm:text-base">
+                {getDisplayValue()}
+              </div>
+            ) : (
+              <input
+                id={name}
+                ref={isDecideHourVariant ? inputRef : undefined}
+                placeholder={getDisplayPlaceholder()}
+                type={type === "password" && passwordVisibility ? "text" : type}
+                required={required}
+                disabled={isInternalDisabled}
+                onKeyDown={type === "number" ? handleNumberKeyDown : undefined}
+                onInput={type === "number" ? handleNumberInput : undefined}
+                {...inputProps}
+                className={cn(
+                  "h-fit px-0 border-none w-full text-left placeholder:text-left focus:ring-0 focus:outline-none",
+                  "text-primary/60 placeholder:text-primary/60 text-sm sm:text-base cursor-pointer",
+                  getIconPaddingClasses(),
+                  className,
+                )}
+                style={isPrice ? { paddingLeft: "3.5rem" } : undefined}
+              />
+            )}
+          </div>
+        </div>
+      ) : isHorizontalLayout ? (
+        /* LAYOUT HORIZONTAL */
+        <div className="border border-primary/60 rounded-full px-4 sm:px-5 py-3 sm:py-4 cursor-pointer">
+          <div className="flex flex-row items-center justify-between gap-4">
+            {internalTitle && (
+              <label
+                htmlFor={name}
+                className="text-left text-base sm:text-lg text-primary font-medium whitespace-nowrap"
+              >
+                {internalTitle}
+                {required && <span className="text-red-500 ml-1">*</span>}
+              </label>
+            )}
+            <div className="relative flex-1 min-w-0">
+              {displayMode === "value" && getDisplayValue() ? (
+                <div className="w-full text-primary/60 text-right text-sm sm:text-base">
+                  {isPrice && <span className="font-semibold mr-1">RD$</span>}
+                  {getDisplayValue()}
+                </div>
+              ) : (
+                <input
+                  id={name}
+                  ref={isDecideHourVariant ? inputRef : undefined}
+                  placeholder={getDisplayPlaceholder()}
+                  type={
+                    type === "password" && passwordVisibility ? "text" : type
+                  }
+                  required={required}
+                  disabled={isInternalDisabled}
+                  {...inputProps}
+                  className={cn(
+                    "h-fit w-full px-0 border-none text-right placeholder:text-right focus:ring-0 focus:outline-none cursor-pointer",
+                    "text-primary/60 placeholder:text-primary/60 text-sm sm:text-base",
+                    isInternalDisabled && "cursor-pointer bg-transparent",
+                    getIconPaddingClasses(),
+                    className,
+                  )}
+                  style={isPrice ? { paddingLeft: "3.5rem" } : undefined}
+                />
+              )}
+            </div>
+          </div>
+        </div>
+      ) : (
+        /* LAYOUT NORMAL */
+        <div className="relative">
+          {icon && (
+            <div
+              className={cn(
+                "absolute left-0 top-0 flex items-center justify-center pointer-events-none text-primary/60",
+                getIconSizeClasses(),
+              )}
+            >
+              {icon}
+            </div>
+          )}
+          {isPrice && (
+            <span className="absolute left-0 top-1/2 -translate-y-1/2 text-primary/60 font-semibold pl-4 select-none">
+              RD$
+            </span>
+          )}
+          <Input
+            id={name}
+            ref={isDecideHourVariant ? inputRef : undefined}
+            placeholder={
+              isDecideHourVariant ? "Ej: 17:00 o 05:00 pm" : placeholder
+            }
+            type={
+              isDecideHourVariant
+                ? "time"
+                : type === "password" && passwordVisibility
+                  ? "text"
+                  : type
+            }
+            required={required}
+            disabled={disabled}
+            onKeyDown={type === "number" ? handleNumberKeyDown : undefined}
+            onInput={type === "number" ? handleNumberInput : undefined}
+            {...inputProps}
+            maxLength={maxLength}
+            className={cn(
+              "w-full rounded-4xl focus:ring-0 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 text-primary placeholder:text-md",
+              getSizeClasses(),
+              handleStatusColor(),
+              getVariantClasses(),
+              getIconPaddingClasses(),
+              className,
+            )}
+            style={isPrice ? { paddingLeft: "4rem" } : undefined}
+          />
+        </div>
+      )}
 
       {/* Status Message */}
       {statusMessage && (
@@ -154,21 +510,22 @@ function MCInput({
             status === "success"
               ? "text-green-500"
               : status === "error"
-              ? "text-red-500"
-              : status === "warning"
-              ? "text-yellow-500"
-              : status === "loading"
-              ? "text-blue-500"
-              : "text-gray-500"
+                ? "text-red-500"
+                : status === "warning"
+                  ? "text-yellow-500"
+                  : status === "loading"
+                    ? "text-blue-500"
+                    : "text-gray-500",
           )}
         >
           {statusMessage}
         </span>
       )}
 
-      {errors[name] && (
+      {/* Form Errors */}
+      {error && (
         <span className="text-red-500 text-sm mt-1">
-          {String(errors[name]?.message)}
+          {String(error?.message)}
         </span>
       )}
     </div>

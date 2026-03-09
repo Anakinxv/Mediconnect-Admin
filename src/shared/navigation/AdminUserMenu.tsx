@@ -29,6 +29,7 @@ import {
   Monitor,
   X,
 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 import { useTranslation } from "react-i18next";
 import { flushSync } from "react-dom";
@@ -90,21 +91,20 @@ export function AdminUserMenu() {
   const setTheme = useAppStore((state) => state.setTheme);
   const themeButtonRef = useRef<HTMLDivElement>(null);
   const isMobile = useIsMobile();
+  const navigate = useNavigate();
 
+  // Función para manejar cambio de tema
   const handleThemeChange = useCallback(
     async (newTheme: Theme, event: React.MouseEvent) => {
       const target = event.currentTarget as HTMLElement;
 
-      // Check if View Transitions API is supported
       if (!document.startViewTransition) {
         setTheme(newTheme);
         return;
       }
 
       await document.startViewTransition(() => {
-        flushSync(() => {
-          setTheme(newTheme);
-        });
+        setTheme(newTheme);
       }).ready;
 
       const { top, left, width, height } = target.getBoundingClientRect();
@@ -112,7 +112,7 @@ export function AdminUserMenu() {
       const y = top + height / 2;
       const maxRadius = Math.hypot(
         Math.max(left, window.innerWidth - left),
-        Math.max(top, window.innerHeight - top)
+        Math.max(top, window.innerHeight - top),
       );
 
       document.documentElement.animate(
@@ -126,10 +126,10 @@ export function AdminUserMenu() {
           duration: 500,
           easing: "ease-in-out",
           pseudoElement: "::view-transition-new(root)",
-        }
+        },
       );
     },
-    [setTheme]
+    [setTheme],
   );
 
   const handleLanguageChange = (langCode: string) => {
@@ -141,7 +141,7 @@ export function AdminUserMenu() {
 
   const handleThemeChangeAndClose = (
     themeValue: Theme,
-    event: React.MouseEvent
+    event: React.MouseEvent,
   ) => {
     handleThemeChange(themeValue, event);
     if (isMobile) {
@@ -183,7 +183,7 @@ export function AdminUserMenu() {
 
   const currentLang = languages.find((lang) => lang.code === language);
   const currentThemeOption = themeOptions.find(
-    (option) => option.value === theme
+    (option) => option.value === theme,
   );
 
   // Opcional: atajo de teclado Ctrl+E o Cmd+E para abrir editar perfil
@@ -250,7 +250,7 @@ export function AdminUserMenu() {
             "rounded-2xl bg-background border border-primary/20",
             isMobile
               ? "w-[calc(100vw-2rem)] max-w-sm" // Better mobile width
-              : "w-80"
+              : "w-80",
           )}
           align={isMobile ? "end" : "end"} // Keep consistent alignment
           side="bottom"
@@ -260,13 +260,13 @@ export function AdminUserMenu() {
           <DropdownMenuLabel
             className={cn(
               "flex items-center gap-3",
-              isMobile ? "px-3 py-3" : "px-4 py-3"
+              isMobile ? "px-3 py-3" : "px-4 py-3",
             )}
           >
             <Avatar
               className={cn(
                 "rounded-full shadow-lg",
-                isMobile ? "h-10 w-10" : "h-13 w-13"
+                isMobile ? "h-10 w-10" : "h-13 w-13",
               )}
             >
               <AvatarImage
@@ -282,7 +282,7 @@ export function AdminUserMenu() {
               <span
                 className={cn(
                   "font-semibold",
-                  isMobile ? "text-sm" : "text-base"
+                  isMobile ? "text-sm" : "text-base",
                 )}
               >
                 José Almirante
@@ -290,7 +290,7 @@ export function AdminUserMenu() {
               <span
                 className={cn(
                   "font-normal overflow-hidden truncate",
-                  isMobile ? "text-xs max-w-40" : "text-sm max-w-55"
+                  isMobile ? "text-xs max-w-40" : "text-sm max-w-55",
                 )}
                 style={{ textOverflow: "clip" }}
                 title="emmanuel03250310@gmail.com"
@@ -314,7 +314,12 @@ export function AdminUserMenu() {
           <DropdownMenuSeparator className="bg-primary/15" />
 
           <DropdownMenuGroup>
-            <DropdownMenuItem>
+            <DropdownMenuItem
+              onSelect={(e) => {
+                e.preventDefault();
+                navigate("/ver-perfil");
+              }}
+            >
               <User className="w-4 h-4 mr-2" />
               {t("userMenu.viewProfile")}
               {!isMobile && (
@@ -378,7 +383,7 @@ export function AdminUserMenu() {
                         value={lang.code}
                         className={cn(
                           "focus:outline-none focus:ring-0",
-                          language === lang.code ? "text-primary" : ""
+                          language === lang.code ? "text-primary" : "",
                         )}
                       >
                         <img
@@ -430,7 +435,7 @@ export function AdminUserMenu() {
                       onClick={(e) => handleThemeChange(option.value, e)}
                       className={cn(
                         "cursor-pointer flex items-center gap-2 focus:outline-none focus:ring-0 relative",
-                        theme === option.value && "text-primary"
+                        theme === option.value && "text-primary",
                       )}
                     >
                       {theme === option.value && (
@@ -497,7 +502,7 @@ export function AdminUserMenu() {
                     "hover:bg-accent",
                     language === lang.code
                       ? "bg-primary/10 text-primary border border-primary/20"
-                      : "border border-transparent"
+                      : "border border-transparent",
                   )}
                 >
                   <img
@@ -529,7 +534,7 @@ export function AdminUserMenu() {
                     "hover:bg-accent",
                     theme === option.value
                       ? "bg-primary/10 text-primary border border-primary/20"
-                      : "border border-transparent"
+                      : "border border-transparent",
                   )}
                 >
                   {option.icon}

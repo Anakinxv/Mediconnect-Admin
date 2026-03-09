@@ -37,7 +37,7 @@ const getAnimationDirection = (direction: Direction) => {
 };
 
 export const ThemeToggler: React.FC<ThemeTogglerProps> = ({
-  direction = "ltr",
+  direction = "btt",
   className = "",
   size = "md",
 }) => {

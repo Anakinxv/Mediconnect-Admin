@@ -5,8 +5,9 @@ import { ChevronDown } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
-interface NavigationMenuProps
-  extends React.ComponentPropsWithoutRef<typeof NavigationMenuPrimitive.Root> {
+interface NavigationMenuProps extends React.ComponentPropsWithoutRef<
+  typeof NavigationMenuPrimitive.Root
+> {
   viewport?: boolean;
 }
 
@@ -19,7 +20,7 @@ const NavigationMenu = React.forwardRef<
     data-viewport={viewport}
     className={cn(
       "group/navigation-menu relative z-10 flex max-w-max flex-1 items-center justify-center",
-      className
+      className,
     )}
     {...props}
   >
@@ -37,7 +38,7 @@ const NavigationMenuList = React.forwardRef<
     ref={ref}
     className={cn(
       "group flex flex-1 list-none items-center justify-center gap-1",
-      className
+      className,
     )}
     {...props}
   />
@@ -48,13 +49,12 @@ const NavigationMenuItem = NavigationMenuPrimitive.Item;
 
 const navigationMenuTriggerStyle = cva(
   // Unifica padding y altura con los links principales
-  "group inline-flex h-10 items-center justify-center rounded-full px-4 py-2 text-sm font-medium transition-all duration-200 disabled:pointer-events-none disabled:opacity-50 outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+  "group inline-flex h-10 items-center justify-center rounded-full px-4 py-2 text-sm font-medium transition-all duration-200 disabled:pointer-events-none disabled:opacity-50 outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
 );
 
-interface NavigationMenuTriggerProps
-  extends React.ComponentPropsWithoutRef<
-    typeof NavigationMenuPrimitive.Trigger
-  > {
+interface NavigationMenuTriggerProps extends React.ComponentPropsWithoutRef<
+  typeof NavigationMenuPrimitive.Trigger
+> {
   active?: boolean;
   hasActiveChild?: boolean; // <-- nuevo
 }
@@ -72,9 +72,9 @@ const NavigationMenuTrigger = React.forwardRef<
       !active &&
         (hasActiveChild
           ? "hover:bg-accent/60 hover:text-accent-foreground"
-          : "hover:bg-accent/70 hover:text-primary text-primary"),
+          : "hover:bg-accent/70 hover:text-accent-foreground"),
       active && "bg-primary text-primary-foreground hover:bg-primary",
-      className
+      className,
     )}
     {...props}
   >
@@ -82,9 +82,8 @@ const NavigationMenuTrigger = React.forwardRef<
     <ChevronDown
       className={cn(
         "relative top-[1px] ml-1 h-4 w-5 transition-transform duration-200 group-data-[state=open]:rotate-180",
-        active && "text-primary-foreground"
+        active && "text-primary-foreground",
       )}
-      aria-hidden="true"
     />
   </NavigationMenuPrimitive.Trigger>
 ));
@@ -110,15 +109,16 @@ const NavigationMenuContent = React.forwardRef<
       "group-data-[viewport=false]/navigation-menu:data-[state=closed]:zoom-out-95",
       "group-data-[viewport=false]/navigation-menu:data-[state=open]:zoom-in-95",
       "overflow-hidden",
-      className
+      className,
     )}
     {...props}
   />
 ));
 NavigationMenuContent.displayName = NavigationMenuPrimitive.Content.displayName;
 
-interface NavigationMenuLinkProps
-  extends React.ComponentPropsWithoutRef<typeof NavigationMenuPrimitive.Link> {
+interface NavigationMenuLinkProps extends React.ComponentPropsWithoutRef<
+  typeof NavigationMenuPrimitive.Link
+> {
   active?: boolean;
   isChild?: boolean;
 }
@@ -136,10 +136,10 @@ const NavigationMenuLink = React.forwardRef<
       // ───── CHILD ─────
       isChild &&
         cn(
-          "rounded-lg px-3 py-2.5 text-primary/80",
-          "hover:bg-accent/60 hover:text-primary",
+          "rounded-lg px-3 py-2.5 text-secondary-foreground/80",
+          "hover:bg-accent/60 hover:text-secondary-foreground",
           "focus:bg-accent",
-          active && "bg-accent/50 text-primary"
+          active && "bg-accent/50 text-",
         ),
 
       // ───── PARENT ─────
@@ -147,11 +147,11 @@ const NavigationMenuLink = React.forwardRef<
         cn(
           "rounded-full px-4 py-2 h-10 text-primary",
           "hover:bg-accent/70",
-          !active && "hover:text-primary",
-          active && "bg-primary text-primary-foreground hover:bg-primary"
+          !active && "hover:text-secondary-foreground",
+          active && "bg-primary text-primary-foreground hover:bg-primary",
         ),
 
-      className
+      className,
     )}
     {...props}
   />
@@ -166,7 +166,7 @@ const NavigationMenuViewport = React.forwardRef<
     <NavigationMenuPrimitive.Viewport
       className={cn(
         "origin-top-center relative mt-1.5 h-[var(--radix-navigation-menu-viewport-height)] w-full overflow-hidden rounded-xl border bg-popover text-popover-foreground shadow-lg data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-90 md:w-[var(--radix-navigation-menu-viewport-width)]",
-        className
+        className,
       )}
       ref={ref}
       {...props}
@@ -184,7 +184,7 @@ const NavigationMenuIndicator = React.forwardRef<
     ref={ref}
     className={cn(
       "top-full z-[1] flex h-1.5 items-end justify-center overflow-hidden data-[state=visible]:animate-in data-[state=hidden]:animate-out data-[state=hidden]:fade-out data-[state=visible]:fade-in",
-      className
+      className,
     )}
     {...props}
   >

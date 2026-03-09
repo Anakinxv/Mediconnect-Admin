@@ -1,3 +1,5 @@
+"use client";
+
 import React, {
   useCallback,
   useContext,
@@ -16,32 +18,8 @@ import {
 } from "motion/react";
 import { createPortal } from "react-dom";
 import { cn } from "@/lib/utils";
-import { XIcon, ArrowLeft } from "lucide-react";
-import { useTranslation } from "react-i18next";
-import { Slot } from "@radix-ui/react-slot"; // <-- Agrega esta línea
-
-const dialogStack: string[] = [];
-
-function addToStack(id: string) {
-  if (!dialogStack.includes(id)) {
-    dialogStack.push(id);
-  }
-}
-
-function removeFromStack(id: string) {
-  const index = dialogStack.indexOf(id);
-  if (index > -1) {
-    dialogStack.splice(index, 1);
-  }
-}
-
-function isTopDialog(id: string) {
-  return dialogStack[dialogStack.length - 1] === id;
-}
-
-function getStackIndex(id: string) {
-  return dialogStack.indexOf(id);
-}
+import { XIcon } from "lucide-react";
+import useClickOutside from "@/lib/hooks/useClickOutside";
 
 export type MorphingDialogContextType = {
   isOpen: boolean;
@@ -57,7 +35,7 @@ function useMorphingDialog() {
   const context = useContext(MorphingDialogContext);
   if (!context) {
     throw new Error(
-      "useMorphingDialog must be used within a MorphingDialogProvider",
+      "useMorphingDialog must be used within a MorphingDialogProvider"
     );
   }
   return context;
@@ -66,46 +44,24 @@ function useMorphingDialog() {
 export type MorphingDialogProviderProps = {
   children: React.ReactNode;
   transition?: Transition;
-  onOpenChange?: (isOpen: boolean) => void;
-  open?: boolean; // <-- NUEVO
 };
 
 function MorphingDialogProvider({
   children,
   transition,
-  onOpenChange,
-  open: controlledOpen, // <-- NUEVO
 }: MorphingDialogProviderProps) {
-  const [internalIsOpen, setInternalIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
   const uniqueId = useId();
   const triggerRef = useRef<HTMLButtonElement>(null!);
-
-  // Determinar si es controlado o no
-  const isControlled = controlledOpen !== undefined;
-  const isOpen = isControlled ? controlledOpen : internalIsOpen;
-
-  // Wrapper que notifica cambios
-  const handleSetIsOpen = useCallback(
-    (value: boolean | ((prev: boolean) => boolean)) => {
-      const newValue = typeof value === "function" ? value(isOpen) : value;
-
-      if (!isControlled) {
-        setInternalIsOpen(newValue);
-      }
-
-      onOpenChange?.(newValue);
-    },
-    [onOpenChange, isControlled, isOpen],
-  );
 
   const contextValue = useMemo(
     () => ({
       isOpen,
-      setIsOpen: handleSetIsOpen,
+      setIsOpen,
       uniqueId,
       triggerRef,
     }),
-    [isOpen, handleSetIsOpen, uniqueId],
+    [isOpen, uniqueId]
   );
 
   return (
@@ -118,22 +74,11 @@ function MorphingDialogProvider({
 export type MorphingDialogProps = {
   children: React.ReactNode;
   transition?: Transition;
-  onOpenChange?: (isOpen: boolean) => void;
-  open?: boolean; // <-- NUEVO
 };
 
-function MorphingDialog({
-  children,
-  transition,
-  onOpenChange,
-  open, // <-- NUEVO
-}: MorphingDialogProps) {
+function MorphingDialog({ children, transition }: MorphingDialogProps) {
   return (
-    <MorphingDialogProvider
-      transition={transition}
-      onOpenChange={onOpenChange}
-      open={open} // <-- PASAR A PROVIDER
-    >
+    <MorphingDialogProvider>
       <MotionConfig transition={transition}>{children}</MotionConfig>
     </MorphingDialogProvider>
   );
@@ -144,7 +89,6 @@ export type MorphingDialogTriggerProps = {
   className?: string;
   style?: React.CSSProperties;
   triggerRef?: React.RefObject<HTMLButtonElement>;
-  asChild?: boolean; // <-- NUEVO
 };
 
 function MorphingDialogTrigger({
@@ -152,58 +96,37 @@ function MorphingDialogTrigger({
   className,
   style,
   triggerRef,
-  asChild = false, // <-- NUEVO
 }: MorphingDialogTriggerProps) {
   const { setIsOpen, isOpen, uniqueId } = useMorphingDialog();
-  const internalRef = useRef<HTMLButtonElement>(null);
-  const mergedRef = triggerRef || internalRef;
 
-  const handleClick = useCallback(
-    (e: React.MouseEvent) => {
-      e.stopPropagation();
-      setIsOpen(!isOpen);
-    },
-    [isOpen, setIsOpen],
-  );
+  const handleClick = useCallback(() => {
+    setIsOpen(!isOpen);
+  }, [isOpen, setIsOpen]);
 
   const handleKeyDown = useCallback(
     (event: React.KeyboardEvent) => {
       if (event.key === "Enter" || event.key === " ") {
         event.preventDefault();
-        event.stopPropagation();
         setIsOpen(!isOpen);
       }
     },
-    [isOpen, setIsOpen],
+    [isOpen, setIsOpen]
   );
 
-  const Component = asChild ? Slot : motion.button;
-
-  const commonProps = {
-    ref: mergedRef,
-    onClick: handleClick,
-    onKeyDown: handleKeyDown,
-    className: cn("relative cursor-pointer", className),
-    style,
-    "aria-haspopup": "dialog" as const,
-    "aria-expanded": isOpen,
-    "aria-controls": `motion-ui-morphing-dialog-content-${uniqueId}`,
-    "aria-label": `Open dialog ${uniqueId}`,
-  };
-
-  if (asChild) {
-    return <Component {...commonProps}>{children}</Component>;
-  }
-
   return (
-    <motion.button {...commonProps} layoutId={`dialog-${uniqueId}`}>
-      <motion.div
-        initial={{ opacity: 1 }}
-        animate={{ opacity: isOpen ? 0 : 1 }}
-        transition={{ duration: 0.1 }}
-      >
-        {children}
-      </motion.div>
+    <motion.button
+      ref={triggerRef}
+      layoutId={`dialog-${uniqueId}`}
+      className={cn("relative cursor-pointer", className)}
+      onClick={handleClick}
+      onKeyDown={handleKeyDown}
+      style={style}
+      aria-haspopup="dialog"
+      aria-expanded={isOpen}
+      aria-controls={`motion-ui-morphing-dialog-content-${uniqueId}`}
+      aria-label={`Open dialog ${uniqueId}`}
+    >
+      {children}
     </motion.button>
   );
 }
@@ -228,7 +151,7 @@ function MorphingDialogContent({
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape" && isTopDialog(uniqueId)) {
+      if (event.key === "Escape") {
         setIsOpen(false);
       }
       if (event.key === "Tab") {
@@ -253,32 +176,32 @@ function MorphingDialogContent({
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
     };
-  }, [setIsOpen, firstFocusableElement, lastFocusableElement, uniqueId]);
+  }, [setIsOpen, firstFocusableElement, lastFocusableElement]);
 
   useEffect(() => {
     if (isOpen) {
       document.body.classList.add("overflow-hidden");
       const focusableElements = containerRef.current?.querySelectorAll(
-        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
+        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
       );
       if (focusableElements && focusableElements.length > 0) {
         setFirstFocusableElement(focusableElements[0] as HTMLElement);
         setLastFocusableElement(
-          focusableElements[focusableElements.length - 1] as HTMLElement,
+          focusableElements[focusableElements.length - 1] as HTMLElement
         );
         (focusableElements[0] as HTMLElement).focus();
       }
     } else {
-      if (dialogStack.length === 0) {
-        document.body.classList.remove("overflow-hidden");
-      }
+      document.body.classList.remove("overflow-hidden");
       triggerRef.current?.focus();
     }
   }, [isOpen, triggerRef]);
 
-  const handleContentClick = useCallback((e: React.MouseEvent) => {
-    e.stopPropagation();
-  }, []);
+  useClickOutside(containerRef, () => {
+    if (isOpen) {
+      setIsOpen(false);
+    }
+  });
 
   return (
     <motion.div
@@ -290,12 +213,6 @@ function MorphingDialogContent({
       aria-modal="true"
       aria-labelledby={`motion-ui-morphing-dialog-title-${uniqueId}`}
       aria-describedby={`motion-ui-morphing-dialog-description-${uniqueId}`}
-      onClick={handleContentClick}
-      // Fade in suave del contenido del modal
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.3, delay: 0.15, ease: "easeOut" }}
     >
       {children}
     </motion.div>
@@ -309,7 +226,7 @@ export type MorphingDialogContainerProps = {
 };
 
 function MorphingDialogContainer({ children }: MorphingDialogContainerProps) {
-  const { isOpen, uniqueId, setIsOpen } = useMorphingDialog();
+  const { isOpen, uniqueId } = useMorphingDialog();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -317,53 +234,38 @@ function MorphingDialogContainer({ children }: MorphingDialogContainerProps) {
     return () => setMounted(false);
   }, []);
 
-  useEffect(() => {
-    if (isOpen) {
-      addToStack(uniqueId);
-    } else {
-      removeFromStack(uniqueId);
-    }
-    return () => {
-      removeFromStack(uniqueId);
-    };
-  }, [isOpen, uniqueId]);
-
-  const handleBackdropClick = useCallback(
-    (e: React.MouseEvent) => {
-      if (e.target === e.currentTarget && isTopDialog(uniqueId)) {
-        setIsOpen(false);
-      }
-    },
-    [setIsOpen, uniqueId],
-  );
-
   if (!mounted) return null;
-
-  const zIndex = 50 + getStackIndex(uniqueId) * 10;
 
   return createPortal(
     <AnimatePresence initial={false} mode="sync">
       {isOpen && (
         <>
+          {/* Overlay invencible - z-index máximo + pointer-events */}
           <motion.div
             key={`backdrop-${uniqueId}`}
-            className="fixed inset-0 h-full w-full bg-black/10 backdrop-blur-sm dark:bg-black/40"
-            style={{ zIndex: zIndex - 1 }}
+            className="fixed inset-0 h-full w-full bg-black/10 backdrop-blur-xs dark:bg-black/40"
+            style={{
+              zIndex: 2147483647, // z-index máximo posible
+              pointerEvents: "auto", // Asegura que capture clicks
+            }}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            onClick={handleBackdropClick}
           />
+          {/* Modal encima del overlay */}
           <div
-            className="fixed inset-0 flex items-center justify-center pointer-events-none"
-            style={{ zIndex }}
+            className="fixed inset-0 flex items-center justify-center"
+            style={{
+              zIndex: 2147483648, // Modal encima del overlay
+              pointerEvents: "none", // Permite clicks solo en el contenido
+            }}
           >
-            <div className="pointer-events-auto">{children}</div>
+            <div style={{ pointerEvents: "auto" }}>{children}</div>
           </div>
         </>
       )}
     </AnimatePresence>,
-    document.body,
+    document.body
   );
 }
 
@@ -386,11 +288,6 @@ function MorphingDialogTitle({
       className={className}
       style={style}
       layout
-      // Animación suave de entrada
-      initial={{ opacity: 0, scale: 0.95 }}
-      animate={{ opacity: 1, scale: 1 }}
-      exit={{ opacity: 0, scale: 0.95 }}
-      transition={{ duration: 0.35, delay: 0.2, ease: "easeOut" }}
     >
       {children}
     </motion.div>
@@ -415,11 +312,6 @@ function MorphingDialogSubtitle({
       layoutId={`dialog-subtitle-container-${uniqueId}`}
       className={className}
       style={style}
-      // Fade in del subtitle
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.35, delay: 0.25, ease: "easeOut" }}
     >
       {children}
     </motion.div>
@@ -445,13 +337,6 @@ function MorphingDialogDescription({
 }: MorphingDialogDescriptionProps) {
   const { uniqueId } = useMorphingDialog();
 
-  // Variantes por defecto mejoradas
-  const defaultVariants = {
-    initial: { opacity: 0, y: 15 },
-    animate: { opacity: 1, y: 0 },
-    exit: { opacity: 0, y: 15 },
-  };
-
   return (
     <motion.div
       key={`dialog-description-${uniqueId}`}
@@ -460,12 +345,11 @@ function MorphingDialogDescription({
           ? undefined
           : `dialog-description-content-${uniqueId}`
       }
-      variants={variants || defaultVariants}
+      variants={variants}
       className={className}
       initial="initial"
       animate="animate"
       exit="exit"
-      transition={{ duration: 0.4, delay: 0.3, ease: "easeOut" }}
       id={`dialog-description-${uniqueId}`}
     >
       {children}
@@ -495,15 +379,6 @@ function MorphingDialogImage({
       className={cn(className)}
       layoutId={`dialog-img-${uniqueId}`}
       style={style}
-      // Animación suave de la imagen
-      initial={{ opacity: 0, scale: 0.97 }}
-      animate={{ opacity: 1, scale: 1 }}
-      exit={{ opacity: 0, scale: 0.97 }}
-      transition={{
-        duration: 0.4,
-        delay: 0.1,
-        ease: [0.34, 1.56, 0.64, 1], // Curva de easing suave con bounce sutil
-      }}
     />
   );
 }
@@ -516,39 +391,18 @@ export type MorphingDialogCloseProps = {
     animate: Variant;
     exit: Variant;
   };
-  typeclose?: "Arrow" | "X";
 };
 
 function MorphingDialogClose({
   children,
   className,
   variants,
-  typeclose,
 }: MorphingDialogCloseProps) {
   const { setIsOpen, uniqueId } = useMorphingDialog();
-  const { t } = useTranslation("auth");
 
-  const handleClose = useCallback(
-    (e: React.MouseEvent) => {
-      e.stopPropagation();
-      setIsOpen(false);
-    },
-    [setIsOpen],
-  );
-
-  // Variantes por defecto mejoradas para el botón de cierre
-  const defaultVariants = {
-    initial: { opacity: 0, scale: 0.85 },
-    animate: { opacity: 1, scale: 1 },
-    exit: { opacity: 0, scale: 0.85 },
-  };
-
-  const backButtonContent = (
-    <div className="group flex items-center gap-2 text-primary transition-all duration-150 hover:opacity-80 active:scale-95 cursor-pointer">
-      <ArrowLeft className="text-primary transition-transform duration-200 group-hover:-translate-x-1 group-hover:scale-110" />
-      <span className="font-medium text-lg">{t("header.back")}</span>
-    </div>
-  );
+  const handleClose = useCallback(() => {
+    setIsOpen(false);
+  }, [setIsOpen]);
 
   return (
     <motion.button
@@ -560,11 +414,9 @@ function MorphingDialogClose({
       initial="initial"
       animate="animate"
       exit="exit"
-      variants={variants || defaultVariants}
-      transition={{ duration: 0.3, delay: 0.25, ease: "easeOut" }}
+      variants={variants}
     >
-      {children ||
-        (typeclose === "Arrow" ? backButtonContent : <XIcon size={24} />)}
+      {children || <XIcon size={24} />}
     </motion.button>
   );
 }

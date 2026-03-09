@@ -29,6 +29,8 @@ interface MCModalBaseProps {
   secondaryText?: string;
 }
 
+export default MCModalBase;
+
 export function MCModalBase({
   trigger,
   isOpen,

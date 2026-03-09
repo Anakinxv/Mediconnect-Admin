@@ -1,17 +1,13 @@
-import { TrendingUp } from "lucide-react";
 import { Pie, PieChart as RechartsPieChart, Cell } from "recharts";
 import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/shared/ui/card";
 import {
   ChartContainer,
-  ChartLegend,
-  ChartLegendContent,
   ChartTooltip,
   ChartTooltipContent,
   type ChartConfig,
@@ -41,7 +37,7 @@ function PieChart({
         label: d.name,
         color: d.color,
       },
-    ])
+    ]),
   );
 
   return (
