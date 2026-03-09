@@ -153,17 +153,7 @@ function AdminNavbarMobile() {
                       </Button>
                     </CollapsibleTrigger>
                     <CollapsibleContent className="pl-4 space-y-1 mt-2">
-                      <Button
-                        variant="ghost"
-                        className={`w-full justify-start text-left h-10 px-4 rounded-lg text-sm transition-all duration-200 active:scale-95 ${
-                          location.pathname === "/a"
-                            ? "bg-accent/50 text-primary"
-                            : "text-primary/80 hover:bg-accent/60 hover:text-primary focus:bg-accent"
-                        }`}
-                        onClick={() => handleNavigation("/a")}
-                      >
-                        {t("navbar.admins")}
-                      </Button>
+                      {/* Admin eliminado */}
                       <Button
                         variant="ghost"
                         className={`w-full justify-start text-left h-10 px-4 rounded-lg text-sm transition-all duration-200 active:scale-95 ${
@@ -190,7 +180,7 @@ function AdminNavbarMobile() {
                         variant="ghost"
                         className={`w-full justify-start text-left h-10 px-4 rounded-lg text-sm transition-all duration-200 active:scale-95 ${
                           location.pathname === "/usuarios/centros"
-                            ? "bg-accent/50 text-primary"
+                            ? "bg-acent/50 text-primary"
                             : "text-primary/80 hover:bg-accent/60 hover:text-primary focus:bg-accent"
                         }`}
                         onClick={() => handleNavigation("/usuarios/centros")}
@@ -200,7 +190,8 @@ function AdminNavbarMobile() {
                     </CollapsibleContent>
                   </Collapsible>
 
-                  {/* Reporte de cuentas */}
+                  {/* Reporte de cuentas eliminado */}
+                  {/* 
                   <Button
                     variant="ghost"
                     className={`w-full justify-start text-left h-12 px-4 rounded-xl transition-all duration-200 active:scale-95 ${
@@ -212,6 +203,7 @@ function AdminNavbarMobile() {
                   >
                     {t("navbar.reporteCuentas")}
                   </Button>
+                  */}
 
                   {/* Contenido Dropdown */}
                   <Collapsible

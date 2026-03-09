@@ -22,7 +22,6 @@ import {
   Languages,
   Moon,
   Settings,
-  Shield,
   LogOut,
   ChevronDown,
   Sun,
@@ -32,15 +31,7 @@ import {
 import { useNavigate } from "react-router-dom";
 
 import { useTranslation } from "react-i18next";
-import { flushSync } from "react-dom";
-import flagSpain from "@/assets/flag-spain.png";
-import flagUSA from "@/assets/flag-usa.png";
-import flagFrance from "@/assets/flag-france.png";
-import flagHaiti from "@/assets/flag-haiti.png";
-import flagItaly from "@/assets/flag-italy.png";
-import flagJapan from "@/assets/flag-japan.png";
-import flagPortugal from "@/assets/flag-portugal.png";
-import flagChina from "@/assets/flag-china.png";
+
 import { useAppStore } from "@/stores/useAppStore";
 import type { Theme } from "@/stores/useGlobalUISlice";
 import { useIsMobile } from "@/lib/hooks/useIsMobile";
@@ -52,14 +43,16 @@ const isMac =
 const cmdOrCtrl = isMac ? "⌘" : "Ctrl";
 
 const languages = [
-  { code: "es", label: "Español", flag: flagSpain },
-  { code: "en", label: "English", flag: flagUSA },
-  { code: "fr", label: "Français", flag: flagFrance },
-  { code: "ht", label: "Kreyòl", flag: flagHaiti },
-  { code: "it", label: "Italiano", flag: flagItaly },
-  { code: "ja", label: "日本語", flag: flagJapan },
-  { code: "pt", label: "Português", flag: flagPortugal },
-  { code: "zh", label: "中文", flag: flagChina },
+  {
+    code: "en",
+    label: "English",
+    flag: "https://res.cloudinary.com/dy2wtanhl/image/upload/v1771637851/flag-usa_ubewc7.png",
+  },
+  {
+    code: "es",
+    label: "Español",
+    flag: "https://res.cloudinary.com/dy2wtanhl/image/upload/v1771637850/flag-spain_u9cses.png",
+  },
 ];
 
 const themeOptions: { value: Theme; label: string; icon: React.ReactNode }[] = [
@@ -73,11 +66,11 @@ const themeOptions: { value: Theme; label: string; icon: React.ReactNode }[] = [
     label: "Oscuro",
     icon: <Moon className="w-4 h-4 text-primary" />,
   },
-  {
-    value: "system",
-    label: "Sistema",
-    icon: <Monitor className="w-4 h-4 text-primary" />,
-  },
+  // { // Elimina o comenta esta opción
+  //   value: "system",
+  //   label: "Sistema",
+  //   icon: <Monitor className="w-4 h-4 text-primary" />,
+  // },
 ];
 
 export function AdminUserMenu() {
@@ -456,13 +449,6 @@ export function AdminUserMenu() {
               {t("userMenu.settings")}
               {!isMobile && (
                 <DropdownMenuShortcut>{cmdOrCtrl}+S</DropdownMenuShortcut>
-              )}
-            </DropdownMenuItem>
-            <DropdownMenuItem>
-              <Shield className="w-4 h-4 mr-2" />
-              {t("userMenu.privacy")}
-              {!isMobile && (
-                <DropdownMenuShortcut>{cmdOrCtrl}+P</DropdownMenuShortcut>
               )}
             </DropdownMenuItem>
           </DropdownMenuGroup>

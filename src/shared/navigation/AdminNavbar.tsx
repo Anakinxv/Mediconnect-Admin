@@ -19,7 +19,6 @@ function AdminNavbar() {
   const { t } = useTranslation("dashboard");
   const theme = useAppStore((state) => state.theme);
   const usuariosRoutes = [
-    "/usuarios/admins",
     "/usuarios/pacientes",
     "/usuarios/doctores",
     "/usuarios/centros",
@@ -93,16 +92,6 @@ function AdminNavbar() {
                   <ul className="p-2 flex flex-col gap-1">
                     <li>
                       <NavigationMenuLink
-                        href="/usuarios/admins"
-                        active={location.pathname === "/usuarios/admins"}
-                        isChild
-                        className="text-sm"
-                      >
-                        {t("navbar.admins")}
-                      </NavigationMenuLink>
-                    </li>
-                    <li>
-                      <NavigationMenuLink
                         href="/usuarios/pacientes"
                         active={location.pathname === "/usuarios/pacientes"}
                         isChild
@@ -136,7 +125,8 @@ function AdminNavbar() {
               </div>
             </NavigationMenuItem>
 
-            {/* Reporte de cuentas */}
+            {/* Reporte de cuentas eliminado */}
+            {/* 
             <NavigationMenuItem>
               <NavigationMenuLink
                 href="/reporte-cuentas"
@@ -150,7 +140,7 @@ function AdminNavbar() {
                 {t("navbar.reporteCuentas")}
               </NavigationMenuLink>
             </NavigationMenuItem>
-
+            */}
             {/* Contenido Dropdown */}
             <NavigationMenuItem
               className={hasActiveChildContenido ? "has-active-child" : ""}
