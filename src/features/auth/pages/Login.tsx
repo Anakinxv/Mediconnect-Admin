@@ -1,8 +1,7 @@
 import { useRef } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
-import LoginAsideImg from "@/assets/LoginAside.png";
-import Logo from "@/assets//MediConnectLanding-green.png";
+
 import MCFormWrapper from "@/shared/components/forms/MCFormWrapper";
 import MCInput from "@/shared/components/forms/MCInput";
 import MCButton from "@/shared/components/forms/MCButton";
@@ -178,3 +177,8 @@ function Login() {
 }
 
 export default Login;
+
+const LoginAsideImg =
+  "https://res.cloudinary.com/dy2wtanhl/image/upload/v1773030468/LoginAside_vaimd0.png";
+const Logo =
+  "https://res.cloudinary.com/dy2wtanhl/image/upload/v1771637879/MediConnectLanding-green_trpgvu.png";

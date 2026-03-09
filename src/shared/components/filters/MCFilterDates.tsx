@@ -109,7 +109,7 @@ function MCFilterDates({
             <Calendar
               mode="single"
               selected={value?.[0]}
-              onSelect={(date) => {
+              onSelect={(date: Date) => {
                 if (date) {
                   const newRange: [Date, Date] = [date, value?.[1] || date];
                   onChange(newRange);
@@ -139,13 +139,13 @@ function MCFilterDates({
             <Calendar
               mode="single"
               selected={value?.[1]}
-              onSelect={(date) => {
+              onSelect={(date: Date) => {
                 if (date) {
                   const newRange: [Date, Date] = [value?.[0] || date, date];
                   onChange(newRange);
                 }
               }}
-              disabled={(date) => (value?.[0] ? date < value[0] : false)}
+              disabled={(date: Date) => (value?.[0] ? date < value[0] : false)}
               initialFocus
             />
           </PopoverContent>

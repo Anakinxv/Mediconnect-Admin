@@ -1,5 +1,3 @@
-import LogoImg from "@/assets/MediConnectLanding-green.png";
-import LogoImgdDark from "@/assets/MediConnectLanding.png";
 import AdminUserMenu from "./AdminUserMenu";
 import {
   NavigationMenu,
@@ -37,7 +35,6 @@ function AdminNavbar() {
   const isUsuariosActive = usuariosRoutes.includes(location.pathname);
   const isContenidoActive = contenidoRoutes.includes(location.pathname);
   const isDashboardActive = location.pathname === "/dashboard";
-  const isReporteActive = location.pathname === "/reporte-cuentas";
 
   const hasActiveChildUsuarios = usuariosRoutes.includes(location.pathname);
   const hasActiveChildContenido = contenidoRoutes.includes(location.pathname);
@@ -47,7 +44,11 @@ function AdminNavbar() {
       {/* Logo */}
       <div className="flex items-center gap-2 sm:gap-3">
         <img
-          src={theme === "dark" ? LogoImgdDark : LogoImg}
+          src={
+            theme === "dark"
+              ? "https://res.cloudinary.com/dy2wtanhl/image/upload/v1771637881/MediConnectLanding_ryopcw.png"
+              : "https://res.cloudinary.com/dy2wtanhl/image/upload/v1771637879/MediConnectLanding-green_trpgvu.png"
+          }
           alt="MediConnect"
           className="h-12 sm:h-16 lg:h-18 w-auto"
         />

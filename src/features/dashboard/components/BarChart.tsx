@@ -19,7 +19,7 @@ interface BarChartProps {
   config?: ChartConfig;
 }
 
-function BarChart({ dataType = "Year", data = [], config }: BarChartProps) {
+function BarChart({ data = [], config }: BarChartProps) {
   const autoConfig: ChartConfig = {
     consultas: {
       label: "Consultas",
