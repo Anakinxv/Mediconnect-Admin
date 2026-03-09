@@ -5,17 +5,10 @@ import PieChart from "../components/PieChart";
 import BarChart from "../components/BarChart";
 import AreaChart from "../components/AreaChart";
 import TopSpecialtiesChart from "../components/TopSpecialtiesChart";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from "@/shared/ui/select"; // Cambiado el import aquí
+import MCFilterSelect from "@/shared/components/filters/MCFilterSelect";
 import { useState } from "react";
-
+import { motion } from "framer-motion";
+import { fadeInUp } from "@/lib/animations/commonAnimations";
 type DataType = "All" | "Year" | "Monthly" | "ThreeMonths" | "Weekly";
 interface ChartRow {
   label: string;
@@ -26,6 +19,7 @@ interface UsersChartRow {
   label: string;
   users: number;
 }
+
 function AdminDashboardPage() {
   const { t } = useTranslation("dashboard");
 
@@ -213,10 +207,10 @@ function AdminDashboardPage() {
   const pieData1 = [
     { name: "Consulta médica", value: 35, color: "hsl(var(--chart-1))" },
     { name: "Sesión física", value: 25, color: "hsl(var(--chart-2))" },
-    { name: "Seguimiento", value: 20, color: "hsl(var(--chart-3))" }, // Changed from chart-2
+    { name: "Seguimiento", value: 20, color: "hsl(var(--chart-3))" },
     { name: "Rehabilitación", value: 10, color: "hsl(var(--chart-4))" },
-    { name: "Presión arterial", value: 6, color: "hsl(var(--chart-5))" }, // Changed from chart-6
-    { name: "Ejercicios guiados", value: 4, color: "hsl(var(--chart-6))" }, // Changed from chart-5
+    { name: "Presión arterial", value: 6, color: "hsl(var(--chart-5))" },
+    { name: "Ejercicios guiados", value: 4, color: "hsl(var(--chart-6))" },
   ];
 
   const pieData2 = [
@@ -244,11 +238,21 @@ function AdminDashboardPage() {
 
   const [consultationsFilter, setConsultationsFilter] =
     useState<DataType>("Year");
-  // Estado para el filtro de usuarios
   const [usersFilter, setUsersFilter] = useState<DataType>("Year");
 
+  const filterOptions = [
+    { label: t("filters.week"), value: "Weekly" },
+    { label: t("filters.month"), value: "Monthly" },
+    { label: t("filters.threeMonths"), value: "ThreeMonths" },
+    { label: t("filters.year"), value: "Year" },
+    { label: t("filters.all"), value: "All" },
+  ];
+
   return (
-    <div className="grid grid-cols-1 md:grid-cols-4 gap-4 h-full">
+    <motion.div
+      {...fadeInUp}
+      className="grid grid-cols-1 md:grid-cols-4 gap-4 h-full"
+    >
       {/* Main content: 3/4 columns */}
       <div className="col-span-1 md:col-span-3 flex flex-col gap-4">
         {/* KPIs */}
@@ -264,64 +268,44 @@ function AdminDashboardPage() {
           ))}
         </div>
 
-        {/* Filtros y BarChart */}
-        <div className="bg-card rounded-3xl  p-4 flex flex-col shadow-sm gap-4 w-full">
+        {/* Consultations BarChart */}
+        <div className="bg-background rounded-3xl p-4 flex flex-col shadow-sm gap-4 w-full">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <h2 className="text-lg font-semibold">
               {t("charts.consultationsTitle")}
             </h2>
-            <Select
-              value={consultationsFilter}
-              onValueChange={(value) =>
-                setConsultationsFilter(value as DataType)
-              }
-            >
-              <SelectTrigger className="w-40">
-                <SelectValue placeholder={t("filters.filterBy")} />
-              </SelectTrigger>
-              <SelectContent position="popper" side="bottom">
-                <SelectGroup>
-                  <SelectLabel>{t("filters.filterBy")}</SelectLabel>
-                  <SelectItem value="Weekly">{t("filters.week")}</SelectItem>
-                  <SelectItem value="Monthly">{t("filters.month")}</SelectItem>
-                  <SelectItem value="ThreeMonths">
-                    {t("filters.threeMonths")}
-                  </SelectItem>
-                  <SelectItem value="Year">{t("filters.year")}</SelectItem>
-                  <SelectItem value="All">{t("filters.all")}</SelectItem>
-                </SelectGroup>
-              </SelectContent>
-            </Select>
+            <div className="w-full sm:w-40">
+              <MCFilterSelect
+                name="consultationsFilter"
+                options={filterOptions}
+                value={consultationsFilter}
+                onChange={(value) => setConsultationsFilter(value as DataType)}
+                placeholder={t("filters.filterBy")}
+                size="small"
+                className="mb-0"
+              />
+            </div>
           </div>
           <div className="h-[350px] w-full">
             <BarChart data={consultationsData[consultationsFilter]} />
           </div>
         </div>
 
-        {/* AreaChart */}
-        <div className="bg-card rounded-3xl  p-4 flex flex-col gap-4 w-full shadow-sm">
+        {/* Users AreaChart */}
+        <div className="bg-background rounded-3xl p-4 flex flex-col gap-4 w-full shadow-sm">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <h2 className="text-lg font-semibold">{t("charts.usersTitle")}</h2>
-            <Select
-              value={usersFilter}
-              onValueChange={(value) => setUsersFilter(value as DataType)}
-            >
-              <SelectTrigger className="w-40">
-                <SelectValue placeholder={t("filters.filterBy")} />
-              </SelectTrigger>
-              <SelectContent position="popper" side="bottom">
-                <SelectGroup>
-                  <SelectLabel>{t("filters.filterBy")}</SelectLabel>
-                  <SelectItem value="Weekly">{t("filters.week")}</SelectItem>
-                  <SelectItem value="Monthly">{t("filters.month")}</SelectItem>
-                  <SelectItem value="ThreeMonths">
-                    {t("filters.threeMonths")}
-                  </SelectItem>
-                  <SelectItem value="Year">{t("filters.year")}</SelectItem>
-                  <SelectItem value="All">{t("filters.all")}</SelectItem>
-                </SelectGroup>
-              </SelectContent>
-            </Select>
+            <div className="w-full sm:w-40">
+              <MCFilterSelect
+                name="usersFilter"
+                options={filterOptions}
+                value={usersFilter}
+                onChange={(value) => setUsersFilter(value as DataType)}
+                placeholder={t("filters.filterBy")}
+                size="small"
+                className="mb-0"
+              />
+            </div>
           </div>
           <div className="h-[350px] w-full">
             <AreaChart
@@ -358,7 +342,7 @@ function AdminDashboardPage() {
           />
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }
 

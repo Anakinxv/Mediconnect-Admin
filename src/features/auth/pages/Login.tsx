@@ -11,8 +11,9 @@ import { useAppStore } from "@/stores/useAppStore";
 import { type LoginSchemaType } from "@/schema/AuthSchema";
 import { useIsMobile } from "@/lib/hooks/useIsMobile";
 import { useTranslation } from "react-i18next";
-import LanguageDropDown from "../components/LanguageDropDown";
 import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
+import { fadeInUp } from "@/lib/animations/commonAnimations";
 
 function Login() {
   const { t } = useTranslation("auth");
@@ -20,7 +21,8 @@ function Login() {
   const loginCredentials = useAppStore((state) => state.loginCredentials);
   const setLoginCredentials = useAppStore((state) => state.setLoginCredentials);
   const navigate = useNavigate();
-
+  const setLanguage = useAppStore((state) => state.setLanguage);
+  const language = useAppStore((state) => state.language);
   const containerRef = useRef<HTMLElement>(null);
   const logoRef = useRef<HTMLImageElement>(null);
   const headingRef = useRef<HTMLDivElement>(null);
@@ -33,22 +35,22 @@ function Login() {
       tl.fromTo(
         logoRef.current,
         { y: 30, opacity: 0 },
-        { y: 0, opacity: 1, duration: 0.5, ease: "power2.out" }
+        { y: 0, opacity: 1, duration: 0.5, ease: "power2.out" },
       )
         .fromTo(
           headingRef.current,
           { y: 30, opacity: 0 },
           { y: 0, opacity: 1, duration: 0.5, ease: "power2.out" },
-          "-=0.3"
+          "-=0.3",
         )
         .fromTo(
           formRef.current,
           { y: 30, opacity: 0 },
           { y: 0, opacity: 1, duration: 0.5, ease: "power2.out" },
-          "-=0.3"
+          "-=0.3",
         );
     },
-    { scope: containerRef }
+    { scope: containerRef },
   );
 
   const handleSubmit = (data: LoginSchemaType) => {
@@ -61,7 +63,39 @@ function Login() {
   };
 
   return (
-    <section className="max-h-screen h-screen overflow-hidden w-full bg-white">
+    <section className="max-h-screen h-screen overflow-hidden w-full bg-white relative">
+      {/* Toggle de idiomas en la esquina superior izquierda */}
+      <div className="absolute top-6 left-6 z-30">
+        <div className="flex gap-2  rounded-lg p-2 ">
+          <button
+            onClick={() => setLanguage("en")}
+            className={`p-2 rounded transition-opacity ${
+              language !== "en" ? "opacity-50" : ""
+            }`}
+            aria-label="English"
+          >
+            <img
+              src="https://res.cloudinary.com/dy2wtanhl/image/upload/v1771637851/flag-usa_ubewc7.png"
+              alt="English"
+              className="w-6 h-6"
+            />
+          </button>
+          <button
+            onClick={() => setLanguage("es")}
+            className={`p-2 rounded transition-opacity ${
+              language !== "es" ? "opacity-50" : ""
+            }`}
+            aria-label="Español"
+          >
+            <img
+              src="https://res.cloudinary.com/dy2wtanhl/image/upload/v1771637850/flag-spain_u9cses.png"
+              alt="Español"
+              className="w-6 h-6"
+            />
+          </button>
+        </div>
+      </div>
+
       <div
         className={`h-full w-full ${
           isMobile ? "" : "grid grid-cols-[33%_67%]"
@@ -73,18 +107,27 @@ function Login() {
             isMobile ? "min-h-screen justify-center items-center" : ""
           }`}
         >
-          <div className="flex flex-col justify-center items-center gap-1 mb-2">
-            <img ref={logoRef} src={Logo} alt="Logo" className="w-32 mb-6" />
-            <div ref={headingRef}>
+          <motion.div
+            {...fadeInUp}
+            className="flex flex-col justify-center items-center gap-1 mb-2"
+          >
+            <motion.img
+              ref={logoRef}
+              src={Logo}
+              alt="Logo"
+              className="w-32 mb-6"
+              {...fadeInUp}
+            />
+            <motion.div ref={headingRef} {...fadeInUp}>
               <h1 className="text-4xl font-bold text-center">
                 {t("login.welcome")}
               </h1>
               <p className="text-xl text-center text-muted-foreground">
                 {t("login.subtitle")}
               </p>
-            </div>
-          </div>
-          <div ref={formRef} className="w-full max-w-sm">
+            </motion.div>
+          </motion.div>
+          <motion.div ref={formRef} className="w-full max-w-sm" {...fadeInUp}>
             <MCFormWrapper
               schema={LoginSchema(t)}
               onSubmit={handleSubmit}
@@ -106,7 +149,7 @@ function Login() {
                 name="password"
                 placeholder={t("login.passwordPlaceholder")}
               />
-              <div className="flex justify-end w-full mb-4">
+              <div className="flex justify-end w-full mb-4" hidden>
                 <a
                   className="text-base text-primary font-semibold hover:underline"
                   onClick={() => navigate("/auth/forgot-password")}
@@ -114,12 +157,11 @@ function Login() {
                   {t("login.forgot")}
                 </a>
               </div>
-              <MCButton type="submit" className="w-full" variant="primary">
+              <MCButton type="submit" className="w-full mt-2" variant="primary">
                 {t("login.submit")}
               </MCButton>
-              <LanguageDropDown />
             </MCFormWrapper>
-          </div>
+          </motion.div>
         </main>
         {!isMobile && (
           <aside className="h-full w-full">
