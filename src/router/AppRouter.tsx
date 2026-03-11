@@ -10,6 +10,8 @@ import PasswordSuccessPage from "@/features/auth/pages/PasswordSuccessPage";
 import AdminDashboardPage from "@/features/dashboard/pages/AdminDashboardPage";
 import PatientsPage from "@/features/users/pages/PatientsPage";
 import DarkLayout from "@/layout/DarkLayout";
+import DoctorsPage from "@/features/users/pages/DoctorsPage";
+import CenterPage from "@/features/users/pages/CenterPage";
 function AppRouter() {
   return (
     <BrowserRouter>
@@ -31,6 +33,8 @@ function AppRouter() {
           <Route element={<DashboardLayout />}>
             <Route path={ROUTES.DASHBOARD} element={<AdminDashboardPage />} />
             <Route path={ROUTES.PATIENTS} element={<PatientsPage />} />
+            <Route path={ROUTES.DOCTORS} element={<DoctorsPage />} />
+            <Route path={ROUTES.CENTERS} element={<CenterPage />} />
           </Route>
         </Route>
       </Router>

@@ -1,13 +1,15 @@
 import React from "react";
-
+import { motion } from "framer-motion";
+import { fadeInUp } from "@/lib/animations/commonAnimations";
 import MCMetricCard from "@/shared/components/MCMetricCard";
+import { useIsMobile } from "@/lib/hooks/useIsMobile";
 
 interface Metric {
   title: string;
   value: string | number;
   icon?: React.ReactNode;
   trend?: number;
-  subtitle?: string; // Agrega esta línea
+  subtitle?: string;
 }
 
 interface MCTablesLayoutsProps {
@@ -15,8 +17,13 @@ interface MCTablesLayoutsProps {
   metrics?: Metric[];
   searchComponent?: React.ReactNode;
   filterComponent?: React.ReactNode;
-  tableComponent: React.ReactNode;
+  tableComponent?: React.ReactNode;
   toogleView?: React.ReactNode;
+  filtersInlineWithTitle?: boolean;
+  pdfGeneratorComponent?: React.ReactNode;
+  actionPlusComponent?: React.ReactNode;
+  isDashboard?: boolean;
+  titleSize?: string;
 }
 
 function MCTablesLayouts({
@@ -26,41 +33,98 @@ function MCTablesLayouts({
   filterComponent,
   tableComponent,
   toogleView,
+  pdfGeneratorComponent,
+  actionPlusComponent,
+  isDashboard = false,
+  titleSize,
 }: MCTablesLayoutsProps) {
-  return (
-    <div className="flex flex-col gap-10 bg-background p-6 rounded-4xl mt-4 h-full">
-      {/* Título y Botón de Acción */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <h1 className="text-3xl font-bold text-foreground">{title}</h1>
-      </div>
+  const isMobile = useIsMobile();
 
-      {/* Métricas Cards */}
-      {metrics.length > 0 && (
-        <div className="flex gap-4  ">
-          {metrics.map((metric, index) => (
-            <MCMetricCard
-              key={index}
-              title={metric.title}
-              value={metric.value}
-              icon={metric.icon}
-              subtitle={metric.subtitle} // Agrega esta línea
-            />
-          ))}
+  return (
+    <div
+      className={`bg-background ${!isDashboard ? "min-h-screen" : "h-fit"} flex gap-4 rounded-4xl ${
+        isDashboard ? "p-10" : isMobile ? "py-6 px-6" : "p-10"
+      }`}
+    >
+      <motion.main {...fadeInUp} className="w-full flex flex-col gap-6">
+        {/* Header con título y acciones */}
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <h1
+            className={`${
+              titleSize
+                ? titleSize
+                : isDashboard
+                  ? isMobile
+                    ? "text-2xl"
+                    : "text-3xl"
+                  : isMobile
+                    ? "text-2xl"
+                    : "text-3xl"
+            } font-bold text-foreground`}
+          >
+            {title}
+          </h1>
+
+          {/* Acciones */}
+          {(searchComponent ||
+            filterComponent ||
+            toogleView ||
+            pdfGeneratorComponent ||
+            actionPlusComponent) && (
+            <div
+              className={`flex ${
+                isMobile ? "flex-col w-full" : "flex-row"
+              } gap-3 items-stretch sm:items-center justify-end ${
+                isMobile ? "w-full" : "max-w-lg"
+              }`}
+            >
+              {searchComponent}
+              <div
+                className={`flex ${
+                  isMobile
+                    ? "grid grid-cols-2 grid-rows-2 gap-3 items-center w-full"
+                    : "flex-row gap-3"
+                }`}
+              >
+                {filterComponent}
+                {toogleView}
+                {pdfGeneratorComponent}
+                {actionPlusComponent}
+              </div>
+            </div>
+          )}
         </div>
-      )}
-      <div className="flex w-full justify-end items-end mt-4">
-        {/* Búsqueda y Filtros */}
-        {(searchComponent || filterComponent || toogleView) && (
-          <div className="flex flex-col sm:flex-row gap-4 items-center justify-end max-w-lg">
-            {searchComponent}
-            {filterComponent}
-            {toogleView}
+
+        {/* Métricas Cards */}
+        {metrics.length > 0 && (
+          <div
+            className={`grid gap-4 ${
+              isMobile
+                ? "grid-cols-2"
+                : metrics.length === 4
+                  ? "grid-cols-2 sm:grid-cols-2 lg:grid-cols-4"
+                  : metrics.length === 3
+                    ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
+                    : metrics.length === 2
+                      ? "grid-cols-1 sm:grid-cols-2"
+                      : "grid-cols-1"
+            }`}
+          >
+            {metrics.map((metric, index) => (
+              <MCMetricCard
+                key={index}
+                title={metric.title}
+                value={metric.value}
+                icon={metric.icon}
+                subtitle={metric.subtitle}
+              />
+            ))}
           </div>
         )}
-      </div>
 
-      {/* Tabla */}
-      <div className="bg-card rounded-xl overflow-hidden">{tableComponent}</div>
+        {/* Tabla/Contenido */}
+        <div>{tableComponent}</div>
+      </motion.main>
     </div>
   );
 }

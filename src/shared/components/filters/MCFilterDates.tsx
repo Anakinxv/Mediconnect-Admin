@@ -108,6 +108,7 @@ function MCFilterDates({
           >
             <Calendar
               mode="single"
+              required={true}
               selected={value?.[0]}
               onSelect={(date: Date) => {
                 if (date) {
@@ -138,6 +139,7 @@ function MCFilterDates({
           >
             <Calendar
               mode="single"
+              required={true}
               selected={value?.[1]}
               onSelect={(date: Date) => {
                 if (date) {

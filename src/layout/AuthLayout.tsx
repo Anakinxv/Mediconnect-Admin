@@ -21,7 +21,7 @@ function AuthLayout() {
   return (
     <div>
       <div>
-        <AuthHeader />
+        <AuthHeader id={""} children={undefined} />
       </div>
       <div className="h-full flex justify-center items-center mt-20">
         <Outlet />

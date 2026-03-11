@@ -7,4 +7,6 @@ export const ROUTES = {
 
   DASHBOARD: "/dashboard",
   PATIENTS: "/usuarios/pacientes",
+  DOCTORS: "/usuarios/doctores",
+  CENTERS: "/usuarios/centros",
 };

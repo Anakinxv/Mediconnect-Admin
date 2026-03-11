@@ -14,13 +14,18 @@ import {
   EmptyContent,
 } from "@/shared/ui/empty";
 import MCButton from "@/shared/components/forms/MCButton";
-import { UserCheck, UserX, Clock, Filter, Users } from "lucide-react";
-import PatientsTable, {
-  type Patient,
-} from "../components/patient/PatientsTable";
-import PatientFilters from "../components/filters/Patientfilters";
+import {
+  UserCheck,
+  UserX,
+  Clock,
+  Filter,
+  Users,
+  Stethoscope,
+} from "lucide-react";
+import DoctorsTable, { type Doctor } from "../components/doctor/DoctorsTable";
+import DoctorFilters from "../components/filters/DoctorFilters";
 
-const mockPatients: Patient[] = [
+const mockDoctors: Doctor[] = [
   {
     id: "1",
     name: "Francisco Madera",
@@ -29,6 +34,7 @@ const mockPatients: Patient[] = [
     registrationDate: "11/10/2025",
     phone: "809-432-9532",
     email: "francisco.m@correo.com",
+    specialty: "Cardiología",
   },
   {
     id: "2",
@@ -38,6 +44,7 @@ const mockPatients: Patient[] = [
     registrationDate: "11/10/2025",
     phone: "809-432-9532",
     email: "emmanuelj@correo.com",
+    specialty: "Neurología",
   },
   {
     id: "3",
@@ -47,6 +54,7 @@ const mockPatients: Patient[] = [
     registrationDate: "11/10/2025",
     phone: "809-432-9532",
     email: "derekh@correo.com",
+    specialty: "Dermatología",
   },
   {
     id: "4",
@@ -56,6 +64,7 @@ const mockPatients: Patient[] = [
     registrationDate: "11/10/2025",
     phone: "809-432-9532",
     email: "jacksonm@correo.com",
+    specialty: "Pediatría",
   },
   {
     id: "5",
@@ -65,6 +74,7 @@ const mockPatients: Patient[] = [
     registrationDate: "11/10/2025",
     phone: "809-432-9532",
     email: "gabrielam@correo.com",
+    specialty: "Ginecología",
   },
   {
     id: "6",
@@ -74,17 +84,19 @@ const mockPatients: Patient[] = [
     registrationDate: "11/10/2025",
     phone: "809-432-9532",
     email: "juanolivo@correo.com",
+    specialty: "Traumatología",
   },
 ];
 
-function PatientsPage() {
-  const { t } = useTranslation("patient");
+function DoctorsPage() {
+  const { t } = useTranslation("doctor");
   const isMobile = useIsMobile();
 
   // Estados
   const [searchTerm, setSearchTerm] = useState("");
   const [filters, setFilters] = useState({
     status: "all",
+    specialty: "all",
     dateRange: undefined as [Date, Date] | undefined,
   });
 
@@ -100,6 +112,7 @@ function PatientsPage() {
   const clearFilters = () => {
     setFilters({
       status: "all",
+      specialty: "all",
       dateRange: undefined,
     });
   };
@@ -129,24 +142,30 @@ function PatientsPage() {
     return registrationDate >= startDate && registrationDate <= endDate;
   };
 
-  // Filtrar pacientes
-  const filteredPatients = useMemo(() => {
-    return mockPatients.filter((patient) => {
+  // Filtrar doctores
+  const filteredDoctors = useMemo(() => {
+    return mockDoctors.filter((doctor) => {
       // Búsqueda por texto
       const matchesSearch =
-        patient.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        patient.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        patient.phone.includes(searchTerm);
+        doctor.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        doctor.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        doctor.phone.includes(searchTerm) ||
+        doctor.specialty.toLowerCase().includes(searchTerm.toLowerCase());
 
       // Filtros
       const matchesStatus =
-        filters.status === "all" || patient.status === filters.status;
+        filters.status === "all" || doctor.status === filters.status;
+      const matchesSpecialty =
+        filters.specialty === "all" ||
+        doctor.specialty
+          .toLowerCase()
+          .includes(filters.specialty.toLowerCase());
       const matchesDate = matchesCustomDateRange(
-        patient.registrationDate,
+        doctor.registrationDate,
         filters.dateRange,
       );
 
-      return matchesSearch && matchesStatus && matchesDate;
+      return matchesSearch && matchesStatus && matchesSpecialty && matchesDate;
     });
   }, [searchTerm, filters]);
 
@@ -154,7 +173,7 @@ function PatientsPage() {
   const searchComponent = (
     <div className="w-full sm:w-auto sm:min-w-[200px] lg:min-w-[250px]">
       <MCFilterInput
-        placeholder={t("patients.searchPlaceholder")}
+        placeholder={t("doctors.searchPlaceholder")}
         value={searchTerm}
         onChange={setSearchTerm}
       />
@@ -167,22 +186,23 @@ function PatientsPage() {
       onClick={async () => {
         await MCGeneratePDF({
           columns: [
-            { title: t("patients.table.patient"), key: "name" },
-            { title: t("patients.table.status"), key: "status" },
+            { title: t("doctors.table.doctor"), key: "name" },
+            { title: t("doctors.table.specialty"), key: "specialty" },
+            { title: t("doctors.table.status"), key: "status" },
             {
-              title: t("patients.table.registrationDate"),
+              title: t("doctors.table.registrationDate"),
               key: "registrationDate",
             },
-            { title: t("patients.table.phone"), key: "phone" },
-            { title: t("patients.table.email"), key: "email" },
+            { title: t("doctors.table.phone"), key: "phone" },
+            { title: t("doctors.table.email"), key: "email" },
           ],
-          data: filteredPatients.map((patient) => ({
-            ...patient,
-            status: t(`patients.status.${patient.status}`),
+          data: filteredDoctors.map((doctor) => ({
+            ...doctor,
+            status: t(`doctors.status.${doctor.status}`),
           })),
-          fileName: "pacientes",
-          title: t("patients.title"),
-          subtitle: t("patients.subtitle"),
+          fileName: "doctores",
+          title: t("doctors.title"),
+          subtitle: t("doctors.subtitle"),
         });
       }}
     />
@@ -194,7 +214,7 @@ function PatientsPage() {
       activeFiltersCount={activeFiltersCount}
       onClearFilters={clearFilters}
     >
-      <PatientFilters
+      <DoctorFilters
         filters={filters}
         onFiltersChange={(newFilters) =>
           setFilters((prev) => ({ ...prev, ...newFilters }))
@@ -212,14 +232,14 @@ function PatientsPage() {
             {activeFiltersCount > 0 ? (
               <Filter className={isMobile ? "w-5 h-5" : "w-7 h-7"} />
             ) : (
-              <Users className={isMobile ? "w-5 h-5" : "w-7 h-7"} />
+              <Stethoscope className={isMobile ? "w-5 h-5" : "w-7 h-7"} />
             )}
             <EmptyTitle
               className={`font-semibold ${isMobile ? "text-lg" : "text-xl"}`}
             >
               {activeFiltersCount > 0
-                ? t("patients.empty.noResults")
-                : t("patients.empty.noPatients")}
+                ? t("doctors.empty.noResults")
+                : t("doctors.empty.noDoctors")}
             </EmptyTitle>
           </span>
           <EmptyDescription
@@ -228,8 +248,8 @@ function PatientsPage() {
             }`}
           >
             {activeFiltersCount > 0
-              ? t("patients.empty.noResultsDescription")
-              : t("patients.empty.noPatientsDescription")}
+              ? t("doctors.empty.noResultsDescription")
+              : t("doctors.empty.noDoctorsDescription")}
           </EmptyDescription>
         </div>
       </EmptyHeader>
@@ -242,7 +262,7 @@ function PatientsPage() {
               className={isMobile ? "px-4 py-2" : "px-6 py-2"}
               size="sm"
             >
-              {t("patients.empty.clearFilters")}
+              {t("doctors.empty.clearFilters")}
             </MCButton>
           )}
         </div>
@@ -252,46 +272,46 @@ function PatientsPage() {
 
   // Tabla con empty state
   const tableComponent =
-    filteredPatients.length === 0 ? (
+    filteredDoctors.length === 0 ? (
       emptyState
     ) : (
-      <PatientsTable
-        patients={filteredPatients}
-        onViewDetails={(patient) => console.log("Ver detalles:", patient)}
+      <DoctorsTable
+        doctors={filteredDoctors}
+        onViewDetails={(doctor) => console.log("Ver detalles:", doctor)}
       />
     );
 
   // Métricas
   const metrics = [
     {
-      title: t("patients.metrics.total"),
-      value: mockPatients.filter((p) => p.status === "approved").length,
+      title: t("doctors.metrics.total"),
+      value: mockDoctors.filter((d) => d.status === "approved").length,
       icon: <UserCheck size={30} />,
-      subtitle: t("patients.metrics.totalSubtitle"),
+      subtitle: t("doctors.metrics.totalSubtitle"),
     },
     {
-      title: t("patients.metrics.pending"),
-      value: mockPatients.filter((p) => p.status === "pending").length,
+      title: t("doctors.metrics.pending"),
+      value: mockDoctors.filter((d) => d.status === "pending").length,
       icon: <Clock size={30} />,
-      subtitle: t("patients.metrics.pendingSubtitle"),
+      subtitle: t("doctors.metrics.pendingSubtitle"),
     },
     {
-      title: t("patients.metrics.rejected"),
-      value: mockPatients.filter((p) => p.status === "rejected").length,
+      title: t("doctors.metrics.rejected"),
+      value: mockDoctors.filter((d) => d.status === "rejected").length,
       icon: <UserX size={30} />,
-      subtitle: t("patients.metrics.rejectedSubtitle"),
+      subtitle: t("doctors.metrics.rejectedSubtitle"),
     },
     {
-      title: t("patients.metrics.approved"),
-      value: mockPatients.filter((p) => p.status === "approved").length,
-      icon: <Users size={30} />,
-      subtitle: t("patients.metrics.approvedSubtitle"),
+      title: t("doctors.metrics.approved"),
+      value: mockDoctors.filter((d) => d.status === "approved").length,
+      icon: <Stethoscope size={30} />,
+      subtitle: t("doctors.metrics.approvedSubtitle"),
     },
   ];
 
   return (
     <MCTablesLayouts
-      title={t("patients.title")}
+      title={t("doctors.title")}
       metrics={metrics}
       tableComponent={tableComponent}
       searchComponent={searchComponent}
@@ -301,4 +321,4 @@ function PatientsPage() {
   );
 }
 
-export default PatientsPage;
+export default DoctorsPage;

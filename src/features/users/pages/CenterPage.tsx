@@ -14,77 +14,89 @@ import {
   EmptyContent,
 } from "@/shared/ui/empty";
 import MCButton from "@/shared/components/forms/MCButton";
-import { UserCheck, UserX, Clock, Filter, Users } from "lucide-react";
-import PatientsTable, {
-  type Patient,
-} from "../components/patient/PatientsTable";
-import PatientFilters from "../components/filters/Patientfilters";
+import {
+  Building,
+  CheckCircle,
+  XCircle,
+  Clock,
+  Filter,
+  Building2,
+} from "lucide-react";
+import CentersTable, { type Center } from "../components/center/CentersTable";
+import CenterFilters from "../components/filters/CenterFilters";
 
-const mockPatients: Patient[] = [
+const mockCenters: Center[] = [
   {
     id: "1",
-    name: "Francisco Madera",
-    image: "https://randomuser.me/api/portraits/men/1.jpg",
-    status: "pending",
+    name: "Hospital General Santo Domingo",
+    image: "https://images.unsplash.com/photo-1586773860418-d37222d8fce3?w=400",
+    status: "approved",
     registrationDate: "11/10/2025",
     phone: "809-432-9532",
-    email: "francisco.m@correo.com",
+    email: "info@hospitalgeneralsd.com",
+    centerType: "Hospital",
   },
   {
     id: "2",
-    name: "Emmanuel Jimenez",
-    image: "https://randomuser.me/api/portraits/men/2.jpg",
+    name: "Clínica Dr. Raúl Báez Duarte",
+    image: "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=400",
     status: "pending",
     registrationDate: "11/10/2025",
-    phone: "809-432-9532",
-    email: "emmanuelj@correo.com",
+    phone: "809-432-9533",
+    email: "contacto@clinicabaez.com",
+    centerType: "Clínica",
   },
   {
     id: "3",
-    name: "Derek Hernandez",
-    image: "https://randomuser.me/api/portraits/men/3.jpg",
+    name: "Centro Médico Plaza de la Salud",
+    image: "https://images.unsplash.com/photo-1551601651-2a8555f1a136?w=400",
     status: "approved",
     registrationDate: "11/10/2025",
-    phone: "809-432-9532",
-    email: "derekh@correo.com",
+    phone: "809-432-9534",
+    email: "info@plazadelasalud.com",
+    centerType: "Centro Especializado",
   },
   {
     id: "4",
-    name: "Jackson Martinez",
-    image: "https://randomuser.me/api/portraits/men/4.jpg",
+    name: "Laboratorio Referencia",
+    image: "https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=400",
     status: "approved",
     registrationDate: "11/10/2025",
-    phone: "809-432-9532",
-    email: "jacksonm@correo.com",
+    phone: "809-432-9535",
+    email: "resultados@labreferencia.com",
+    centerType: "Laboratorio",
   },
   {
     id: "5",
-    name: "Gabriela Melo",
-    image: "https://randomuser.me/api/portraits/women/5.jpg",
+    name: "Centro de Diagnóstico Avanzado",
+    image: "https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=400",
     status: "pending",
     registrationDate: "11/10/2025",
-    phone: "809-432-9532",
-    email: "gabrielam@correo.com",
+    phone: "809-432-9536",
+    email: "citas@diagnosticoavanzado.com",
+    centerType: "Centro de Diagnóstico",
   },
   {
     id: "6",
-    name: "Juan Olivo",
-    image: "https://randomuser.me/api/portraits/men/6.jpg",
+    name: "Farmacia Nacional Central",
+    image: "https://images.unsplash.com/photo-1631549916768-4119b2e5f926?w=400",
     status: "rejected",
     registrationDate: "11/10/2025",
-    phone: "809-432-9532",
-    email: "juanolivo@correo.com",
+    phone: "809-432-9537",
+    email: "info@farmacianacional.com",
+    centerType: "Farmacia",
   },
 ];
 
-function PatientsPage() {
-  const { t } = useTranslation("patient");
+function CenterPage() {
+  const { t } = useTranslation("center");
   const isMobile = useIsMobile();
 
   // Estados
   const [searchTerm, setSearchTerm] = useState("");
   const [filters, setFilters] = useState({
     status: "all",
+    centerType: "all",
     dateRange: undefined as [Date, Date] | undefined,
   });
 
@@ -100,6 +112,7 @@ function PatientsPage() {
   const clearFilters = () => {
     setFilters({
       status: "all",
+      centerType: "all",
       dateRange: undefined,
     });
   };
@@ -129,24 +142,30 @@ function PatientsPage() {
     return registrationDate >= startDate && registrationDate <= endDate;
   };
 
-  // Filtrar pacientes
-  const filteredPatients = useMemo(() => {
-    return mockPatients.filter((patient) => {
+  // Filtrar centros
+  const filteredCenters = useMemo(() => {
+    return mockCenters.filter((center) => {
       // Búsqueda por texto
       const matchesSearch =
-        patient.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        patient.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        patient.phone.includes(searchTerm);
+        center.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        center.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        center.phone.includes(searchTerm) ||
+        center.centerType.toLowerCase().includes(searchTerm.toLowerCase());
 
       // Filtros
       const matchesStatus =
-        filters.status === "all" || patient.status === filters.status;
+        filters.status === "all" || center.status === filters.status;
+      const matchesCenterType =
+        filters.centerType === "all" ||
+        center.centerType
+          .toLowerCase()
+          .includes(filters.centerType.toLowerCase());
       const matchesDate = matchesCustomDateRange(
-        patient.registrationDate,
+        center.registrationDate,
         filters.dateRange,
       );
 
-      return matchesSearch && matchesStatus && matchesDate;
+      return matchesSearch && matchesStatus && matchesCenterType && matchesDate;
     });
   }, [searchTerm, filters]);
 
@@ -154,7 +173,7 @@ function PatientsPage() {
   const searchComponent = (
     <div className="w-full sm:w-auto sm:min-w-[200px] lg:min-w-[250px]">
       <MCFilterInput
-        placeholder={t("patients.searchPlaceholder")}
+        placeholder={t("centers.searchPlaceholder")}
         value={searchTerm}
         onChange={setSearchTerm}
       />
@@ -167,22 +186,23 @@ function PatientsPage() {
       onClick={async () => {
         await MCGeneratePDF({
           columns: [
-            { title: t("patients.table.patient"), key: "name" },
-            { title: t("patients.table.status"), key: "status" },
+            { title: t("centers.table.center"), key: "name" },
+            { title: t("centers.table.centerType"), key: "centerType" },
+            { title: t("centers.table.status"), key: "status" },
             {
-              title: t("patients.table.registrationDate"),
+              title: t("centers.table.registrationDate"),
               key: "registrationDate",
             },
-            { title: t("patients.table.phone"), key: "phone" },
-            { title: t("patients.table.email"), key: "email" },
+            { title: t("centers.table.phone"), key: "phone" },
+            { title: t("centers.table.email"), key: "email" },
           ],
-          data: filteredPatients.map((patient) => ({
-            ...patient,
-            status: t(`patients.status.${patient.status}`),
+          data: filteredCenters.map((center) => ({
+            ...center,
+            status: t(`centers.status.${center.status}`),
           })),
-          fileName: "pacientes",
-          title: t("patients.title"),
-          subtitle: t("patients.subtitle"),
+          fileName: "centros-medicos",
+          title: t("centers.title"),
+          subtitle: t("centers.subtitle"),
         });
       }}
     />
@@ -194,7 +214,7 @@ function PatientsPage() {
       activeFiltersCount={activeFiltersCount}
       onClearFilters={clearFilters}
     >
-      <PatientFilters
+      <CenterFilters
         filters={filters}
         onFiltersChange={(newFilters) =>
           setFilters((prev) => ({ ...prev, ...newFilters }))
@@ -212,14 +232,14 @@ function PatientsPage() {
             {activeFiltersCount > 0 ? (
               <Filter className={isMobile ? "w-5 h-5" : "w-7 h-7"} />
             ) : (
-              <Users className={isMobile ? "w-5 h-5" : "w-7 h-7"} />
+              <Building2 className={isMobile ? "w-5 h-5" : "w-7 h-7"} />
             )}
             <EmptyTitle
               className={`font-semibold ${isMobile ? "text-lg" : "text-xl"}`}
             >
               {activeFiltersCount > 0
-                ? t("patients.empty.noResults")
-                : t("patients.empty.noPatients")}
+                ? t("centers.empty.noResults")
+                : t("centers.empty.noCenters")}
             </EmptyTitle>
           </span>
           <EmptyDescription
@@ -228,8 +248,8 @@ function PatientsPage() {
             }`}
           >
             {activeFiltersCount > 0
-              ? t("patients.empty.noResultsDescription")
-              : t("patients.empty.noPatientsDescription")}
+              ? t("centers.empty.noResultsDescription")
+              : t("centers.empty.noCentersDescription")}
           </EmptyDescription>
         </div>
       </EmptyHeader>
@@ -242,7 +262,7 @@ function PatientsPage() {
               className={isMobile ? "px-4 py-2" : "px-6 py-2"}
               size="sm"
             >
-              {t("patients.empty.clearFilters")}
+              {t("centers.empty.clearFilters")}
             </MCButton>
           )}
         </div>
@@ -252,46 +272,46 @@ function PatientsPage() {
 
   // Tabla con empty state
   const tableComponent =
-    filteredPatients.length === 0 ? (
+    filteredCenters.length === 0 ? (
       emptyState
     ) : (
-      <PatientsTable
-        patients={filteredPatients}
-        onViewDetails={(patient) => console.log("Ver detalles:", patient)}
+      <CentersTable
+        centers={filteredCenters}
+        onViewDetails={(center) => console.log("Ver detalles:", center)}
       />
     );
 
   // Métricas
   const metrics = [
     {
-      title: t("patients.metrics.total"),
-      value: mockPatients.filter((p) => p.status === "approved").length,
-      icon: <UserCheck size={30} />,
-      subtitle: t("patients.metrics.totalSubtitle"),
+      title: t("centers.metrics.total"),
+      value: mockCenters.filter((c) => c.status === "approved").length,
+      icon: <CheckCircle size={30} />,
+      subtitle: t("centers.metrics.totalSubtitle"),
     },
     {
-      title: t("patients.metrics.pending"),
-      value: mockPatients.filter((p) => p.status === "pending").length,
+      title: t("centers.metrics.pending"),
+      value: mockCenters.filter((c) => c.status === "pending").length,
       icon: <Clock size={30} />,
-      subtitle: t("patients.metrics.pendingSubtitle"),
+      subtitle: t("centers.metrics.pendingSubtitle"),
     },
     {
-      title: t("patients.metrics.rejected"),
-      value: mockPatients.filter((p) => p.status === "rejected").length,
-      icon: <UserX size={30} />,
-      subtitle: t("patients.metrics.rejectedSubtitle"),
+      title: t("centers.metrics.rejected"),
+      value: mockCenters.filter((c) => c.status === "rejected").length,
+      icon: <XCircle size={30} />,
+      subtitle: t("centers.metrics.rejectedSubtitle"),
     },
     {
-      title: t("patients.metrics.approved"),
-      value: mockPatients.filter((p) => p.status === "approved").length,
-      icon: <Users size={30} />,
-      subtitle: t("patients.metrics.approvedSubtitle"),
+      title: t("centers.metrics.approved"),
+      value: mockCenters.filter((c) => c.status === "approved").length,
+      icon: <Building size={30} />,
+      subtitle: t("centers.metrics.approvedSubtitle"),
     },
   ];
 
   return (
     <MCTablesLayouts
-      title={t("patients.title")}
+      title={t("centers.title")}
       metrics={metrics}
       tableComponent={tableComponent}
       searchComponent={searchComponent}
@@ -301,4 +321,4 @@ function PatientsPage() {
   );
 }
 
-export default PatientsPage;
+export default CenterPage;
