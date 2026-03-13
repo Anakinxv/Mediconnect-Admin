@@ -24,6 +24,8 @@ import {
 } from "lucide-react";
 import DoctorsTable, { type Doctor } from "../components/doctor/DoctorsTable";
 import DoctorFilters from "../components/filters/DoctorFilters";
+import { useNavigate } from "react-router-dom";
+import { ROUTES } from "@/router/routes";
 
 const mockDoctors: Doctor[] = [
   {
@@ -91,6 +93,7 @@ const mockDoctors: Doctor[] = [
 function DoctorsPage() {
   const { t } = useTranslation("doctor");
   const isMobile = useIsMobile();
+  const navigate = useNavigate();
 
   // Estados
   const [searchTerm, setSearchTerm] = useState("");
@@ -277,7 +280,9 @@ function DoctorsPage() {
     ) : (
       <DoctorsTable
         doctors={filteredDoctors}
-        onViewDetails={(doctor) => console.log("Ver detalles:", doctor)}
+        onViewDetails={(doctor) =>
+          navigate(ROUTES.DOCTOR_DETAILS.replace(":doctorId", doctor.id))
+        }
       />
     );
 

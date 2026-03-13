@@ -2,5 +2,567 @@
   "validation": {
     "show": "Show",
     "hide": "Hide"
+  },
+  "navbar": {
+    "home": "Home",
+    "appointments": "Appointments",
+    "patients": "Patients",
+    "patientsAppointments": "Appointments",
+    "doctors": "Doctors",
+    "calendar": "Calendar",
+    "services": "Services",
+    "schedule": "Schedule",
+    "noMenuRole": "No menu for role",
+    "noRole": "Unknown"
+  },
+  "userMenu": {
+    "spanish": "Spanish",
+    "english": "English",
+    "themeLight": "Light",
+    "themeDark": "Dark",
+    "themeSystem": "System",
+    "changeLanguage": "Change language",
+    "changeTheme": "Change theme",
+    "viewProfile": "View profile",
+    "editProfile": "Edit profile",
+    "verificationDocs": "Verification documents",
+    "requests": "Requests",
+    "settings": "Settings",
+    "privacy": "Privacy",
+    "logout": "Logout",
+    "doctor": "Doctor",
+    "patient": "Patient",
+    "center": "Medical Center",
+    "admin": "Administrator"
+  },
+  "clinicCard": {
+    "connect": "Connect",
+    "connected": "Connected",
+    "pending": "Request pending",
+    "viewProfile": "View profile",
+    "insurances": "Insurances:",
+    "acceptedInsurances": "Accepted insurances:",
+    "andOtherLanguages": "and {{count}} other languages...",
+    "andMore": "and {{count}} more...",
+    "reviews": "reviews"
+  },
+  "doctorCard": {
+    "availability": "Availability:",
+    "availableAvailability": "Available slots:",
+    "noSlots": "No",
+    "appointments": "Appointments",
+    "more": "More",
+    "pending": "Request pending"
+  },
+  "search": {
+    "providerType": "Provider type",
+    "specialty": "Specialty",
+    "modality": "Modality",
+    "gender": "Gender",
+    "languages": "Languages",
+    "schedule": "Schedule",
+    "rating": "Rating",
+    "yearsOfExperience": "Years of experience",
+    "selectedProviders": "{{count}} of {{max}} providers selected for comparison",
+    "compare": "Compare",
+    "providersFound": "{{count}} providers found",
+    "noProvidersFound": "No providers found",
+    "noResultsDescription": "No results for the selected filters. Try changing the filters or search.",
+    "viewList": "View List",
+    "viewMap": "View Map"
+  },
+  "validation": {
+    "emailRequired": "Email is required",
+    "emailInvalid": "Email is invalid",
+    "passwordMin": "Password must be at least 8 characters",
+    "passwordRequired": "Password is required",
+    "confirmPasswordRequired": "You must confirm the password",
+    "passwordsDoNotMatch": "Passwords do not match",
+    "otpLength": "OTP code must be 4 digits",
+    "otpNumeric": "OTP code must be numeric",
+    "visibilityRequired": "Profile visibility is required",
+    "privacyConsentRequired": "You must accept the privacy policy",
+    "invalidPatientMessageConfig": "Invalid patient message configuration",
+    "invalidCenterMessageConfig": "Invalid center message configuration",
+    "invalidDoctorMessageConfig": "Invalid doctor message configuration",
+    "show": "Show",
+    "hide": "Hide",
+    "firstNameRequired": "First name is required",
+    "lastNameRequired": "Last name is required",
+    "genderRequired": "Gender is required",
+    "nationalityRequired": "Nationality is required",
+    "identificationNumberRequired": "Identification number is required",
+    "identificationNumberInvalid": "Invalid identification number",
+    "phoneRequired": "Phone is required",
+    "addressRequired": "Address is required",
+    "primarySpecialtyRequired": "Primary specialty is required",
+    "medicalLicenseRequired": "Medical license is required",
+    "centerNameRequired": "Center name is required",
+    "centerDescriptionRequired": "Center description is required",
+    "urlInvalid": "Invalid URL",
+    "provinceRequired": "Province is required",
+    "municipalityRequired": "Municipality is required",
+    "rncRequired": "RNC is required",
+    "rncInvalid": "Invalid RNC",
+    "centerTypeRequired": "Center type is required"
+  },
+  "account": {
+    "title": "Settings",
+    "description": "Manage your account information, update your personal data, or configure deactivation options.",
+    "changeEmail": "Change Email",
+    "changePassword": "Change Password",
+    "deleteAccount": "Delete Account"
+  },
+  "privacy": {
+    "title": "Privacy and Security",
+    "description": "Manage your information, privacy, and security to make MediConnect work better for you",
+    "profilePrivacy": "Profile Privacy",
+    "messagesPrivacy": "Messages and Communication",
+    "blockedUsers": "Blocked Users"
+  },
+  "verifyIdentity": {
+    "title": "Verify your identity",
+    "description": "For security, we need to verify it's you. Enter your current password.",
+    "passwordLabel": "Password",
+    "passwordPlaceholder": "Enter your password",
+    "verifyButton": "Verify",
+    "successMessage": "Identity verified without implementing real logic."
+  },
+  "changeEmail": {
+    "title": "Change email address",
+    "description": "Enter your new email address. We'll send you a verification code.",
+    "newEmailLabel": "New email address",
+    "newEmailPlaceholder": "Enter your new email address",
+    "changeButton": "Change email"
+  },
+  "verifyEmail": {
+    "title": "Verify your new email",
+    "instructions": "Enter the verification code we sent to",
+    "tip": "Didn't receive the code?:Check your spam folder or wait a few minutes.",
+    "resend": "Resend code",
+    "verify": "Verify",
+    "currentOtp": "Current OTP:"
+  },
+  "changePassword": {
+    "title": "Change password",
+    "description": "Enter your current password and the new password you want to set.",
+    "currentPasswordLabel": "Current password",
+    "currentPasswordPlaceholder": "Enter your current password",
+    "newPasswordLabel": "New password",
+    "newPasswordPlaceholder": "Enter your new password",
+    "changeButton": "Change password"
+  },
+  "deleteAccount": {
+    "title": "Delete account",
+    "description": "This action will permanently delete your MediConnect account. Once confirmed, you won't be able to recover it or access your information again.",
+    "whatHappens": "What will happen?",
+    "consequence1": "Your profile and all your personal data will be deleted from the system.",
+    "consequence2": "You won't be able to log in or recover your account.",
+    "consequence3": "All your appointments and connections with doctors or health centers will be cancelled.",
+    "consequence4": "Associated messages and records will be irreversibly deleted, following MediConnect's privacy policies.",
+    "cancelButton": "Cancel",
+    "deleteButton": "Delete Account"
+  },
+  "profileVisibility": {
+    "title": "Professional profile privacy",
+    "description": "Control who can see your profile and professional information",
+    "visibilityLabel": "Visibility",
+    "public": "Public",
+    "relationshipsOnly": "Relationships only",
+    "private": "Private"
+  },
+  "messagesPrivacy": {
+    "title": "Message privacy settings",
+    "description": "Choose who can send you messages based on your account type.",
+    "patientMessagesLabel": "Messages to Patients",
+    "centerMessagesLabel": "Messages to Centers",
+    "doctorMessagesLabel": "Messages to Doctors",
+    "withAppointment": "With appointment",
+    "previous": "Previous",
+    "none": "None",
+    "connectionEstablished": "Connection established",
+    "anyCenter": "Any center",
+    "any": "Any",
+    "affiliated": "Affiliated",
+    "myDoctors": "My doctors"
+  },
+  "blockedUsers": {
+    "title": "Blocked users",
+    "description": "Manage blocked accounts. Blocked users cannot send you messages or view your profile.",
+    "searchPlaceholder": "Search blocked users",
+    "noUsers": "No blocked users.",
+    "blocked": "Blocked",
+    "unblockButton": "Unblock",
+    "patient": "Patient",
+    "doctor": "Doctor",
+    "center": "Center"
+  },
+  "verification": {
+    "progress": "Progress",
+    "progressPercentage": "{{percentage}}%",
+    "stepsCompleted": "{{current}} of {{total}} steps completed",
+    "personalIdentification": "Personal Identification",
+    "centerInformation": "Center Information",
+    "documentss": "Documents",
+    "status": {
+      "rejected": "Rejected",
+      "pending": "Under review",
+      "approved": "Approved"
+    },
+    "messages": {
+      "rejected": "Your information was rejected. Please review the details.",
+      "pending": "Your document is under review. We'll notify you when there's a response.",
+      "approved": "Your information was approved!"
+    },
+    "identification": {
+      "title": "Personal Identification",
+      "centerTitle": "Center Information",
+      "description": "Information submitted for verification",
+      "centerName": "Center Name",
+      "centerType": "Center Type",
+      "description_field": "Description",
+      "email": "Email",
+      "phone": "Phone",
+      "website": "Website",
+      "rnc": "RNC",
+      "firstName": "First Name(s)",
+      "lastName": "Last Name(s)",
+      "gender": "Gender",
+      "nationality": "Nationality",
+      "identificationNumber": "Identification Number",
+      "physicalAddress": "Physical Address",
+      "primarySpecialty": "Primary Specialty",
+      "secondarySpecialty": "Secondary Specialty",
+      "medicalLicense": "Medical License",
+      "resubmitPersonal": "Resubmit Personal Data",
+      "resubmitCenter": "Resubmit Center Information",
+      "cancel": "Cancel",
+      "submit": "Submit"
+    },
+    "documents": {
+      "title": "Documents",
+      "doctorTitle": "Doctor Documents",
+      "centerTitle": "Center Documents",
+      "description": "Documents submitted for verification",
+      "identityDocument": "Identity Document",
+      "academicTitle": "Academic Title",
+      "additionalCertifications": "Additional Certifications",
+      "healthCertificate": "Health Certificate",
+      "loading": "Loading documents..."
+    },
+    "documentsSection": {
+      "filesUploaded": "{{count}} of {{max}} certifications uploaded",
+      "uploadedOn": "Uploaded on {{date}}",
+      "resubmit": "Resubmit",
+      "addMore": "Add more",
+      "addCertifications": "Add certifications ({{current}}/{{max}})",
+      "resubmitCertifications": "Resubmit certifications ({{current}}/{{max}})",
+      "send": "Send",
+      "sendMultiple": "Send ({{count}})",
+      "changeFile": "Change file",
+      "viewDocument": "View document",
+      "removeFile": "Remove file",
+      "warningCannotChange": "Once you send {{fileType}}, you won't be able to change them.",
+      "warningCannotChangeSingle": "the file",
+      "warningCannotChangeMultiple": "the files",
+      "actionsAvailable": "Available actions",
+      "actionsDescription": "You can submit all current certifications for review, or cancel everything and start over.",
+      "submitAllForReview": "Submit All for Review",
+      "cancelAll": "Cancel All"
+    },
+    "forms": {
+      "centerName": "Center Name",
+      "centerNamePlaceholder": "Enter the center name",
+      "description": "Description",
+      "descriptionPlaceholder": "Describe the medical center",
+      "website": "Website (Optional)",
+      "websitePlaceholder": "https://www.example.com",
+      "rnc": "RNC",
+      "rncPlaceholder": "000000000",
+      "centerType": "Center Type",
+      "centerTypePlaceholder": "Select type",
+      "phone": "Phone",
+      "phonePlaceholder": "(809) 000-0000",
+      "email": "Email",
+      "emailPlaceholder": "example@email.com",
+      "selectLocation": "Select Location",
+      "address": "Address",
+      "addressPlaceholder": "Address will be auto-filled when selecting on the map",
+      "province": "Province",
+      "provincePlaceholder": "Will be auto-filled",
+      "municipality": "Municipality",
+      "municipalityPlaceholder": "Will be auto-filled",
+      "latitude": "Latitude",
+      "longitude": "Longitude",
+      "firstName": "First Name(s)",
+      "firstNamePlaceholder": "Enter your first name",
+      "lastName": "Last Name(s)",
+      "lastNamePlaceholder": "Enter your last name",
+      "gender": "Gender",
+      "genderPlaceholder": "Select your gender",
+      "nationality": "Nationality",
+      "nationalityPlaceholder": "Select nationality",
+      "identificationNumber": "Identification Number",
+      "identificationNumberPlaceholder": "000-0000000-0",
+      "physicalAddress": "Physical Address",
+      "physicalAddressPlaceholder": "Enter your complete address",
+      "primarySpecialty": "Primary Specialty",
+      "primarySpecialtyPlaceholder": "Select specialty",
+      "secondarySpecialty": "Secondary Specialty (Optional)",
+      "medicalLicense": "Medical License",
+      "medicalLicensePlaceholder": "EX00000",
+      "centerTypes": {
+        "hospital": "Hospital",
+        "clinic": "Clinic",
+        "office": "Office",
+        "diagnostic": "Diagnostic Center"
+      },
+      "genderOptions": {
+        "male": "Male",
+        "female": "Female",
+        "other": "Other"
+      },
+      "nationalities": {
+        "dominican": "Dominican",
+        "american": "American",
+        "mexican": "Mexican",
+        "colombian": "Colombian",
+        "venezuelan": "Venezuelan",
+        "other": "Other"
+      },
+      "specialties": {
+        "cardiology": "Cardiology",
+        "internal_medicine": "Internal Medicine",
+        "pediatrics": "Pediatrics",
+        "gynecology": "Gynecology"
+      }
+    }
+  },
+  "ui": {
+    "toggle": {
+      "table": "Table",
+      "cards": "Cards",
+      "tableView": "Table view",
+      "cardView": "Card view"
+    },
+    "buttons": {
+      "generatePDF": "Generate PDF",
+      "generatingPDF": "Generating PDF..."
+    },
+    "errors": {
+      "pdfGenerationError": "Error generating PDF"
+    },
+    "select": {
+      "placeholder": "Select...",
+      "search": "Search...",
+      "noResults": "No results found",
+      "selected": "selected"
+    },
+    "filters": {
+      "all": "All"
+    },
+    "pagination": {
+      "previous": "Previous",
+      "next": "Next",
+      "goToPrevious": "Go to previous page",
+      "goToNext": "Go to next page",
+      "morePages": "More pages",
+      "navigation": "pagination"
+    },
+    "dates": {
+      "startDate": "Start date",
+      "endDate": "End date"
+    }
+  },
+  "pdf": {
+    "date": "Date",
+    "time": "Time",
+    "reportIntro": "This report was generated on",
+    "tableInfo": "The requested information is presented below.",
+    "confidential": "Confidential Document - Internal Use",
+    "page": "Page",
+    "of": "of",
+    "generatedBy": "Generated by MediConnect",
+    "total": "Total",
+    "success": "PDF Generated",
+    "successMessage": "The PDF document has been generated successfully",
+    "error": "Error",
+    "errorMessage": "Error generating PDF. Please try again."
+  },
+  "confirmationScreen": {
+    "title": "Teleconsultation Confirmation",
+    "subtitle": "You are about to start a video call",
+    "joinButton": "Join teleconsultation"
+  },
+  "consultationInfo": {
+    "title": "Consultation Information",
+    "additionalSections": "Additional Sections",
+    "pastAppointments": "Past Appointments",
+    "lastConsultation": "Last Consultation",
+    "patientDetail": "Patient Detail",
+    "appointmentDetails": "Appointment Details"
+  },
+  "ratingModal": {
+    "title": "Rate your consultation",
+    "rateExperience": "Rate your experience",
+    "leaveComment": "Leave a comment (Optional)",
+    "commentPlaceholder": "Write your comment here...",
+    "submit": "Submit rating",
+    "skip": "Skip for now",
+    "specialty": "Internal Medicine Specialist"
+  },
+  "videoCall": {
+    "fullscreen": "Fullscreen",
+    "exitFullscreen": "Exit fullscreen",
+    "mute": "Mute",
+    "unmute": "Unmute",
+    "cameraOff": "Turn camera off",
+    "cameraOn": "Turn camera on",
+    "endCall": "End call"
+  },
+  "chatHeader": {
+    "typing": "typing...",
+    "online": "online",
+    "offline": "offline",
+    "doctorName": "Dr. Cristiano Ronaldo"
+  },
+  "chatInput": {
+    "recording": "Recording...",
+    "sendImage": "Send image",
+    "sendFile": "Send document",
+    "placeholder": "Type a message..."
+  },
+  "chatPanel": {
+    "noMessages": "No messages yet",
+    "selectConversation": "Select a conversation to get started",
+    "back": "Back",
+    "menu": "Menu",
+    "conversations": "Conversations",
+    "searchChats": "Search Chats",
+    "noConversationsFound": "No conversations found",
+    "microphoneError": "Could not access microphone. Check permissions."
+  },
+  "filePreview": {
+    "imageAlt": "Image preview",
+    "fileAlt": "File preview"
+  },
+  "fileViewer": {
+    "imageTitle": "Image preview",
+    "fileTitle": "File preview",
+    "pdfNotSupported": "PDF cannot be displayed in this browser",
+    "openInNewTab": "Open in new tab",
+    "download": "Download",
+    "previewNotAvailable": "Preview is not available for this file type",
+    "downloadFile": "Download file",
+    "close": "Close"
+  },
+  "messageBubble": {
+    "imageAlt": "Sent image",
+    "download": "Download"
+  },
+  "prescription": {
+    "diagnosisTittle": "Diagnosis",
+    "diagnosisTittlePlaceholder": "Diagnosis title",
+    "diagnosisDescription": "Diagnosis description",
+    "diagnosisDescriptionPlaceholder": "Describe the diagnosis here...",
+    "documents": "Attached documents",
+    "uploadHintMobile": "Tap to upload",
+    "uploadHintDesktop": "Drag or click",
+    "uploadSubHint": "Images and documents",
+    "maxFiles": "Maximum {{count}} files",
+    "uploadedFiles": "{{count}} file uploaded",
+    "uploadedFiles_plural": "{{count}} files uploaded",
+    "removeFile": "Remove file",
+    "submit": "Save prescription"
+  },
+  "richText": {
+    "bold": "Bold (Ctrl+B)",
+    "italic": "Italic (Ctrl+I)",
+    "underline": "Underline (Ctrl+U)",
+    "heading": "Heading",
+    "bulletList": "Bullet List",
+    "orderedList": "Numbered List",
+    "undo": "Undo (Ctrl+Z)",
+    "redo": "Redo (Ctrl+Shift+Z)"
+  },
+  "calendar": {
+    "today": "Today",
+    "month": "Month",
+    "week": "Week",
+    "day": "Day",
+    "list": "List",
+    "weekOf": "Week of",
+    "appointmentsScheduled": "{{count}} appointment scheduled",
+    "appointmentsScheduled_plural": "{{count}} appointments scheduled",
+    "noUpcomingAppointments": "No upcoming appointments",
+    "upcomingAppointmentsDescription": "Your upcoming appointments will appear here",
+    "available": "Available",
+    "more": "+{{count}} more",
+    "appointment": "appointment",
+    "appointments": "appointments",
+    "noAppointmentSelected": "No appointment selected",
+    "selectAppointmentDescription": "Select an appointment to view details",
+    "appointmentDetails": "Appointment Details",
+    "contact": "Contact",
+    "reason": "Reason",
+    "weekDays": {
+      "sun": "Sun",
+      "mon": "Mon",
+      "tue": "Tue",
+      "wed": "Wed",
+      "thu": "Thu",
+      "fri": "Fri",
+      "sat": "Sat"
+    },
+    "status": {
+      "scheduled": "Scheduled",
+      "pending": "Pending",
+      "in_progress": "In Progress",
+      "completed": "Completed",
+      "cancelled": "Cancelled"
+    },
+    "modality": {
+      "virtual": "Virtual",
+      "presencial": "In-Person"
+    }
+  },
+  "appointments": {
+    "join": "Join",
+    "viewDetails": "View Details",
+    "viewAppointment": "View Appointment",
+    "reschedule": "Reschedule",
+    "cancel": "Cancel",
+    "accept": "Accept",
+    "reject": "Reject",
+    "continueConsultation": "Continue Consultation",
+    "joinTeleconsult": "Join Teleconsultation",
+    "markCompleted": "Mark as Completed",
+    "openChat": "Open chat"
+  },
+  "requests": {
+    "title": "Manage Requests",
+    "description": "Manage your connection requests with {{type}}",
+    "doctorConnections": "other doctors and medical centers",
+    "centerConnections": "doctors",
+    "received": "Received",
+    "sent": "Sent",
+    "connect": "Connect",
+    "reject": "Reject",
+    "withdraw": "Withdraw",
+    "noReceivedTitle": "No received requests",
+    "noReceivedDescription": "You have not received any connection requests yet.",
+    "noSentTitle": "No sent requests",
+    "noSentDescription": "You have not sent any connection requests yet."
+  },
+  "doctors": {
+    "profile": "View profile",
+    "schedule": "Schedule appointment",
+    "history": "History",
+    "lastAppointment": "Last appointment",
+    "experience": "{{years}} year of experience",
+    "experience_plural": "{{years}} years of experience",
+    "noExperience": "Experience not specified",
+    "acceptedInsurances": "Accepted insurances",
+    "noLanguages": "Languages not specified"
   }
 }

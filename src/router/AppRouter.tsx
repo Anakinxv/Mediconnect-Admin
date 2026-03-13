@@ -18,6 +18,8 @@ import ChangeEmailPage from "@/features/account/settings/pages/ChangeEmailPage";
 import VerifyNewEmailPage from "@/features/account/settings/pages/VerifyNewEmailPage";
 import ChangePasswordPage from "@/features/account/settings/pages/ChangePasswordPage";
 import DeleteAccountPage from "@/features/account/settings/pages/DeleteAccountPage";
+import ViewDetailsPage from "@/features/users/pages/ViewDetailsPage";
+
 function AppRouter() {
   return (
     <BrowserRouter>
@@ -41,7 +43,17 @@ function AppRouter() {
             <Route path={ROUTES.PATIENTS} element={<PatientsPage />} />
             <Route path={ROUTES.DOCTORS} element={<DoctorsPage />} />
             <Route path={ROUTES.CENTERS} element={<CenterPage />} />
-            <Route path="/settings" element={<AccountOverviewPage />} />
+
+            <Route
+              path={ROUTES.DOCTOR_DETAILS}
+              element={<ViewDetailsPage isDoctor />}
+            />
+            <Route
+              path={ROUTES.CENTER_DETAILS}
+              element={<ViewDetailsPage isDoctor={false} />}
+            />
+
+            <Route path={ROUTES.SETTINGS} element={<AccountOverviewPage />} />
             <Route
               path={ROUTES.SETTINGS_VERIFY_IDENTITY}
               element={<VerifyIdentityPage />}

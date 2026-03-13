@@ -1,13 +1,26 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+:root {
+  --vh: 100vh;
+}
+@supports (height: 100dvh) {
+  :root {
+    --vh: 100dvh;
+  }
+}
+iframe {
+  border: none; /* quita borde */
+  outline: none; /* quita línea azul/gris */
+  background: transparent; /* fondo transparente */
+}
+
 /* ⚡ LA MAGIA: usa data-theme en lugar de .dark */
 @custom-variant dark ([data-theme="dark"] &);
 
 * {
   font-family: "Manrope", sans-serif;
 }
-
 @theme inline {
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
@@ -41,7 +54,7 @@
 
   /* Light Mode Colors */
   --background: #ffffff;
-  --foreground: #0b2c12;
+  --foreground: rgb(11, 44, 18);
   --primary: #0b2c12;
   --primary-foreground: #ffffff;
   --secondary: #8bb1ca;
@@ -59,7 +72,9 @@
   /* Nuevos colores */
   --bg-secondary: #fbfbfb;
   --bg-btn-secondary: #f7f7f7;
-  --destructive: #ffebe9;
+  --destructive: #dc2626; /* Texto / iconos */
+  --destructive-hover: rgba(220, 38, 38, 0.1); /* Hover background */
+  --destructive-focus: rgba(220, 38, 38, 0.15); /* Focus background */
 
   /* Pie Chart Colors (Light Mode) */
   --chart-1: 120 86% 7%; /* #0B2C12 */
@@ -88,7 +103,9 @@
   --border: #1e1e1e;
   --input: #1e1e1e;
   --ring: #8bb1ca;
-  --destructive: #3b0a0a;
+  --destructive: #dc2626; /* Texto / iconos */
+  --destructive-hover: rgba(220, 38, 38, 0.1); /* Hover background */
+  --destructive-focus: rgba(220, 38, 38, 0.15); /* Focus background */
 
   /* Nuevos colores para dark */
   --bg-secondary: #0a0a0a;
@@ -117,4 +134,110 @@
 ::view-transition-new(root) {
   animation: none;
   mix-blend-mode: normal;
+}
+/* Oculta la scrollbar en navegadores modernos */
+.scrollbar-hide {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE y Edge */
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none; /* Chrome, Safari y Opera */
+}
+
+/* Oculta la scrollbar pero permite el scroll */
+.custom-iframe-scroll {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE 10+ */
+}
+.custom-iframe-scroll::-webkit-scrollbar {
+  display: none; /* Chrome/Safari/Webkit */
+}
+
+/* Estilos para la scrollbar del iframe */
+.custom-iframe-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+  background: transparent;
+  border-radius: 1rem;
+  overflow: hidden;
+}
+.custom-iframe-scroll::-webkit-scrollbar {
+  width: 8px;
+  background: transparent;
+}
+.custom-iframe-scroll::-webkit-scrollbar-thumb {
+  background: transparent;
+}
+
+.mapboxgl-popup-content {
+  padding: 0;
+  background: transparent;
+  box-shadow: none;
+  background-color: transparent;
+}
+
+/* Oculta el fondo y el borde del popup de Mapbox */
+.mapboxgl-popup-content {
+  background: none !important;
+  width: fit-content !important;
+
+  box-shadow: none !important;
+  border: none !important;
+  padding: 0 !important;
+  border-radius: 20px !important;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    font-family: "Inter", sans-serif;
+  }
+}
+
+/* Chrome, Safari, Edge */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+/* Chrome, Edge, Safari */
+input[type="time"]::-webkit-calendar-picker-indicator {
+  opacity: 0;
+  cursor: pointer;
+}
+
+/* Quitar estilos internos raros */
+input[type="time"]::-webkit-datetime-edit {
+  padding: 0;
+}
+
+input[type="time"]::-webkit-datetime-edit-fields-wrapper {
+  background: transparent;
+}
+
+input[type="time"]::-webkit-datetime-edit-text {
+  color: inherit;
+}
+
+/* Firefox */
+input[type="time"] {
+  appearance: none;
+  -moz-appearance: textfield;
+}
+
+.mapboxgl-map,
+.mapboxgl-canvas-container,
+.mapboxgl-canvas {
+  width: 100% !important;
+  height: 100% !important;
+  max-width: 100% !important;
 }

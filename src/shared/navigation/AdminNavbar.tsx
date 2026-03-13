@@ -12,29 +12,28 @@ import { useLocation } from "react-router-dom";
 import AdminNavbarBell from "../components/AdminNavbarBell";
 import { useTranslation } from "react-i18next";
 import { useAppStore } from "@/stores/useAppStore";
+import { ROUTES } from "@/router/routes";
+
 function AdminNavbar() {
   const location = useLocation();
   const { t } = useTranslation("dashboard");
   const theme = useAppStore((state) => state.theme);
-  const usuariosRoutes = [
-    "/usuarios/pacientes",
-    "/usuarios/doctores",
-    "/usuarios/centros",
-  ];
+
+  const usuariosRoutes = [ROUTES.PATIENTS, ROUTES.DOCTORS, ROUTES.CENTERS];
 
   const contenidoRoutes = [
-    "/contenido/tipo-centro-salud",
-    "/contenido/profesion",
-    "/contenido/tipo-servicio",
-    "/contenido/pais",
-    "/contenido/tipo-seguro",
-    "/contenido/seguros",
-    "/contenido/alergias",
+    ROUTES.HEALTH_CENTER_TYPE,
+    ROUTES.PROFESSION,
+    ROUTES.SERVICE_TYPE,
+    ROUTES.COUNTRY,
+    ROUTES.INSURANCE_TYPE,
+    ROUTES.INSURANCES,
+    ROUTES.ALLERGIES,
   ];
 
   const isUsuariosActive = usuariosRoutes.includes(location.pathname);
   const isContenidoActive = contenidoRoutes.includes(location.pathname);
-  const isDashboardActive = location.pathname === "/dashboard";
+  const isDashboardActive = location.pathname === ROUTES.DASHBOARD;
 
   const hasActiveChildUsuarios = usuariosRoutes.includes(location.pathname);
   const hasActiveChildContenido = contenidoRoutes.includes(location.pathname);
@@ -61,7 +60,7 @@ function AdminNavbar() {
             {/* Dashboard */}
             <NavigationMenuItem>
               <NavigationMenuLink
-                href="/dashboard"
+                href={ROUTES.DASHBOARD}
                 active={isDashboardActive}
                 className={`text-sm lg:text-base px-2 lg:px-4 py-4 lg:py-6 rounded-full hover:rounded-full ${
                   isDashboardActive
@@ -93,8 +92,8 @@ function AdminNavbar() {
                   <ul className="p-2 flex flex-col gap-1">
                     <li>
                       <NavigationMenuLink
-                        href="/usuarios/pacientes"
-                        active={location.pathname === "/usuarios/pacientes"}
+                        href={ROUTES.PATIENTS}
+                        active={location.pathname === ROUTES.PATIENTS}
                         isChild
                         className="text-sm"
                       >
@@ -103,8 +102,8 @@ function AdminNavbar() {
                     </li>
                     <li>
                       <NavigationMenuLink
-                        href="/usuarios/doctores"
-                        active={location.pathname === "/usuarios/doctores"}
+                        href={ROUTES.DOCTORS}
+                        active={location.pathname === ROUTES.DOCTORS}
                         isChild
                         className="text-sm"
                       >
@@ -113,8 +112,8 @@ function AdminNavbar() {
                     </li>
                     <li>
                       <NavigationMenuLink
-                        href="/usuarios/centros"
-                        active={location.pathname === "/usuarios/centros"}
+                        href={ROUTES.CENTERS}
+                        active={location.pathname === ROUTES.CENTERS}
                         isChild
                         className="text-sm"
                       >
@@ -126,22 +125,6 @@ function AdminNavbar() {
               </div>
             </NavigationMenuItem>
 
-            {/* Reporte de cuentas eliminado */}
-            {/* 
-            <NavigationMenuItem>
-              <NavigationMenuLink
-                href="/reporte-cuentas"
-                active={isReporteActive}
-                className={`text-sm lg:text-base px-2 lg:px-4 py-4 lg:py-6 rounded-full hover:rounded-full ${
-                  isReporteActive
-                    ? "font-medium"
-                    : "font-normal opacity-50 hover:opacity-100"
-                }`}
-              >
-                {t("navbar.reporteCuentas")}
-              </NavigationMenuLink>
-            </NavigationMenuItem>
-            */}
             {/* Contenido Dropdown */}
             <NavigationMenuItem
               className={hasActiveChildContenido ? "has-active-child" : ""}
@@ -162,10 +145,8 @@ function AdminNavbar() {
                   <ul className="p-2 flex flex-col gap-1">
                     <li>
                       <NavigationMenuLink
-                        href="/contenido/tipo-centro-salud"
-                        active={
-                          location.pathname === "/contenido/tipo-centro-salud"
-                        }
+                        href={ROUTES.HEALTH_CENTER_TYPE}
+                        active={location.pathname === ROUTES.HEALTH_CENTER_TYPE}
                         isChild
                         className="text-sm"
                       >
@@ -174,8 +155,8 @@ function AdminNavbar() {
                     </li>
                     <li>
                       <NavigationMenuLink
-                        href="/contenido/profesion"
-                        active={location.pathname === "/contenido/profesion"}
+                        href={ROUTES.PROFESSION}
+                        active={location.pathname === ROUTES.PROFESSION}
                         isChild
                         className="text-sm"
                       >
@@ -184,10 +165,8 @@ function AdminNavbar() {
                     </li>
                     <li>
                       <NavigationMenuLink
-                        href="/contenido/tipo-servicio"
-                        active={
-                          location.pathname === "/contenido/tipo-servicio"
-                        }
+                        href={ROUTES.SERVICE_TYPE}
+                        active={location.pathname === ROUTES.SERVICE_TYPE}
                         isChild
                         className="text-sm"
                       >
@@ -196,8 +175,8 @@ function AdminNavbar() {
                     </li>
                     <li>
                       <NavigationMenuLink
-                        href="/contenido/pais"
-                        active={location.pathname === "/contenido/pais"}
+                        href={ROUTES.COUNTRY}
+                        active={location.pathname === ROUTES.COUNTRY}
                         isChild
                         className="text-sm"
                       >
@@ -206,8 +185,8 @@ function AdminNavbar() {
                     </li>
                     <li>
                       <NavigationMenuLink
-                        href="/contenido/tipo-seguro"
-                        active={location.pathname === "/contenido/tipo-seguro"}
+                        href={ROUTES.INSURANCE_TYPE}
+                        active={location.pathname === ROUTES.INSURANCE_TYPE}
                         isChild
                         className="text-sm"
                       >
@@ -216,8 +195,8 @@ function AdminNavbar() {
                     </li>
                     <li>
                       <NavigationMenuLink
-                        href="/contenido/seguros"
-                        active={location.pathname === "/contenido/seguros"}
+                        href={ROUTES.INSURANCES}
+                        active={location.pathname === ROUTES.INSURANCES}
                         isChild
                         className="text-sm"
                       >
@@ -226,8 +205,8 @@ function AdminNavbar() {
                     </li>
                     <li>
                       <NavigationMenuLink
-                        href="/contenido/alergias"
-                        active={location.pathname === "/contenido/alergias"}
+                        href={ROUTES.ALLERGIES}
+                        active={location.pathname === ROUTES.ALLERGIES}
                         isChild
                         className="text-sm"
                       >
@@ -244,7 +223,7 @@ function AdminNavbar() {
 
       {/* User Menu */}
       <div className="flex items-center gap-2 sm:gap-3">
-        {/* <AdminNavbarBell /> */}
+        <AdminNavbarBell />
         <div className="hidden md:block">
           <AdminUserMenu />
         </div>

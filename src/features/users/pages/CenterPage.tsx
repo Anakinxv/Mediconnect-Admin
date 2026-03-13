@@ -24,6 +24,8 @@ import {
 } from "lucide-react";
 import CentersTable, { type Center } from "../components/center/CentersTable";
 import CenterFilters from "../components/filters/CenterFilters";
+import { useNavigate } from "react-router-dom";
+import { ROUTES } from "@/router/routes";
 
 const mockCenters: Center[] = [
   {
@@ -91,6 +93,7 @@ const mockCenters: Center[] = [
 function CenterPage() {
   const { t } = useTranslation("center");
   const isMobile = useIsMobile();
+  const navigate = useNavigate();
 
   // Estados
   const [searchTerm, setSearchTerm] = useState("");
@@ -277,7 +280,9 @@ function CenterPage() {
     ) : (
       <CentersTable
         centers={filteredCenters}
-        onViewDetails={(center) => console.log("Ver detalles:", center)}
+        onViewDetails={(center) =>
+          navigate(ROUTES.CENTER_DETAILS.replace(":centerId", center.id))
+        }
       />
     );
 

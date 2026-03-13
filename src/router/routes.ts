@@ -4,7 +4,6 @@ export const ROUTES = {
   VERIFY_EMAIL: "/verify-email",
   RESET_PASSWORD: "/reset-password",
   PASSWORD_SUCCESS: "/password-success",
-
   DASHBOARD: "/dashboard",
   PATIENTS: "/patients",
   DOCTORS: "/doctors",
@@ -15,4 +14,14 @@ export const ROUTES = {
   SETTINGS_VERIFY_NEW_EMAIL: "/settings/verify-email",
   SETTINGS_CHANGE_PASSWORD: "/settings/change-password",
   SETTINGS_DELETE_ACCOUNT: "/settings/delete-account",
+  // Contenido
+  HEALTH_CENTER_TYPE: "/contenido/tipo-centro-salud",
+  PROFESSION: "/contenido/profesion",
+  SERVICE_TYPE: "/contenido/tipo-servicio",
+  COUNTRY: "/contenido/pais",
+  INSURANCE_TYPE: "/contenido/tipo-seguro",
+  INSURANCES: "/contenido/seguros",
+  ALLERGIES: "/contenido/alergias",
+  DOCTOR_DETAILS: "/doctors/:doctorId/details",
+  CENTER_DETAILS: "/centers/:centerId/details",
 };
