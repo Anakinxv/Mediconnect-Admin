@@ -24,7 +24,7 @@ import {
 } from "@/shared/ui/tooltip";
 import { UserStatusBadge, type UserStatus } from "../UserStates";
 import UserAction from "../UserAction";
-
+import ViewDetailsPatientDialog from "./ViewDetailsPatientDialog";
 export interface Patient {
   id: string;
   name: string;
@@ -147,7 +147,11 @@ export default function PatientsTable({
 
                 {/* Acciones */}
                 <TableCell className="w-[80px]">
-                  <UserAction onViewDetails={() => onViewDetails?.(patient)} />
+                  <ViewDetailsPatientDialog patientId={patient.id}>
+                    <UserAction
+                      onViewDetails={() => onViewDetails?.(patient)}
+                    />
+                  </ViewDetailsPatientDialog>
                 </TableCell>
               </TableRow>
             ))
