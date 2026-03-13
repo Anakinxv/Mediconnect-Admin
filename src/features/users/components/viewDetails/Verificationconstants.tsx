@@ -25,18 +25,14 @@ export const STATUS = {
 
 export const STATUS_DETAILS = {
   REJECTED: {
-    message: "Tu información fue rechazada. Por favor revisa los detalles.",
     bg: "bg-[#C62828]/15",
     text: "text-[#C62828]",
   },
   PENDING: {
-    message:
-      "Tu documento está en revisión. Te avisaremos cuando haya una respuesta.",
     bg: "bg-[#C77A1F]/15",
     text: "text-[#C77A1F]",
   },
   APPROVED: {
-    message: "¡Tu información fue aceptada!",
     bg: "bg-[#2E7D32]/15",
     text: "text-[#2E7D32]",
   },

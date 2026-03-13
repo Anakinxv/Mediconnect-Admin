@@ -1,9 +1,8 @@
-import React from "react";
+import React, { useCallback, useRef } from "react";
 import MCTextArea from "@/shared/components/forms/MCTextArea";
 import { MCModalBase } from "@/shared/components/MCModalBase";
 import { useTranslation } from "react-i18next";
 import MCFormWrapper from "@/shared/components/forms/MCFormWrapper";
-import { TriangleAlert } from "lucide-react";
 import { useGlobalUIStore } from "@/stores/useGlobalUIStore";
 import { z } from "zod";
 
@@ -12,6 +11,12 @@ interface DeniedDocProps {
   documentTitle: string;
   onConfirmReject: (reason: string) => void;
   children: React.ReactNode;
+}
+
+function unlockBodyScroll() {
+  document.body.style.overflow = "";
+  document.body.style.removeProperty("overflow");
+  document.documentElement.style.removeProperty("overflow");
 }
 
 export default function DeniedDoc({
@@ -23,26 +28,33 @@ export default function DeniedDoc({
   const { t } = useTranslation("common");
   const setToast = useGlobalUIStore((s) => s.setToast);
 
-  const handleConfirm = () => {
-    // Mantener vacío si MCModalBase ya coordina el submit del formulario interno.
-  };
+  const submitRef = useRef<HTMLButtonElement>(null);
 
-  const handleSecondary = () => {
+  const handleConfirm = useCallback(() => {
+    submitRef.current?.click();
+  }, []);
+
+  const handleSecondary = useCallback(() => {
     setToast({
       message: t("verification.reject.aborted"),
       type: "info",
       open: true,
     });
-  };
+    unlockBodyScroll();
+  }, [setToast, t]);
 
-  const onSubmit = (values: { rejectionReason: string }) => {
-    onConfirmReject(values.rejectionReason);
-    setToast({
-      message: t("verification.reject.success"),
-      type: "success",
-      open: true,
-    });
-  };
+  const onSubmit = useCallback(
+    (values: { rejectionReason: string }) => {
+      onConfirmReject(values.rejectionReason);
+      setToast({
+        message: t("verification.reject.success"),
+        type: "success",
+        open: true,
+      });
+      unlockBodyScroll();
+    },
+    [onConfirmReject, setToast, t],
+  );
 
   return (
     <MCModalBase
@@ -55,7 +67,7 @@ export default function DeniedDoc({
       onSecondary={handleSecondary}
       confirmText={t("verification.reject.confirm")}
       secondaryText={t("verification.reject.cancel")}
-      description="¿Seguro que quieres rechazar este documento? Una vez rechazado, no podrás modificar el estado del mismo."
+      description={t("verification.reject.description")}
     >
       <MCFormWrapper
         defaultValues={{ rejectionReason: "" }}
@@ -72,6 +84,7 @@ export default function DeniedDoc({
           rows={4}
           maxRows={10}
         />
+        <button ref={submitRef} type="submit" className="hidden" />
       </MCFormWrapper>
     </MCModalBase>
   );

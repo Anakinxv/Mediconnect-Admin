@@ -39,6 +39,38 @@ function ViewDetailsPage({ isDoctor = true }: { isDoctor?: boolean }) {
     return "PENDING";
   };
 
+  const documentsStatus = getDocumentsStatus();
+
+  const getProgressData = () => {
+    const identificationApproved = currentStatus === "APPROVED" ? 1 : 0;
+
+    if (isDoctor) {
+      const docStatuses: VerificationStatus[] = [
+        doctorDocuments?.identityDocumentFile?.verificationStatus ?? "PENDING",
+        doctorDocuments?.academicTitle?.verificationStatus ?? "PENDING",
+        doctorDocuments?.certificationsStatus ?? "PENDING",
+      ];
+      const docsApproved = docStatuses.filter((s) => s === "APPROVED").length;
+      const totalSteps = 1 + docStatuses.length; // identificación + 3 docs
+      const completedSteps = identificationApproved + docsApproved;
+      const percentage = Math.round((completedSteps / totalSteps) * 100);
+
+      return { completedSteps, totalSteps, percentage };
+    }
+
+    const centerDocApproved =
+      centerDocuments?.healthCertificateFile?.verificationStatus === "APPROVED"
+        ? 1
+        : 0;
+    const totalSteps = 2; // identificación + documento del centro
+    const completedSteps = identificationApproved + centerDocApproved;
+    const percentage = Math.round((completedSteps / totalSteps) * 100);
+
+    return { completedSteps, totalSteps, percentage };
+  };
+
+  const progress = getProgressData();
+
   return (
     <MCDashboardContent mainWidth="w-[100%]" noBg>
       <div className="min-h-screen w-full">
@@ -47,8 +79,12 @@ function ViewDetailsPage({ isDoctor = true }: { isDoctor?: boolean }) {
             <VerificationProgressSidebar
               activeTab={activeTab}
               currentStatus={currentStatus}
+              documentsStatus={documentsStatus}
               isDoctor={isDoctor}
               onTabChange={setActiveTab}
+              progressPercentage={progress.percentage}
+              completedSteps={progress.completedSteps}
+              totalSteps={progress.totalSteps}
             />
             <main className="mt-4 sm:mt-0">
               {activeTab === "identificacion" && (
@@ -61,7 +97,7 @@ function ViewDetailsPage({ isDoctor = true }: { isDoctor?: boolean }) {
               {activeTab === "documentos" && (
                 <DocumentsSection
                   isDoctor={isDoctor}
-                  currentStatus={getDocumentsStatus()}
+                  currentStatus={documentsStatus}
                 >
                   {isDoctor ? (
                     <AdminDoctorDocumentsView />

@@ -1,9 +1,7 @@
-import React from "react";
 import { Card } from "@/shared/ui/card";
 import { Progress } from "@/shared/ui/progress";
 import { CircleSlash, CircleCheck, Loader } from "lucide-react";
 import { useTranslation } from "react-i18next";
-
 type VerificationStatus = "PENDING" | "APPROVED" | "REJECTED";
 
 const STATUS = {
@@ -30,15 +28,23 @@ const STATUS = {
 interface VerificationProgressSidebarProps {
   activeTab: string;
   currentStatus: VerificationStatus;
+  documentsStatus: VerificationStatus;
   isDoctor: boolean;
   onTabChange: (tab: string) => void;
+  progressPercentage: number;
+  completedSteps: number;
+  totalSteps: number;
 }
 
 function VerificationProgressSidebar({
   activeTab,
   currentStatus,
+  documentsStatus,
   isDoctor,
   onTabChange,
+  progressPercentage,
+  completedSteps,
+  totalSteps,
 }: VerificationProgressSidebarProps) {
   const { t } = useTranslation("common");
 
@@ -51,16 +57,22 @@ function VerificationProgressSidebar({
               {t("verification.progress")}
             </h1>
             <p className="text-sm font-extralight">
-              {t("verification.progressPercentage", { percentage: 30 })}
+              {t("verification.progressPercentage", {
+                percentage: progressPercentage,
+              })}
             </p>
           </div>
           <div className="flex flex-col items-start gap-2 mt-2">
-            <Progress value={30} className="w-full" />
+            <Progress value={progressPercentage} className="w-full" />
             <p className="text-sm font-extralight">
-              {t("verification.stepsCompleted", { current: 1, total: 4 })}
+              {t("verification.stepsCompleted", {
+                current: completedSteps,
+                total: totalSteps,
+              })}
             </p>
           </div>
         </div>
+
         <div className="flex flex-col w-full gap-2">
           <button
             type="button"
@@ -85,6 +97,7 @@ function VerificationProgressSidebar({
               </div>
             </div>
           </button>
+
           <button
             type="button"
             onClick={() => onTabChange("documentos")}
@@ -95,13 +108,13 @@ function VerificationProgressSidebar({
             }`}
           >
             <div className="flex items-center gap-4">
-              <div>{STATUS.PENDING.icon}</div>
+              <div>{STATUS[documentsStatus].icon}</div>
               <div className="text-left">
                 <p className="font-medium">
                   {t("verification.documents.title")}
                 </p>
-                <p className={`text-base ${STATUS.PENDING.textColor}`}>
-                  {t(STATUS.PENDING.labelKey)}
+                <p className={`text-base ${STATUS[documentsStatus].textColor}`}>
+                  {t(STATUS[documentsStatus].labelKey)}
                 </p>
               </div>
             </div>
