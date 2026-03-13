@@ -307,6 +307,8 @@ export function AdminUserMenu() {
           <DropdownMenuSeparator className="bg-primary/15" />
 
           <DropdownMenuGroup>
+            {/* Elimina el ítem "Ver perfil" */}
+            {/* 
             <DropdownMenuItem
               onSelect={(e) => {
                 e.preventDefault();
@@ -319,14 +321,15 @@ export function AdminUserMenu() {
                 <DropdownMenuShortcut>⇧{cmdOrCtrl}+P</DropdownMenuShortcut>
               )}
             </DropdownMenuItem>
+            */}
             <DropdownMenuItem
               onSelect={(e) => {
-                e.preventDefault(); // Evita que se cierre antes de tiempo
+                e.preventDefault();
                 setIsEditProfileOpen(true);
               }}
             >
-              <Pencil className="w-4 h-4 mr-2" />
-              {t("userMenu.editProfile")}
+              <User className="w-4 h-4 mr-2" />
+              Perfil
               {!isMobile && (
                 <DropdownMenuShortcut>{cmdOrCtrl}+E</DropdownMenuShortcut>
               )}
@@ -444,7 +447,12 @@ export function AdminUserMenu() {
           </DropdownMenuGroup>
 
           <DropdownMenuGroup>
-            <DropdownMenuItem>
+            <DropdownMenuItem
+              onSelect={(e) => {
+                e.preventDefault();
+                navigate("/settings");
+              }}
+            >
               <Settings className="w-4 h-4 mr-2" />
               {t("userMenu.settings")}
               {!isMobile && (

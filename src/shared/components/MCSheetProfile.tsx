@@ -25,10 +25,10 @@ function MCSheetProfile({ open, onOpenChange }: MCSheetProfileProps) {
     rol: "",
   });
   const [banner, setBanner] = useState<string>(
-    "https://i.pinimg.com/736x/3b/37/46/3b3746e0878804293202d56d1dda1fe1.jpg"
+    "https://i.pinimg.com/736x/3b/37/46/3b3746e0878804293202d56d1dda1fe1.jpg",
   );
   const [profile, setProfile] = useState<string>(
-    "https://i.pinimg.com/736x/ee/27/85/ee278567d7a890bb390e5a99a4df4936.jpg"
+    "https://i.pinimg.com/736x/ee/27/85/ee278567d7a890bb390e5a99a4df4936.jpg",
   );
 
   // Estados para crop modal
@@ -37,7 +37,7 @@ function MCSheetProfile({ open, onOpenChange }: MCSheetProfileProps) {
   const [tempImage, setTempImage] = useState<string>("");
 
   // Refs para inputs file
-  const bannerInputRef = useRef<HTMLInputElement>(null);
+
   const profileInputRef = useRef<HTMLInputElement>(null);
 
   const handleInputChange = (field: string, value: string) => {
@@ -47,7 +47,7 @@ function MCSheetProfile({ open, onOpenChange }: MCSheetProfileProps) {
   // Cuando el usuario selecciona una imagen, abrir crop modal
   const handleImageChange = (
     e: React.ChangeEvent<HTMLInputElement>,
-    type: CropType
+    type: CropType,
   ) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -97,7 +97,7 @@ function MCSheetProfile({ open, onOpenChange }: MCSheetProfileProps) {
           className={
             isMobile
               ? "inset-y-0 my-2.5 flex items-center justify-center h-[calc(100%-20px)] w-[calc(100vw-10px)] ml-[10px] rounded-l-4xl border-accent"
-              : "w-1/1.5 border-accent inset-y-0 my-2.5 flex items-center justify-center h-[calc(100%-20px)] rounded-l-4xl"
+              : "w-[50vw] border-accent inset-y-0 my-2.5 flex items-center justify-center h-[calc(100%-20px)] rounded-l-4xl"
           }
         >
           <Tabs className="grid grid-cols-[35%_65%] h-full w-full">
@@ -137,7 +137,7 @@ function MCSheetProfile({ open, onOpenChange }: MCSheetProfileProps) {
             </aside>
 
             <main className="w-full h-full overflow-y-auto">
-              <div className="flex items-center justify-end p-2">
+              <div className="flex items-center justify-end px-4 py-2">
                 <SheetClose asChild>
                   <button
                     className="rounded-full h-8 w-8 flex items-center border-none outline-none ring-none justify-center hover:bg-accent/70 focus:bg-accent active:scale-95 transition-all duration-200"
@@ -166,33 +166,6 @@ function MCSheetProfile({ open, onOpenChange }: MCSheetProfileProps) {
                     onSubmit={handleSubmit}
                     className="flex flex-col gap-4"
                   >
-                    {/* Imagen de Banner */}
-                    <div className="flex flex-col gap-4">
-                      <h3 className="text-lg font-medium">Imagen de Banner</h3>
-                      <label
-                        className="relative w-full h-40 bg-accent/30 rounded-2xl overflow-hidden cursor-pointer group"
-                        onClick={() => bannerInputRef.current?.click()}
-                      >
-                        <img
-                          src={banner}
-                          alt="Banner"
-                          className="w-full h-full object-cover"
-                        />
-                        <input
-                          ref={bannerInputRef}
-                          type="file"
-                          accept="image/*"
-                          className="hidden"
-                          onChange={(e) => handleImageChange(e, "banner")}
-                        />
-                        <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                          <span className="text-white font-semibold text-lg">
-                            Cambiar imagen
-                          </span>
-                        </div>
-                      </label>
-                    </div>
-
                     {/* Foto de perfil */}
                     <div className="flex flex-col gap-4">
                       <h3 className="text-lg font-medium">Foto de perfil</h3>
@@ -219,11 +192,6 @@ function MCSheetProfile({ open, onOpenChange }: MCSheetProfileProps) {
                             </span>
                           </div>
                         </label>
-                        <div className="flex flex-col gap-2">
-                          <p className="text-sm text-muted-foreground">
-                            Recomendado: 400x400px, formato JPG o PNG
-                          </p>
-                        </div>
                       </div>
                     </div>
 
@@ -239,31 +207,14 @@ function MCSheetProfile({ open, onOpenChange }: MCSheetProfileProps) {
                       }
                     />
 
-                    {/* Especialidad */}
-                    <MCInput
-                      name="rol"
-                      label="Especialidad"
-                      type="text"
-                      placeholder="Ej: Cardiología"
-                      value={formData.rol}
-                    />
-
-                    {/* Email */}
+                    {/* Email solo lectura */}
                     <MCInput
                       name="email"
                       label="Email"
                       type="email"
                       placeholder="correo@ejemplo.com"
                       value={formData.email}
-                    />
-
-                    {/* Teléfono */}
-                    <MCInput
-                      name="telefono"
-                      label="Teléfono"
-                      type="tel"
-                      placeholder="+52 123 456 7890"
-                      value={formData.telefono}
+                      disabled
                     />
 
                     {/* Botones de acción */}

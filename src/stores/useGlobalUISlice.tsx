@@ -11,6 +11,14 @@ const getSystemTheme = (): ResolvedTheme => {
     : "light";
 };
 
+export type VerificationContext =
+  | "CHANGE_EMAIL"
+  | "CHANGE_PASSWORD"
+  | "DELETE_ACCOUNT"
+  | null;
+
+export type VerificationContextStatus = "IDLE" | "PENDING" | "VERIFIED";
+
 export type GlobalUISlice = {
   theme: Theme;
   resolvedTheme: ResolvedTheme;
@@ -36,6 +44,11 @@ export type GlobalUISlice = {
   allowedPages: string[];
   setAccessPage: (canAccess: boolean, pages: string[]) => void;
   modalOpen: boolean;
+
+  verificationContext: VerificationContext;
+  verificationContextStatus: VerificationContextStatus;
+  setVerificationContext: (context: VerificationContext) => void;
+  setVerificationContextStatus: (status: VerificationContextStatus) => void;
 };
 
 export const createGlobalUISlice: StateCreator<GlobalUISlice> = (set, get) => ({
@@ -78,4 +91,10 @@ export const createGlobalUISlice: StateCreator<GlobalUISlice> = (set, get) => ({
   setAccessPage: (canAccess, pages) =>
     set({ canAccessPage: canAccess, allowedPages: pages }),
   modalOpen: false,
+
+  verificationContext: null,
+  verificationContextStatus: "IDLE",
+  setVerificationContext: (context) => set({ verificationContext: context }),
+  setVerificationContextStatus: (status) =>
+    set({ verificationContextStatus: status }),
 });

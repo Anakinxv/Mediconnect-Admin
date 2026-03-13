@@ -12,6 +12,12 @@ import PatientsPage from "@/features/users/pages/PatientsPage";
 import DarkLayout from "@/layout/DarkLayout";
 import DoctorsPage from "@/features/users/pages/DoctorsPage";
 import CenterPage from "@/features/users/pages/CenterPage";
+import AccountOverviewPage from "@/features/account/settings/pages/AccountOverviewPage";
+import VerifyIdentityPage from "@/features/account/settings/pages/VerifyIdentityPage";
+import ChangeEmailPage from "@/features/account/settings/pages/ChangeEmailPage";
+import VerifyNewEmailPage from "@/features/account/settings/pages/VerifyNewEmailPage";
+import ChangePasswordPage from "@/features/account/settings/pages/ChangePasswordPage";
+import DeleteAccountPage from "@/features/account/settings/pages/DeleteAccountPage";
 function AppRouter() {
   return (
     <BrowserRouter>
@@ -35,6 +41,27 @@ function AppRouter() {
             <Route path={ROUTES.PATIENTS} element={<PatientsPage />} />
             <Route path={ROUTES.DOCTORS} element={<DoctorsPage />} />
             <Route path={ROUTES.CENTERS} element={<CenterPage />} />
+            <Route path="/settings" element={<AccountOverviewPage />} />
+            <Route
+              path={ROUTES.SETTINGS_VERIFY_IDENTITY}
+              element={<VerifyIdentityPage />}
+            />
+            <Route
+              path={ROUTES.SETTINGS_CHANGE_EMAIL}
+              element={<ChangeEmailPage />}
+            />
+            <Route
+              path={ROUTES.SETTINGS_VERIFY_NEW_EMAIL}
+              element={<VerifyNewEmailPage />}
+            />
+            <Route
+              path={ROUTES.SETTINGS_CHANGE_PASSWORD}
+              element={<ChangePasswordPage />}
+            />
+            <Route
+              path={ROUTES.SETTINGS_DELETE_ACCOUNT}
+              element={<DeleteAccountPage />}
+            />
           </Route>
         </Route>
       </Router>
