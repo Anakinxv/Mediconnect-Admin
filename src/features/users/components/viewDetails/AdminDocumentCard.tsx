@@ -1,13 +1,5 @@
 import { useState } from "react";
 import { Eye, CircleCheck, CircleSlash } from "lucide-react";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from "@/shared/ui/dialog";
-import { Textarea } from "@/shared/ui/textarea";
 import type { UploadedFileWithStatus, UploadedFile } from "@/types/Documents";
 import StatusBadge from "./StatusBadge";
 import { type VerificationStatus, STATUS } from "./Verificationconstants";
@@ -15,6 +7,8 @@ import MCButton from "@/shared/components/forms/MCButton";
 import DocumentIcon from "./DocumentIcon";
 import { ImageCarouselModal } from "./ImageCarouselModal";
 import PreviewDocumentsDialog from "./PreviewDocumentsDialog";
+import DeniedDoc from "./DeniedDoc";
+import AcceptDoc from "./AcceptDoc";
 import { useTranslation } from "react-i18next";
 import { useIsMobile } from "@/lib/hooks/useIsMobile";
 
@@ -25,10 +19,14 @@ interface AdminDocumentCardProps {
   isArray?: boolean;
   arrayParentStatus?: VerificationStatus;
   arrayParentFeedback?: string;
-  onApprove?: () => void;
-  onReject?: (feedback: string) => void;
+  onApprove?: (doc: UploadedFile) => void;
+  onReject?: (doc: UploadedFile | null, feedback: string) => void;
   onApproveAll?: () => void;
   onRejectAll?: (feedback: string) => void;
+  docStatuses?: Record<string, VerificationStatus>;
+  docFeedbacks?: Record<string, string>;
+  /** "success" (default) para docs estándar · "warning" para certificaciones u otras secciones críticas */
+  approveVariant?: "decide" | "warning";
 }
 
 const formatFileSize = (bytes: number) => {
@@ -48,17 +46,48 @@ export default function AdminDocumentCard({
   onReject,
   onApproveAll,
   onRejectAll,
+  docStatuses = {},
+  docFeedbacks = {},
+  approveVariant = "decide",
 }: AdminDocumentCardProps) {
   const { t } = useTranslation("common");
   const isMobile = useIsMobile();
-  const [rejectOpen, setRejectOpen] = useState(false);
-  const [feedback, setFeedback] = useState("");
   const [carouselOpen, setCarouselOpen] = useState(false);
   const [carouselStartIndex, setCarouselStartIndex] = useState(0);
 
+  function getDocStatus(doc: UploadedFile): VerificationStatus {
+    return docStatuses[doc.name] ?? "PENDING";
+  }
+
+  function getDocFeedback(doc: UploadedFile): string | undefined {
+    return docFeedbacks[doc.name];
+  }
+
+  const docStatusBorder: Record<VerificationStatus, string> = {
+    APPROVED: "border-[#2E7D32]/40",
+    PENDING: "border-[#C77A1F]/40",
+    REJECTED: "border-[#C62828]/40",
+  };
+
+  const docStatusText: Record<VerificationStatus, string> = {
+    APPROVED: "text-status-approved",
+    PENDING: "text-status-pending",
+    REJECTED: "text-status-rejected",
+  };
+
+  const derivedArrayStatus: VerificationStatus = isArray
+    ? documents.length === 0
+      ? (arrayParentStatus ?? "PENDING")
+      : documents.some((d) => getDocStatus(d) === "REJECTED")
+        ? "REJECTED"
+        : documents.every((d) => getDocStatus(d) === "APPROVED")
+          ? "APPROVED"
+          : "PENDING"
+    : "PENDING";
+
   const currentStatus: VerificationStatus = isArray
-    ? arrayParentStatus || "PENDING"
-    : document?.verificationStatus || "PENDING";
+    ? derivedArrayStatus
+    : (document?.verificationStatus ?? "PENDING");
 
   const borderColorByStatus: Record<VerificationStatus, string> = {
     APPROVED: "border-[#2E7D32]/40",
@@ -79,19 +108,24 @@ export default function AdminDocumentCard({
       ? [document]
       : [];
 
-  const handleConfirmReject = () => {
-    if (isArray) onRejectAll?.(feedback);
-    else onReject?.(feedback);
-    setFeedback("");
-    setRejectOpen(false);
-  };
+  const approvedCount = isArray
+    ? documents.filter((d) => getDocStatus(d) === "APPROVED").length
+    : 0;
+  const rejectedCount = isArray
+    ? documents.filter((d) => getDocStatus(d) === "REJECTED").length
+    : 0;
+  const pendingCount = isArray
+    ? documents.filter((d) => getDocStatus(d) === "PENDING").length
+    : 0;
+
+  const showGlobalActions = currentStatus === "PENDING";
 
   return (
     <>
       <div
         className={`rounded-2xl md:rounded-3xl border ${borderColorByStatus[currentStatus]} p-3 md:p-5 space-y-3 md:space-y-4`}
       >
-        {/* Encabezado */}
+        {/* Header */}
         <div className="flex items-start gap-3 md:gap-4">
           <div className="hidden md:block">
             <DocumentIcon status={currentStatus} />
@@ -112,6 +146,30 @@ export default function AdminDocumentCard({
               <>
                 <p className="text-sm text-muted-foreground mt-0.5">
                   {documents.length} archivo(s) subido(s)
+                  {documents.length > 0 && (
+                    <span className="ml-2 text-xs">
+                      {approvedCount > 0 && (
+                        <span className="text-status-approved font-medium">
+                          {approvedCount} aprobado{approvedCount > 1 ? "s" : ""}
+                        </span>
+                      )}
+                      {rejectedCount > 0 && (
+                        <span
+                          className={`text-status-rejected font-medium ${approvedCount > 0 ? " · " : ""}`}
+                        >
+                          {rejectedCount} rechazado
+                          {rejectedCount > 1 ? "s" : ""}
+                        </span>
+                      )}
+                      {pendingCount > 0 && (
+                        <span
+                          className={`text-status-pending font-medium ${approvedCount > 0 || rejectedCount > 0 ? " · " : ""}`}
+                        >
+                          {pendingCount} pendiente{pendingCount > 1 ? "s" : ""}
+                        </span>
+                      )}
+                    </span>
+                  )}
                 </p>
                 {arrayParentFeedback && (
                   <p className={`text-sm mt-1.5 ${feedbackColorClass}`}>
@@ -145,55 +203,119 @@ export default function AdminDocumentCard({
           </div>
         </div>
 
-        {/* Lista de documentos en arrays */}
+        {/* Array of documents — individual approve/reject per doc */}
         {isArray && documents.length > 0 && (
           <div className="space-y-2 md:space-y-3">
-            {documents.map((doc, index) => (
-              <div
-                key={index}
-                className="rounded-lg md:rounded-xl border border-primary/15 p-3 md:p-4"
-              >
-                <div className="flex items-start gap-2 md:gap-3">
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-foreground truncate">
-                      {doc.name}
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      {formatFileSize(doc.size)} • {doc.uploadedAt}
-                    </p>
+            {documents.map((doc, index) => {
+              const docStatus = getDocStatus(doc);
+              const docFeedback = getDocFeedback(doc);
 
-                    {doc.type.startsWith("image/") ? (
-                      <img
-                        src={doc.url}
-                        alt={doc.name}
-                        className="w-12 h-12 md:w-16 md:h-16 rounded-lg object-cover cursor-pointer border mt-2"
-                        onClick={() => {
-                          setCarouselStartIndex(
-                            imageDocuments.findIndex((d) => d.url === doc.url),
-                          );
-                          setCarouselOpen(true);
-                        }}
-                      />
-                    ) : (
-                      <PreviewDocumentsDialog
-                        documentUrl={doc.url}
-                        documentType={doc.type}
-                        documentName={doc.name}
-                      >
-                        <button className="mt-2 flex items-center gap-2 px-2 md:px-3 py-1 md:py-1.5 rounded-lg bg-primary/10 hover:bg-primary/20 transition-colors text-xs md:text-sm font-medium text-primary">
-                          <Eye className="w-3 h-3 md:w-4 md:h-4" />
-                          Ver documento
-                        </button>
-                      </PreviewDocumentsDialog>
+              return (
+                <div
+                  key={index}
+                  className={`rounded-lg md:rounded-xl border ${docStatusBorder[docStatus]} p-3 md:p-4 transition-colors`}
+                >
+                  <div className="flex items-start gap-2 md:gap-3">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <p className="text-sm font-medium text-foreground truncate max-w-[160px] md:max-w-xs">
+                          {doc.name}
+                        </p>
+                        <StatusBadge
+                          label={STATUS[docStatus].label}
+                          color={STATUS[docStatus].color}
+                        />
+                      </div>
+
+                      <p className="text-xs text-muted-foreground mt-0.5">
+                        {formatFileSize(doc.size)} • {doc.uploadedAt}
+                      </p>
+
+                      {docFeedback && (
+                        <p
+                          className={`text-xs mt-1 ${docStatusText[docStatus]}`}
+                        >
+                          {docFeedback}
+                        </p>
+                      )}
+
+                      {doc.type.startsWith("image/") ? (
+                        <img
+                          src={doc.url}
+                          alt={doc.name}
+                          className="w-12 h-12 md:w-16 md:h-16 rounded-lg object-cover cursor-pointer border mt-2"
+                          onClick={() => {
+                            setCarouselStartIndex(
+                              imageDocuments.findIndex(
+                                (d) => d.url === doc.url,
+                              ),
+                            );
+                            setCarouselOpen(true);
+                          }}
+                        />
+                      ) : (
+                        <PreviewDocumentsDialog
+                          documentUrl={doc.url}
+                          documentType={doc.type}
+                          documentName={doc.name}
+                        >
+                          <div
+                            role="button"
+                            tabIndex={0}
+                            className="mt-2 flex items-center gap-2 px-2 md:px-3 py-1 md:py-1.5 rounded-lg bg-primary/10 hover:bg-primary/20 transition-colors text-xs md:text-sm font-medium text-primary cursor-pointer"
+                          >
+                            <Eye className="w-3 h-3 md:w-4 md:h-4" />
+                            Ver documento
+                          </div>
+                        </PreviewDocumentsDialog>
+                      )}
+                    </div>
+
+                    {/* Individual approve / reject — only when pending */}
+                    {docStatus === "PENDING" && (
+                      <div className="flex flex-col justify-center gap-4 h-full">
+                        <AcceptDoc
+                          id={`approve-doc-${index}`}
+                          documentTitle={doc.name}
+                          variant={approveVariant}
+                          onConfirmApprove={() => onApprove && onApprove(doc)}
+                        >
+                          <MCButton
+                            size="s"
+                            className="flex items-center gap-2 justify-center"
+                          >
+                            <CircleCheck className="w-4 h-4" />
+                            Aprobar
+                          </MCButton>
+                        </AcceptDoc>
+
+                        {/* ── Reject individual doc via DeniedDoc modal ── */}
+                        <DeniedDoc
+                          id={`reject-doc-${index}`}
+                          documentTitle={doc.name}
+                          onConfirmReject={(reason) =>
+                            onReject && onReject(doc, reason)
+                          }
+                        >
+                          <MCButton
+                            variant="outlineDelete"
+                            size="s"
+                            className="flex items-center gap-2 justify-center"
+                          >
+                            <CircleSlash className="w-4 h-4" />
+                            Rechazar
+                          </MCButton>
+                        </DeniedDoc>
+                      </div>
                     )}
                   </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
 
-        {/* Ver documento individual */}
+        {/* Single document preview */}
         {!isArray && document && (
           <div>
             {document.type.startsWith("image/") ? (
@@ -210,88 +332,69 @@ export default function AdminDocumentCard({
                 documentType={document.type}
                 documentName={document.name}
               >
-                <button className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-primary/10 hover:bg-primary/20 transition-colors text-sm font-medium text-primary">
+                <div
+                  role="button"
+                  tabIndex={0}
+                  className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-primary/10 hover:bg-primary/20 transition-colors text-sm font-medium text-primary cursor-pointer"
+                >
                   <Eye className="w-4 h-4" />
                   Ver documento
-                </button>
+                </div>
               </PreviewDocumentsDialog>
             )}
           </div>
         )}
 
-        {/* Acciones del admin */}
-        <div className="flex flex-col sm:flex-row gap-2 pt-1 border-t border-primary/10">
-          <MCButton
-            variant="outlineDelete"
-            size={isMobile ? "sm" : "sm"}
-            onClick={() => setRejectOpen(true)}
-            className="flex-1 flex items-center gap-2 justify-center"
-          >
-            <CircleSlash className="w-4 h-4" />
-            Rechazar
-          </MCButton>
-          <MCButton
-            size={isMobile ? "sm" : "sm"}
-            onClick={isArray ? onApproveAll : onApprove}
-            className="flex-1 flex items-center gap-2 justify-center"
-          >
-            <CircleCheck className="w-4 h-4" />
-            Aprobar
-          </MCButton>
-        </div>
+        {/* Global actions — hidden once the overall status is resolved */}
+        {showGlobalActions && (
+          <div className="flex flex-col sm:flex-row gap-2 pt-3 border-t border-primary/10">
+            {/* ── Reject all / reject single via DeniedDoc modal ── */}
+            <DeniedDoc
+              id={`reject-all-${title}`}
+              documentTitle={title}
+              onConfirmReject={(reason) => {
+                if (isArray) onRejectAll?.(reason);
+                else onReject?.(null, reason);
+              }}
+            >
+              <MCButton
+                variant="outlineDelete"
+                size={isMobile ? "sm" : "sm"}
+                className="flex-1 flex items-center gap-2 justify-center"
+              >
+                <CircleSlash className="w-4 h-4" />
+                {isArray ? "Rechazar todos" : "Rechazar"}
+              </MCButton>
+            </DeniedDoc>
+
+            <AcceptDoc
+              id={`approve-all-${title}`}
+              documentTitle={title}
+              variant={approveVariant}
+              onConfirmApprove={() => {
+                if (isArray) onApproveAll?.();
+                else onApprove && document && onApprove(document);
+              }}
+            >
+              <MCButton
+                size={isMobile ? "sm" : "sm"}
+                className="flex-1 flex items-center gap-2 justify-center"
+              >
+                <CircleCheck className="w-4 h-4" />
+                {isArray ? "Aprobar todos" : "Aprobar"}
+              </MCButton>
+            </AcceptDoc>
+          </div>
+        )}
       </div>
 
-      {/* Carousel de imágenes */}
+      {/* Image carousel */}
       <ImageCarouselModal
         images={imageDocuments.map((d) => d.url)}
         open={carouselOpen}
         onClose={() => setCarouselOpen(false)}
         startIndex={carouselStartIndex}
       />
-
-      {/* Modal de rechazo */}
-      <Dialog open={rejectOpen} onOpenChange={setRejectOpen}>
-        <DialogContent className="rounded-3xl max-w-md">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-destructive">
-              <CircleSlash className="w-5 h-5" />
-              Rechazar {title}
-            </DialogTitle>
-          </DialogHeader>
-
-          <div className="space-y-3 py-2">
-            <p className="text-sm text-muted-foreground">
-              Indica el motivo del rechazo. El usuario recibirá este mensaje.
-            </p>
-            <Textarea
-              value={feedback}
-              onChange={(e) => setFeedback(e.target.value)}
-              placeholder="Escribe el motivo del rechazo..."
-              className="min-h-[100px] resize-none"
-            />
-          </div>
-
-          <DialogFooter className="flex flex-col sm:flex-row gap-2">
-            <MCButton
-              variant="outline"
-              size="sm"
-              onClick={() => setRejectOpen(false)}
-              className="w-full sm:w-auto"
-            >
-              Cancelar
-            </MCButton>
-            <MCButton
-              variant="outlineDelete"
-              size="sm"
-              onClick={handleConfirmReject}
-              disabled={!feedback.trim()}
-              className="w-full sm:w-auto"
-            >
-              Confirmar Rechazo
-            </MCButton>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
     </>
   );
 }

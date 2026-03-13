@@ -1,19 +1,8 @@
-import { useEffect } from "react";
-import { CircleCheck, CircleSlash, Eye } from "lucide-react";
-import { useState } from "react";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from "@/shared/ui/dialog";
-import { Textarea } from "@/shared/ui/textarea";
-import MCButton from "@/shared/components/forms/MCButton";
+import { useEffect, useState } from "react";
 import DocumentCard from "./AdminDocumentCard";
-
 import { useVerifyInfoStore } from "@/stores/useVerifyInfoStore";
-import type { DoctorDocuments } from "@/types/Documents";
+import type { DoctorDocuments, UploadedFile } from "@/types/Documents";
+import type { VerificationStatus } from "./Verificationconstants";
 
 const initialDoctorDocuments: DoctorDocuments = {
   identityDocumentFile: {
@@ -29,7 +18,7 @@ const initialDoctorDocuments: DoctorDocuments = {
     url: "#",
     name: "titulo-universitario.pdf",
     type: "application/pdf",
-    size: 1.8 * 1024 * 1024,
+    size: 2.3 * 1024 * 1024,
     uploadedAt: "Subido el 15 Oct 2025",
     verificationStatus: "PENDING",
     feedback: "En revisión",
@@ -37,90 +26,54 @@ const initialDoctorDocuments: DoctorDocuments = {
   certifications: [
     {
       url: "#",
-      name: "certificacion.pdf",
+      name: "certificacion-residencia-medica.pdf",
       type: "application/pdf",
       size: 1.8 * 1024 * 1024,
       uploadedAt: "Subido el 15 Oct 2025",
     },
+    {
+      url: "#",
+      name: "certificacion-cardiologia-invasiva.pdf",
+      type: "application/pdf",
+      size: 2.1 * 1024 * 1024,
+      uploadedAt: "Subido el 20 Nov 2025",
+    },
+    {
+      url: "#",
+      name: "certificacion-medicina-interna.pdf",
+      type: "application/pdf",
+      size: 1.5 * 1024 * 1024,
+      uploadedAt: "Subido el 05 Dic 2025",
+    },
+    {
+      url: "#",
+      name: "certificacion-ultrasonido-cardiaco.pdf",
+      type: "application/pdf",
+      size: 3.2 * 1024 * 1024,
+      uploadedAt: "Subido el 10 Dic 2025",
+    },
+    {
+      url: "#",
+      name: "certificacion-soporte-vital-avanzado.pdf",
+      type: "application/pdf",
+      size: 0.9 * 1024 * 1024,
+      uploadedAt: "Subido el 22 Dic 2025",
+    },
   ],
   certificationsStatus: "PENDING",
-  certificationsFeedback: "En revisión",
+  certificationsFeedback: undefined,
 };
-
-function AdminActionRow({
-  onApprove,
-  onRejectConfirm,
-}: {
-  onApprove: () => void;
-  onRejectConfirm: (feedback: string) => void;
-}) {
-  const [open, setOpen] = useState(false);
-  const [feedback, setFeedback] = useState("");
-
-  return (
-    <>
-      <div className="flex flex-col sm:flex-row gap-2 pt-3 mt-1 border-t border-primary/10">
-        <MCButton
-          variant="outlineDelete"
-          size="sm"
-          className="flex-1 flex items-center gap-2 justify-center"
-          onClick={() => setOpen(true)}
-        >
-          <CircleSlash className="w-4 h-4" /> Rechazar
-        </MCButton>
-        <MCButton
-          size="sm"
-          className="flex-1 flex items-center gap-2 justify-center"
-          onClick={onApprove}
-        >
-          <CircleCheck className="w-4 h-4" /> Aprobar
-        </MCButton>
-      </div>
-
-      <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="rounded-3xl max-w-md">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-destructive">
-              <CircleSlash className="w-5 h-5" /> Rechazar Documento
-            </DialogTitle>
-          </DialogHeader>
-          <Textarea
-            value={feedback}
-            onChange={(e) => setFeedback(e.target.value)}
-            placeholder="Motivo del rechazo..."
-            className="min-h-[100px] resize-none"
-          />
-          <DialogFooter className="flex flex-col sm:flex-row gap-2">
-            <MCButton
-              variant="outline"
-              size="sm"
-              onClick={() => setOpen(false)}
-              className="w-full sm:w-auto"
-            >
-              Cancelar
-            </MCButton>
-            <MCButton
-              variant="outlineDelete"
-              size="sm"
-              disabled={!feedback.trim()}
-              onClick={() => {
-                onRejectConfirm(feedback);
-                setFeedback("");
-                setOpen(false);
-              }}
-              className="w-full sm:w-auto"
-            >
-              Confirmar
-            </MCButton>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-    </>
-  );
-}
 
 export default function AdminDoctorDocumentsView() {
   const { doctorDocuments, setDoctorDocuments } = useVerifyInfoStore();
+
+  // Per-certification individual statuses & feedbacks, keyed by doc.name
+  const [certStatuses, setCertStatuses] = useState<
+    Record<string, VerificationStatus>
+  >({});
+  const [certFeedbacks, setCertFeedbacks] = useState<Record<string, string>>(
+    {},
+  );
 
   useEffect(() => {
     if (!doctorDocuments) setDoctorDocuments(initialDoctorDocuments);
@@ -128,81 +81,137 @@ export default function AdminDoctorDocumentsView() {
 
   if (!doctorDocuments) return null;
 
-  const approve = (field: "identityDocumentFile" | "academicTitle") =>
+  // ─── Identity document handlers ───────────────────────────────────────────
+  const handleApproveIdentity = () => {
     setDoctorDocuments({
       ...doctorDocuments,
-      [field]: {
-        ...doctorDocuments[field]!,
+      identityDocumentFile: {
+        ...doctorDocuments.identityDocumentFile,
         verificationStatus: "APPROVED",
-        feedback: "Aprobado",
+        feedback: "Documento verificado correctamente.",
       },
     });
+  };
 
-  const reject = (
-    field: "identityDocumentFile" | "academicTitle",
-    fb: string,
-  ) =>
+  const handleRejectIdentity = (
+    _doc: UploadedFile | null,
+    feedback: string,
+  ) => {
     setDoctorDocuments({
       ...doctorDocuments,
-      [field]: {
-        ...doctorDocuments[field]!,
+      identityDocumentFile: {
+        ...doctorDocuments.identityDocumentFile,
         verificationStatus: "REJECTED",
-        feedback: fb,
+        feedback,
       },
     });
+  };
+
+  // ─── Academic title handlers ───────────────────────────────────────────────
+  const handleApproveTitle = () => {
+    if (!doctorDocuments.academicTitle) return;
+    setDoctorDocuments({
+      ...doctorDocuments,
+      academicTitle: {
+        ...doctorDocuments.academicTitle,
+        verificationStatus: "APPROVED",
+        feedback: "Título verificado correctamente.",
+      },
+    });
+  };
+
+  const handleRejectTitle = (_doc: UploadedFile | null, feedback: string) => {
+    if (!doctorDocuments.academicTitle) return;
+    setDoctorDocuments({
+      ...doctorDocuments,
+      academicTitle: {
+        ...doctorDocuments.academicTitle,
+        verificationStatus: "REJECTED",
+        feedback,
+      },
+    });
+  };
+
+  // ─── Certifications — individual handlers ─────────────────────────────────
+  const handleApproveOneCert = (doc: UploadedFile) => {
+    setCertStatuses((prev) => ({ ...prev, [doc.name]: "APPROVED" }));
+    setCertFeedbacks((prev) => {
+      const next = { ...prev };
+      delete next[doc.name];
+      return next;
+    });
+  };
+
+  const handleRejectOneCert = (doc: UploadedFile | null, feedback: string) => {
+    if (!doc) return;
+    setCertStatuses((prev) => ({ ...prev, [doc.name]: "REJECTED" }));
+    setCertFeedbacks((prev) => ({ ...prev, [doc.name]: feedback }));
+  };
+
+  // ─── Certifications — bulk handlers ───────────────────────────────────────
+  const handleApproveAllCerts = () => {
+    const allApproved: Record<string, VerificationStatus> = {};
+    (doctorDocuments.certifications ?? []).forEach((d) => {
+      allApproved[d.name] = "APPROVED";
+    });
+    setCertStatuses(allApproved);
+    setDoctorDocuments({
+      ...doctorDocuments,
+      certificationsStatus: "APPROVED",
+      certificationsFeedback: "Todas las certificaciones han sido aprobadas.",
+    });
+  };
+
+  const handleRejectAllCerts = (feedback: string) => {
+    const allRejected: Record<string, VerificationStatus> = {};
+    const allFeedbacks: Record<string, string> = {};
+    (doctorDocuments.certifications ?? []).forEach((d) => {
+      allRejected[d.name] = "REJECTED";
+      allFeedbacks[d.name] = feedback;
+    });
+    setCertStatuses(allRejected);
+    setCertFeedbacks(allFeedbacks);
+    setDoctorDocuments({
+      ...doctorDocuments,
+      certificationsStatus: "REJECTED",
+      certificationsFeedback: feedback,
+    });
+  };
 
   return (
     <div className="space-y-4">
-      {/* Reutiliza DocumentCard existente en modo lectura + acciones debajo */}
-      <div>
-        <DocumentCard
-          title="Documento de Identidad"
-          document={doctorDocuments.identityDocumentFile}
-        />
-        <AdminActionRow
-          onApprove={() => approve("identityDocumentFile")}
-          onRejectConfirm={(fb) => reject("identityDocumentFile", fb)}
-        />
-      </div>
+      {/* Identity document */}
+      <DocumentCard
+        title="Documento de Identidad"
+        document={doctorDocuments.identityDocumentFile}
+        onApprove={handleApproveIdentity}
+        onReject={handleRejectIdentity}
+      />
 
+      {/* Academic title */}
       {doctorDocuments.academicTitle && (
-        <div>
-          <DocumentCard
-            title="Título Académico"
-            document={doctorDocuments.academicTitle}
-          />
-          <AdminActionRow
-            onApprove={() => approve("academicTitle")}
-            onRejectConfirm={(fb) => reject("academicTitle", fb)}
-          />
-        </div>
+        <DocumentCard
+          title="Título Académico"
+          document={doctorDocuments.academicTitle}
+          onApprove={handleApproveTitle}
+          onReject={handleRejectTitle}
+        />
       )}
 
-      <div>
-        <DocumentCard
-          title="Certificaciones Adicionales"
-          documents={doctorDocuments.certifications || []}
-          isArray
-          arrayParentStatus={doctorDocuments.certificationsStatus || "PENDING"}
-          arrayParentFeedback={doctorDocuments.certificationsFeedback}
-        />
-        <AdminActionRow
-          onApprove={() =>
-            setDoctorDocuments({
-              ...doctorDocuments,
-              certificationsStatus: "APPROVED",
-              certificationsFeedback: "Aprobado",
-            })
-          }
-          onRejectConfirm={(fb) =>
-            setDoctorDocuments({
-              ...doctorDocuments,
-              certificationsStatus: "REJECTED",
-              certificationsFeedback: fb,
-            })
-          }
-        />
-      </div>
+      {/* Certifications — individual approve/reject per cert */}
+      <DocumentCard
+        title="Certificaciones Adicionales"
+        documents={doctorDocuments.certifications ?? []}
+        isArray
+        arrayParentStatus={doctorDocuments.certificationsStatus ?? "PENDING"}
+        arrayParentFeedback={doctorDocuments.certificationsFeedback}
+        onApprove={handleApproveOneCert}
+        onReject={handleRejectOneCert}
+        onApproveAll={handleApproveAllCerts}
+        onRejectAll={handleRejectAllCerts}
+        docStatuses={certStatuses}
+        docFeedbacks={certFeedbacks}
+      />
     </div>
   );
 }
