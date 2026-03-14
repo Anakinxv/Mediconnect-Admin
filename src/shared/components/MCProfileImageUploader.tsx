@@ -1,5 +1,5 @@
 import "react-image-crop/dist/ReactCrop.css";
-import { useState, useRef, useCallback, useEffect } from "react";
+import { useState, useRef, useCallback } from "react";
 import ReactCrop, {
   type Crop,
   type PixelCrop,
@@ -31,12 +31,12 @@ export interface ImageCropModalProps {
 function centerAspectCrop(
   mediaWidth: number,
   mediaHeight: number,
-  aspect: number
+  aspect: number,
 ) {
   return centerCrop(
     makeAspectCrop({ unit: "%", width: 90 }, aspect, mediaWidth, mediaHeight),
     mediaWidth,
-    mediaHeight
+    mediaHeight,
   );
 }
 
@@ -74,7 +74,6 @@ export default function MCProfileImageUploader({
     canvas.width = completedCrop.width * scaleX;
     canvas.height = completedCrop.height * scaleY;
 
-    // Opcional: recorte circular
     if (isCircular) {
       ctx.save();
       ctx.beginPath();
@@ -83,7 +82,7 @@ export default function MCProfileImageUploader({
         canvas.height / 2,
         Math.min(canvas.width, canvas.height) / 2,
         0,
-        2 * Math.PI
+        2 * Math.PI,
       );
       ctx.closePath();
       ctx.clip();
@@ -98,7 +97,7 @@ export default function MCProfileImageUploader({
       0,
       0,
       canvas.width,
-      canvas.height
+      canvas.height,
     );
 
     if (isCircular) ctx.restore();
@@ -128,7 +127,7 @@ export default function MCProfileImageUploader({
             <div
               className="relative rounded-4xl p-4 flex justify-center max-h-[400px] overflow-hidden border border-primary/5"
               ref={cropContainerRef}
-              tabIndex={0} // Para permitir foco si quieres
+              tabIndex={0}
             >
               <div className="rounded-4xl overflow-hidden">
                 <ReactCrop

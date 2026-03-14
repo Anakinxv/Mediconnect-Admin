@@ -18,14 +18,12 @@ import { Button } from "@/shared/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/shared/ui/avatar";
 import {
   User,
-  Pencil,
   Languages,
   Moon,
   Settings,
   LogOut,
   ChevronDown,
   Sun,
-  Monitor,
   X,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -203,10 +201,10 @@ export function AdminUserMenu() {
             <Avatar className="h-14 w-14 rounded-full shadow-lg transition-all">
               <AvatarImage
                 src="https://i.pinimg.com/736x/ff/e7/3f/ffe73ffe75682fec82ccd320ccb43fe9.jpg"
-                alt="José Almirante"
+                alt="emmanuel"
                 className="object-cover"
               />
-              <AvatarFallback className="text-xl">JA</AvatarFallback>
+              <AvatarFallback className="text-xl">EM</AvatarFallback>
             </Avatar>
             <div className="flex items-start gap-3 0">
               <div className="flex flex-col items-start leading-tight text-left">
@@ -215,7 +213,7 @@ export function AdminUserMenu() {
                     !open ? "text-primary" : "text-background"
                   }`}
                 >
-                  José Almirante
+                  emmanuel
                 </span>
                 <span
                   className={`text-sm font-normal max-w-35 truncate ${
@@ -264,11 +262,11 @@ export function AdminUserMenu() {
             >
               <AvatarImage
                 src="https://i.pinimg.com/736x/ff/e7/3f/ffe73ffe75682fec82ccd320ccb43fe9.jpg"
-                alt="José Almirante"
+                alt="emmanuel"
                 className="object-cover"
               />
               <AvatarFallback className={cn(isMobile ? "text-sm" : "text-xl")}>
-                JA
+                EM
               </AvatarFallback>
             </Avatar>
             <div className="flex flex-col items-start leading-tight text-left min-w-0 flex-1">
@@ -278,7 +276,7 @@ export function AdminUserMenu() {
                   isMobile ? "text-sm" : "text-base",
                 )}
               >
-                José Almirante
+                emmanuel
               </span>
               <span
                 className={cn(
@@ -286,9 +284,9 @@ export function AdminUserMenu() {
                   isMobile ? "text-xs max-w-40" : "text-sm max-w-55",
                 )}
                 style={{ textOverflow: "clip" }}
-                title="emmanuel03250310@gmail.com"
+                title="emmanuelroame@gmail.com"
               >
-                emmanuel03250310@gmail.com
+                emmanuelroame@gmail.com
               </span>
             </div>
             {/* Close button for mobile */}

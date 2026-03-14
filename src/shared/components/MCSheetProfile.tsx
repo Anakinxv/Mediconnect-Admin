@@ -1,6 +1,6 @@
 import { Sheet, SheetContent, SheetClose } from "@/shared/ui/sheet";
 import { useIsMobile } from "@/lib/hooks/useIsMobile";
-import { X, User } from "lucide-react";
+import { X } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/ui/tabs";
 import MCButton from "./forms/MCButton";
 import MCInput from "./forms/MCInput";
@@ -11,6 +11,7 @@ import MCProfileImageUploader from "./MCProfileImageUploader";
 import { Avatar, AvatarImage } from "@/shared/ui/avatar";
 import { MCUserAvatar } from "@/shared/navigation/MCUserAvatar";
 import { useTranslation } from "react-i18next";
+
 interface MCSheetProfileProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -22,17 +23,17 @@ function MCSheetProfile({ open, onOpenChange }: MCSheetProfileProps) {
   const { t } = useTranslation("dashboard");
   const te = (key: string) => t(`userMenu.editProfile.${key}`);
   const isMobile = useIsMobile();
+
   const [formData, setFormData] = useState({
+    profilePicture: "",
     nombre: "",
     email: "",
     telefono: "",
     rol: "",
   });
+
   const [banner, setBanner] = useState<string>(
     "https://i.pinimg.com/736x/3b/37/46/3b3746e0878804293202d56d1dda1fe1.jpg",
-  );
-  const [profile, setProfile] = useState<string>(
-    "https://i.pinimg.com/736x/ee/27/85/ee278567d7a890bb390e5a99a4df4936.jpg",
   );
 
   // Estados para crop modal
@@ -41,14 +42,13 @@ function MCSheetProfile({ open, onOpenChange }: MCSheetProfileProps) {
   const [tempImage, setTempImage] = useState<string>("");
 
   // Refs para inputs file
-
   const profileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleInputChange = (field: string, value: string) => {
+  const handleInputChange = (field: keyof typeof formData, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-  // Cuando el usuario selecciona una imagen, abrir crop modal
+  // FIX 1: Solo lee el archivo y abre el modal — el label ya dispara el input por si solo
   const handleImageChange = (
     e: React.ChangeEvent<HTMLInputElement>,
     type: CropType,
@@ -63,14 +63,17 @@ function MCSheetProfile({ open, onOpenChange }: MCSheetProfileProps) {
       };
       reader.readAsDataURL(file);
     }
-    // Limpiar el input para permitir volver a seleccionar la misma imagen si se desea
+    // Limpia el input para permitir reseleccionar la misma imagen
     e.target.value = "";
   };
 
-  // Cuando se confirma el crop
+  // FIX 2: Usa cropType para saber a qué estado guardar la imagen recortada
   const handleCropComplete = (croppedImage: string) => {
-    if (cropType === "banner") setBanner(croppedImage);
-    else setProfile(croppedImage);
+    if (cropType === "profile") {
+      setFormData((prev) => ({ ...prev, profilePicture: croppedImage }));
+    } else {
+      setBanner(croppedImage);
+    }
   };
 
   const handleSubmit = () => {
@@ -104,7 +107,7 @@ function MCSheetProfile({ open, onOpenChange }: MCSheetProfileProps) {
         >
           <Tabs className="grid grid-cols-[35%_65%] h-full w-full">
             <aside
-              className="w-full h-full rounded-l-4xl bg-accent/30 border-r-3 border-accent py-6 m-0 flex flex-col gap-4 "
+              className="w-full h-full rounded-l-4xl bg-accent/30 border-r-3 border-accent py-6 m-0 flex flex-col gap-4"
               role="navigation"
               aria-label="Opciones de edición de perfil"
             >
@@ -116,9 +119,8 @@ function MCSheetProfile({ open, onOpenChange }: MCSheetProfileProps) {
                   {te("subtitle")}
                 </p>
               </div>
-
               <TabsList
-                className="flex flex-col gap-2 w-full justify-center items-center px-6  h-fit"
+                className="flex flex-col gap-2 w-full justify-center items-center px-6 h-fit"
                 role="tablist"
                 aria-label="Secciones de perfil"
               >
@@ -126,7 +128,7 @@ function MCSheetProfile({ open, onOpenChange }: MCSheetProfileProps) {
                   value="info"
                   role="tab"
                   aria-controls="info-panel"
-                  className="text-md rounded-full "
+                  className="text-md rounded-full"
                 >
                   <div className="flex items-center gap-2 p-2 rounded-full">
                     <span className="text-base font-medium">
@@ -173,14 +175,17 @@ function MCSheetProfile({ open, onOpenChange }: MCSheetProfileProps) {
                         {te("profilePhoto")}
                       </h3>
                       <div className="flex items-center gap-4">
-                        <label
-                          className="relative w-32 h-32 rounded-full overflow-hidden cursor-pointer group"
-                          onClick={() => profileInputRef.current?.click()}
-                        >
+                        {/*
+                          FIX 3: Eliminado el onClick del label.
+                          El <label> ya dispara el <input type="file"> que contiene adentro
+                          de forma nativa — agregar onClick causaba que el file picker
+                          se abra dos veces y la segunda cancelación bloqueaba la selección.
+                        */}
+                        <label className="relative w-32 h-32 rounded-full overflow-hidden cursor-pointer group">
                           <Avatar className="w-32 h-32 rounded-full bg-muted border border-primary/10">
-                            {profile ? (
+                            {formData.profilePicture ? (
                               <AvatarImage
-                                src={profile}
+                                src={formData.profilePicture}
                                 alt={formData.nombre || te("defaultName")}
                                 className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
                               />
@@ -196,6 +201,7 @@ function MCSheetProfile({ open, onOpenChange }: MCSheetProfileProps) {
                             )}
                           </Avatar>
 
+                          {/* Input oculto — el label lo activa automáticamente */}
                           <input
                             ref={profileInputRef}
                             type="file"

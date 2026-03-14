@@ -18,7 +18,7 @@ function InfoItem({ label, value }: { label: string; value: string }) {
       <h4 className="text-sm md:text-md text-primary/75 font-medium">
         {label}
       </h4>
-      <p className="text-base md:text-lg text-primary font-medium break-words max-w-xs">
+      <p className="text-base md:text-lg text-primary font-medium ">
         {value || "—"}
       </p>
     </div>
@@ -28,7 +28,7 @@ function InfoItem({ label, value }: { label: string; value: string }) {
 function ViewDetailsPatientDialog({
   children,
   patientId,
-  patientName = "Derek Hernandez",
+  patientName = "Valeria Gómez",
   patientImage,
 }: ViewDetailsPatientDialogProps) {
   const { t } = useTranslation("common");
@@ -80,20 +80,20 @@ function ViewDetailsPatientDialog({
           <div
             className={`grid ${isMobile ? "grid-cols-2" : "grid-cols-3"} gap-4 md:gap-6`}
           >
-            <InfoItem label={t("patientDetails.firstName")} value="Derek" />
-            <InfoItem label={t("patientDetails.lastName")} value="Hernandez" />
-            <InfoItem label={t("patientDetails.gender")} value="Masculino" />
+            <InfoItem label={t("patientDetails.firstName")} value="Valeria" />
+            <InfoItem label={t("patientDetails.lastName")} value="Gómez" />
+            <InfoItem label={t("patientDetails.gender")} value="Femenino" />
             <InfoItem
               label={t("patientDetails.birthDate")}
-              value="20/10/2004"
+              value="15/03/1998"
             />
             <InfoItem
               label={t("patientDetails.nationality")}
-              value="Dominicano"
+              value="Mexicana"
             />
             <InfoItem
               label={t("patientDetails.idNumber")}
-              value="402-3445875-4"
+              value="123-4567890-1"
             />
           </div>
         </section>
@@ -104,18 +104,23 @@ function ViewDetailsPatientDialog({
           <h3 className="text-base sm:text-lg text-primary font-medium">
             {t("patientDetails.contact")}
           </h3>
-          <div
-            className={`grid ${isMobile ? "grid-cols-2" : "grid-cols-2"} gap-4 md:gap-6`}
-          >
-            <InfoItem label={t("patientDetails.phone")} value="809-002-1525" />
-            <InfoItem
-              label={t("patientDetails.email")}
-              value="derekh@coreo.com"
-            />
-            <InfoItem
-              label={t("patientDetails.address")}
-              value="Calle Benito Juárez, El Vergel, Zona Colonial, República Dominicana"
-            />
+          <div className={`flex flex-col gap-4 md:gap-6 items-start w-full`}>
+            <div className="grid grid-cols-2 gap-4 md:col-span-1 w-full">
+              <InfoItem
+                label={t("patientDetails.phone")}
+                value="555-123-4567"
+              />
+              <InfoItem
+                label={t("patientDetails.email")}
+                value="valeria.gomez@email.com"
+              />
+            </div>
+            <div className="md:col-span-2 flex flex-col h-full  w-full ">
+              <InfoItem
+                label={t("patientDetails.address")}
+                value="Av. Reforma 123, Ciudad de México, México"
+              />
+            </div>
           </div>
         </section>
       </div>

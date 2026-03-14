@@ -8,7 +8,6 @@ import {
   CollapsibleTrigger,
 } from "@/shared/ui/collapsible";
 import AdminUserMenu from "./AdminUserMenu";
-import AdminNavbarBell from "@/shared/components/AdminNavbarBell";
 
 import { useAppStore } from "@/stores/useAppStore";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -44,7 +43,6 @@ function AdminNavbarMobile() {
   const isUsuariosActive = usuariosRoutes.includes(location.pathname);
   const isContenidoActive = contenidoRoutes.includes(location.pathname);
   const isDashboardActive = location.pathname === "/";
-  const isReporteActive = location.pathname === "/reporte-cuentas";
 
   const handleNavigation = (route: string) => {
     navigate(route);
@@ -74,9 +72,6 @@ function AdminNavbarMobile() {
 
       {/* Right side - Notifications + Menu */}
       <div className="flex items-center gap-4">
-        {/* Notifications Bell */}
-        <AdminNavbarBell />
-
         {/* Mobile Menu */}
         <Sheet open={open} onOpenChange={setOpen}>
           <SheetTrigger asChild>

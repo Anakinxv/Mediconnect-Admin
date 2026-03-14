@@ -55,7 +55,7 @@ function Login() {
   const handleSubmit = (data: LoginSchemaType) => {
     if (data.email && data.password) {
       setLoginCredentials({ email: data.email, password: data.password });
-      navigate("/admin/dashboard");
+      navigate("/dashboard"); // <-- Cambia aquí la ruta
     } else {
       alert(t("login.errorFields"));
     }
