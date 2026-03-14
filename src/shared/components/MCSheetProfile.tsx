@@ -8,6 +8,8 @@ import { useState, useRef } from "react";
 import MCFormWrapper from "./forms/MCFormWrapper";
 import { profileSchema } from "@/schema/UserSchema";
 import MCProfileImageUploader from "./MCProfileImageUploader";
+import { Avatar, AvatarImage } from "@/shared/ui/avatar";
+import { MCUserAvatar } from "@/shared/navigation/MCUserAvatar";
 
 interface MCSheetProfileProps {
   open: boolean;
@@ -171,14 +173,28 @@ function MCSheetProfile({ open, onOpenChange }: MCSheetProfileProps) {
                       <h3 className="text-lg font-medium">Foto de perfil</h3>
                       <div className="flex items-center gap-4">
                         <label
-                          className="relative w-32 h-32 rounded-full bg-accent/30 overflow-hidden cursor-pointer group"
+                          className="relative w-32 h-32 rounded-full overflow-hidden cursor-pointer group"
                           onClick={() => profileInputRef.current?.click()}
                         >
-                          <img
-                            src={profile}
-                            alt="Perfil"
-                            className="w-full h-full object-cover"
-                          />
+                          <Avatar className="w-32 h-32 rounded-full bg-muted border border-primary/10">
+                            {profile ? (
+                              <AvatarImage
+                                src={profile}
+                                alt={formData.nombre || "Administrador"}
+                                className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
+                              />
+                            ) : (
+                              <div className="w-full h-full flex items-center justify-center bg-muted rounded-full">
+                                <MCUserAvatar
+                                  name={formData.nombre || "Administrador"}
+                                  square={false}
+                                  size={128}
+                                  className="w-full h-full object-cover"
+                                />
+                              </div>
+                            )}
+                          </Avatar>
+
                           <input
                             ref={profileInputRef}
                             type="file"
@@ -186,6 +202,7 @@ function MCSheetProfile({ open, onOpenChange }: MCSheetProfileProps) {
                             className="hidden"
                             onChange={(e) => handleImageChange(e, "profile")}
                           />
+
                           <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity rounded-full">
                             <span className="text-white font-semibold text-sm">
                               Cambiar imagen

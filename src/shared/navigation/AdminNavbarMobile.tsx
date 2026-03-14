@@ -223,8 +223,7 @@ function AdminNavbar() {
 
       {/* User Menu */}
       <div className="flex items-center gap-2 sm:gap-3">
-        <AdminNavbarBell />
-        <div className="hidden md:block">
+        <div className=" md:block">
           <AdminUserMenu />
         </div>
       </div>

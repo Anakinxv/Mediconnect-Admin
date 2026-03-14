@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef, useEffect } from "react";
+import { useState, useCallback, useRef } from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -6,7 +6,6 @@ import {
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
-  DropdownMenuShortcut,
   DropdownMenuTrigger,
   DropdownMenuSub,
   DropdownMenuSubContent,
@@ -18,14 +17,12 @@ import { Button } from "@/shared/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/shared/ui/avatar";
 import {
   User,
-  Pencil,
   Languages,
   Moon,
   Settings,
   LogOut,
   ChevronDown,
   Sun,
-  Monitor,
   X,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -37,10 +34,6 @@ import type { Theme } from "@/stores/useGlobalUISlice";
 import { useIsMobile } from "@/lib/hooks/useIsMobile";
 import { cn } from "@/lib/utils";
 import MCSheetProfile from "@/shared/components/MCSheetProfile";
-const isMac =
-  typeof window !== "undefined" &&
-  /Mac|iPod|iPhone|iPad/.test(navigator.platform);
-const cmdOrCtrl = isMac ? "⌘" : "Ctrl";
 
 const languages = [
   {
@@ -66,17 +59,12 @@ const themeOptions: { value: Theme; label: string; icon: React.ReactNode }[] = [
     label: "Oscuro",
     icon: <Moon className="w-4 h-4 text-primary" />,
   },
-  // { // Elimina o comenta esta opción
-  //   value: "system",
-  //   label: "Sistema",
-  //   icon: <Monitor className="w-4 h-4 text-primary" />,
-  // },
 ];
 
 export function AdminUserMenu() {
   const [open, setOpen] = useState(false);
   const [subMenuOpen, setSubMenuOpen] = useState<string | null>(null);
-  const [isEditProfileOpen, setIsEditProfileOpen] = useState(false); // Nuevo estado
+  const [isEditProfileOpen, setIsEditProfileOpen] = useState(false);
   const { t } = useTranslation("dashboard");
   const language = useAppStore((state) => state.language);
   const setLanguage = useAppStore((state) => state.setLanguage);
@@ -86,7 +74,6 @@ export function AdminUserMenu() {
   const isMobile = useIsMobile();
   const navigate = useNavigate();
 
-  // Función para manejar cambio de tema
   const handleThemeChange = useCallback(
     async (newTheme: Theme, event: React.MouseEvent) => {
       const target = event.currentTarget as HTMLElement;
@@ -179,76 +166,80 @@ export function AdminUserMenu() {
     (option) => option.value === theme,
   );
 
-  // Opcional: atajo de teclado Ctrl+E o Cmd+E para abrir editar perfil
-  useEffect(() => {
-    const handler = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.key === "e") {
-        setIsEditProfileOpen(true);
-      }
-    };
-    window.addEventListener("keydown", handler);
-    return () => window.removeEventListener("keydown", handler);
-  }, []);
-
   return (
     <>
       <DropdownMenu open={open} onOpenChange={setOpen}>
         <DropdownMenuTrigger asChild>
           <Button
             variant="outline"
-            className={`flex items-center  justify-center gap-3 rounded-full w-full  bg-transparent hover:bg-accent/80   outline-none border-none shadow-none ring-0 focus:ring-0 h-fit transition-colors ${
-              open ? "bg-primary rounded-full text-primary" : ""
-            }`}
+            className={cn(
+              "flex items-center rounded-full bg-transparent hover:bg-accent/80 outline-none border-none shadow-none ring-0 focus:ring-0 h-fit transition-colors",
+              open ? "bg-primary text-primary" : "",
+              isMobile
+                ? "w-auto px-1.5 py-1.5 gap-2"
+                : "w-full justify-center gap-3",
+            )}
           >
-            <Avatar className="h-14 w-14 rounded-full shadow-lg transition-all">
+            <Avatar
+              className={cn(
+                "rounded-full shadow-lg transition-all",
+                isMobile ? "h-10 w-10" : "h-14 w-14",
+              )}
+            >
               <AvatarImage
                 src="https://i.pinimg.com/736x/ff/e7/3f/ffe73ffe75682fec82ccd320ccb43fe9.jpg"
                 alt="José Almirante"
                 className="object-cover"
               />
-              <AvatarFallback className="text-xl">JA</AvatarFallback>
+              <AvatarFallback className={cn(isMobile ? "text-sm" : "text-xl")}>
+                JA
+              </AvatarFallback>
             </Avatar>
-            <div className="flex items-start gap-3 0">
-              <div className="flex flex-col items-start leading-tight text-left">
-                <span
-                  className={`text-base font-semibold ${
-                    !open ? "text-primary" : "text-background"
-                  }`}
-                >
-                  José Almirante
-                </span>
-                <span
-                  className={`text-sm font-normal max-w-35 truncate ${
-                    !open ? "text-primary" : "text-background"
-                  }`}
-                  style={{ textOverflow: "clip" }}
-                  title="jose@gmail.com"
-                >
-                  {t("userMenu.admin")}
-                </span>
+
+            {isMobile ? (
+              <ChevronDown
+                className={cn(
+                  "w-5 h-5 stroke-2.5 transition-transform duration-200",
+                  open ? "rotate-180 text-background" : "text-primary",
+                )}
+              />
+            ) : (
+              <div className="flex items-start gap-3">
+                <div className="flex flex-col items-start leading-tight text-left">
+                  <span
+                    className={`text-base font-semibold ${!open ? "text-primary" : "text-background"}`}
+                  >
+                    José Almirante
+                  </span>
+                  <span
+                    className={`text-sm font-normal max-w-35 truncate ${!open ? "text-primary" : "text-background"}`}
+                    style={{ textOverflow: "clip" }}
+                    title="jose@gmail.com"
+                  >
+                    {t("userMenu.admin")}
+                  </span>
+                </div>
+                <div className="flex flex-col h-full w-full items-start justify-start">
+                  <ChevronDown
+                    className={`w-7 h-7 mt-0.5 stroke-2.5 transition-transform duration-200 ${
+                      open ? "rotate-180 text-background" : "text-primary"
+                    }`}
+                  />
+                </div>
               </div>
-              <div className="flex flex-col h-full w-full items-start justify-start">
-                <ChevronDown
-                  className={`w-7 h-7 mt-0.5 stroke-2.5 transition-transform duration-200 ${
-                    open ? "rotate-180 text-background" : "text-primary"
-                  }`}
-                />
-              </div>
-            </div>
+            )}
           </Button>
         </DropdownMenuTrigger>
 
         <DropdownMenuContent
           className={cn(
             "rounded-2xl bg-background border border-primary/20",
-            isMobile
-              ? "w-[calc(100vw-2rem)] max-w-sm" // Better mobile width
-              : "w-80",
+            isMobile ? "w-[calc(100vw-2rem)] max-w-sm" : "w-80",
           )}
-          align={isMobile ? "end" : "end"} // Keep consistent alignment
+          align={isMobile ? "end" : "end"}
           side="bottom"
-          sideOffset={isMobile ? 12 : 8} // More space on mobile
-          avoidCollisions={true} // Prevent dropdown from going off-screen
+          sideOffset={isMobile ? 12 : 8}
+          avoidCollisions={true}
         >
           <DropdownMenuLabel
             className={cn(
@@ -291,7 +282,6 @@ export function AdminUserMenu() {
                 emmanuel03250310@gmail.com
               </span>
             </div>
-            {/* Close button for mobile */}
             {isMobile && (
               <Button
                 variant="ghost"
@@ -307,21 +297,6 @@ export function AdminUserMenu() {
           <DropdownMenuSeparator className="bg-primary/15" />
 
           <DropdownMenuGroup>
-            {/* Elimina el ítem "Ver perfil" */}
-            {/* 
-            <DropdownMenuItem
-              onSelect={(e) => {
-                e.preventDefault();
-                navigate("/ver-perfil");
-              }}
-            >
-              <User className="w-4 h-4 mr-2" />
-              {t("userMenu.viewProfile")}
-              {!isMobile && (
-                <DropdownMenuShortcut>⇧{cmdOrCtrl}+P</DropdownMenuShortcut>
-              )}
-            </DropdownMenuItem>
-            */}
             <DropdownMenuItem
               onSelect={(e) => {
                 e.preventDefault();
@@ -330,9 +305,6 @@ export function AdminUserMenu() {
             >
               <User className="w-4 h-4 mr-2" />
               Perfil
-              {!isMobile && (
-                <DropdownMenuShortcut>{cmdOrCtrl}+E</DropdownMenuShortcut>
-              )}
             </DropdownMenuItem>
           </DropdownMenuGroup>
 
@@ -455,9 +427,6 @@ export function AdminUserMenu() {
             >
               <Settings className="w-4 h-4 mr-2" />
               {t("userMenu.settings")}
-              {!isMobile && (
-                <DropdownMenuShortcut>{cmdOrCtrl}+S</DropdownMenuShortcut>
-              )}
             </DropdownMenuItem>
           </DropdownMenuGroup>
 
@@ -466,9 +435,6 @@ export function AdminUserMenu() {
           <DropdownMenuItem variant="destructive">
             <LogOut className="w-4 h-4 mr-2" />
             {t("userMenu.logout")}
-            {!isMobile && (
-              <DropdownMenuShortcut>⇧{cmdOrCtrl}+Q</DropdownMenuShortcut>
-            )}
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

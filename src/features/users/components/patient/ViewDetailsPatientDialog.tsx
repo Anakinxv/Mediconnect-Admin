@@ -77,7 +77,9 @@ function ViewDetailsPatientDialog({
             Información Personal
           </h3>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
+          <div
+            className={`grid ${isMobile ? "grid-cols-2" : "grid-cols-3"} gap-4 md:gap-6`}
+          >
             <InfoItem label="Nombre(s)" value="Derek" />
             <InfoItem label="Apellido(s)" value="Hernandez" />
             <InfoItem label="Género" value="Masculino" />
@@ -94,7 +96,9 @@ function ViewDetailsPatientDialog({
             Contacto
           </h3>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+          <div
+            className={`grid ${isMobile ? "grid-cols-2" : "grid-cols-2"} gap-4 md:gap-6`}
+          >
             <InfoItem label="Teléfono móvil" value="809-002-1525" />
             <InfoItem label="Correo electrónico" value="derekh@coreo.com" />
             <InfoItem
