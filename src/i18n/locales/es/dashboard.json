@@ -19,7 +19,23 @@
   "userMenu": {
     "admin": "Admin",
     "viewProfile": "Ver Perfil",
-    "editProfile": "Editar Perfil",
+    "editProfile": {
+      "title": "Editar Perfil",
+      "subtitle": "Modifica tu Información profesional",
+      "professionalInfo": "Información profesional",
+      "close": "Cerrar",
+      "generalInfo": "Información General",
+      "profilePhoto": "Foto de perfil",
+      "changeImage": "Cambiar imagen",
+      "fullName": "Nombre Completo",
+      "namePlaceholder": "Ingresa tu nombre completo",
+      "emailPlaceholder": "correo@ejemplo.com",
+      "saveChanges": "Guardar cambios",
+      "cancel": "Cancelar",
+      "cropBanner": "Recortar banner",
+      "cropProfile": "Recortar foto de perfil",
+      "defaultName": "Administrador"
+    },
     "changeLanguage": "Cambiar Idioma",
     "changeTheme": "Cambiar Tema",
     "settings": "Configuración",
@@ -51,7 +67,9 @@
     "consultations": "Consultas",
     "consultationsDescription": "Tipo de consulta",
     "topSpecialties": "Top Especialidades",
-    "topSpecialtiesDescription": "Especialidades con mejor reseñas"
+    "topSpecialtiesDescription": "Especialidades con mejor reseñas",
+    "topSpecialtiesRequested": "Especialidades más solicitadas",
+    "ratingLabel": "Valoración"
   },
   "filters": {
     "filterBy": "Filtrar por",
@@ -60,5 +78,11 @@
     "threeMonths": "3 Meses",
     "year": "Año",
     "all": "Todo"
+  },
+  "userSchema": {
+    "nameRequired": "El nombre es obligatorio",
+    "invalidEmail": "Correo electrónico inválido",
+    "phoneRequired": "El teléfono es obligatorio",
+    "roleRequired": "El rol es obligatorio"
   }
 }

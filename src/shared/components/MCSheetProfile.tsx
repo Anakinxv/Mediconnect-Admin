@@ -10,7 +10,7 @@ import { profileSchema } from "@/schema/UserSchema";
 import MCProfileImageUploader from "./MCProfileImageUploader";
 import { Avatar, AvatarImage } from "@/shared/ui/avatar";
 import { MCUserAvatar } from "@/shared/navigation/MCUserAvatar";
-
+import { useTranslation } from "react-i18next";
 interface MCSheetProfileProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -19,6 +19,8 @@ interface MCSheetProfileProps {
 type CropType = "banner" | "profile";
 
 function MCSheetProfile({ open, onOpenChange }: MCSheetProfileProps) {
+  const { t } = useTranslation("dashboard");
+  const te = (key: string) => t(`userMenu.editProfile.${key}`);
   const isMobile = useIsMobile();
   const [formData, setFormData] = useState({
     nombre: "",
@@ -85,9 +87,7 @@ function MCSheetProfile({ open, onOpenChange }: MCSheetProfileProps) {
         aspectRatio={cropType === "banner" ? 3.5 : 1}
         isCircular={cropType === "profile"}
         onCropComplete={handleCropComplete}
-        title={
-          cropType === "banner" ? "Recortar banner" : "Recortar foto de perfil"
-        }
+        title={cropType === "banner" ? te("cropBanner") : te("cropProfile")}
       />
 
       <Sheet open={open} onOpenChange={onOpenChange}>
@@ -110,10 +110,10 @@ function MCSheetProfile({ open, onOpenChange }: MCSheetProfileProps) {
             >
               <div className="w-full px-10 mt-6 flex flex-col gap-2">
                 <h1 id="mc-sheet-title" className="text-xl font-medium">
-                  Editar Perfil
+                  {te("title")}
                 </h1>
                 <p id="mc-sheet-desc" className="text-base max-w-50 text-left">
-                  Modifica tu Información profesional
+                  {te("subtitle")}
                 </p>
               </div>
 
@@ -129,9 +129,8 @@ function MCSheetProfile({ open, onOpenChange }: MCSheetProfileProps) {
                   className="text-md rounded-full "
                 >
                   <div className="flex items-center gap-2 p-2 rounded-full">
-                    <User className="h-12 w-auto stroke-2" />
                     <span className="text-base font-medium">
-                      Información profesional
+                      {te("professionalInfo")}
                     </span>
                   </div>
                 </TabsTrigger>
@@ -143,7 +142,7 @@ function MCSheetProfile({ open, onOpenChange }: MCSheetProfileProps) {
                 <SheetClose asChild>
                   <button
                     className="rounded-full h-8 w-8 flex items-center border-none outline-none ring-none justify-center hover:bg-accent/70 focus:bg-accent active:scale-95 transition-all duration-200"
-                    aria-label="Cerrar"
+                    aria-label={te("close")}
                   >
                     <X className="h-4 w-4" />
                   </button>
@@ -151,8 +150,8 @@ function MCSheetProfile({ open, onOpenChange }: MCSheetProfileProps) {
               </div>
 
               <div className="flex items-center border-b-2 border-border mx-4">
-                <h2 className="text-2xl font-medium px-5 ">
-                  Información General
+                <h2 className="text-2xl font-medium px-5">
+                  {te("generalInfo")}
                 </h2>
               </div>
 
@@ -164,13 +163,15 @@ function MCSheetProfile({ open, onOpenChange }: MCSheetProfileProps) {
                   aria-labelledby="info-tab"
                 >
                   <MCFormWrapper
-                    schema={profileSchema}
+                    schema={profileSchema(t)}
                     onSubmit={handleSubmit}
                     className="flex flex-col gap-4"
                   >
                     {/* Foto de perfil */}
                     <div className="flex flex-col gap-4">
-                      <h3 className="text-lg font-medium">Foto de perfil</h3>
+                      <h3 className="text-lg font-medium">
+                        {te("profilePhoto")}
+                      </h3>
                       <div className="flex items-center gap-4">
                         <label
                           className="relative w-32 h-32 rounded-full overflow-hidden cursor-pointer group"
@@ -180,13 +181,13 @@ function MCSheetProfile({ open, onOpenChange }: MCSheetProfileProps) {
                             {profile ? (
                               <AvatarImage
                                 src={profile}
-                                alt={formData.nombre || "Administrador"}
+                                alt={formData.nombre || te("defaultName")}
                                 className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
                               />
                             ) : (
                               <div className="w-full h-full flex items-center justify-center bg-muted rounded-full">
                                 <MCUserAvatar
-                                  name={formData.nombre || "Administrador"}
+                                  name={formData.nombre || te("defaultName")}
                                   square={false}
                                   size={128}
                                   className="w-full h-full object-cover"
@@ -205,7 +206,7 @@ function MCSheetProfile({ open, onOpenChange }: MCSheetProfileProps) {
 
                           <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity rounded-full">
                             <span className="text-white font-semibold text-sm">
-                              Cambiar imagen
+                              {te("changeImage")}
                             </span>
                           </div>
                         </label>
@@ -215,9 +216,9 @@ function MCSheetProfile({ open, onOpenChange }: MCSheetProfileProps) {
                     {/* Nombre Completo */}
                     <MCInput
                       name="nombre"
-                      label="Nombre Completo"
+                      label={te("fullName")}
                       type="text"
-                      placeholder="Ingresa tu nombre completo"
+                      placeholder={te("namePlaceholder")}
                       value={formData.nombre}
                       onChange={(e) =>
                         handleInputChange("nombre", e.target.value)
@@ -229,7 +230,7 @@ function MCSheetProfile({ open, onOpenChange }: MCSheetProfileProps) {
                       name="email"
                       label="Email"
                       type="email"
-                      placeholder="correo@ejemplo.com"
+                      placeholder={te("emailPlaceholder")}
                       value={formData.email}
                       disabled
                     />
@@ -241,14 +242,14 @@ function MCSheetProfile({ open, onOpenChange }: MCSheetProfileProps) {
                         size="m"
                         onClick={handleSubmit}
                       >
-                        Guardar cambios
+                        {te("saveChanges")}
                       </MCButton>
                       <MCButton
                         variant="secondary"
                         size="m"
                         onClick={() => onOpenChange(false)}
                       >
-                        Cancelar
+                        {te("cancel")}
                       </MCButton>
                     </div>
                   </MCFormWrapper>

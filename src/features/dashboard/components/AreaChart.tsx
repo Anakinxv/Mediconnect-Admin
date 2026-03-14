@@ -13,6 +13,7 @@ import {
   ChartTooltipContent,
   type ChartConfig,
 } from "@/shared/ui/chart";
+import { useTranslation } from "react-i18next";
 
 interface AreaChartProps {
   dataType?: "All" | "Year" | "Monthly" | "ThreeMonths" | "Weekly";
@@ -21,14 +22,16 @@ interface AreaChartProps {
 }
 
 function AreaChart({ data = [], config }: AreaChartProps) {
+  const { t } = useTranslation("dashboard");
+
   const autoConfig: ChartConfig = {
     consultas: {
-      label: "Consultas",
+      label: t("charts.consultations"),
     },
   };
 
   return (
-    <Card className="h-full flex flex-col rounded-3xl border-none shadow-none p-0  m-0">
+    <Card className="h-full flex flex-col rounded-3xl border-none shadow-none p-0 m-0">
       <CardContent className="flex items-center justify-center h-full">
         <ChartContainer
           config={config ?? autoConfig}

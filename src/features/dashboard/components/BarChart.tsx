@@ -3,7 +3,7 @@ import {
   BarChart as RechartsBarChart,
   CartesianGrid,
   XAxis,
-  YAxis, // <-- Agrega esto
+  YAxis,
   Tooltip,
 } from "recharts";
 import { Card, CardContent } from "@/shared/ui/card";
@@ -12,6 +12,7 @@ import {
   ChartTooltipContent,
   type ChartConfig,
 } from "@/shared/ui/chart";
+import { useTranslation } from "react-i18next";
 
 interface BarChartProps {
   dataType?: "All" | "Year" | "Monthly" | "ThreeMonths" | "Weekly";
@@ -20,15 +21,17 @@ interface BarChartProps {
 }
 
 function BarChart({ data = [], config }: BarChartProps) {
+  const { t } = useTranslation("dashboard");
+
   const autoConfig: ChartConfig = {
     consultas: {
-      label: "Consultas",
+      label: t("charts.consultations"),
       color: "var(--primary)",
     },
   };
 
   return (
-    <Card className="h-full flex flex-col  border-none p-0 m-0 shadow-none">
+    <Card className="h-full flex flex-col border-none p-0 m-0 shadow-none">
       <CardContent className="flex items-center justify-center h-full">
         <ChartContainer
           config={config ?? autoConfig}
@@ -40,7 +43,7 @@ function BarChart({ data = [], config }: BarChartProps) {
           >
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="label" />
-            <YAxis /> {/* <-- Esto agrega el eje Y a la izquierda */}
+            <YAxis />
             <Tooltip
               cursor={false}
               content={<ChartTooltipContent hideLabel />}
@@ -49,7 +52,7 @@ function BarChart({ data = [], config }: BarChartProps) {
               dataKey="consultas"
               fill="var(--accent)"
               barSize={60}
-              radius={[8, 8, 0, 0]} // Bordes superiores redondeados
+              radius={[8, 8, 0, 0]}
             />
           </RechartsBarChart>
         </ChartContainer>

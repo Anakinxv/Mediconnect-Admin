@@ -16,11 +16,26 @@
     "seguros": "Insurances",
     "alergias": "Allergies"
   },
-
   "userMenu": {
     "admin": "Admin",
     "viewProfile": "View Profile",
-    "editProfile": "Edit Profile",
+    "editProfile": {
+      "title": "Edit Profile",
+      "subtitle": "Modify your professional information",
+      "professionalInfo": "Professional information",
+      "close": "Close",
+      "generalInfo": "General Information",
+      "profilePhoto": "Profile photo",
+      "changeImage": "Change image",
+      "fullName": "Full Name",
+      "namePlaceholder": "Enter your full name",
+      "emailPlaceholder": "email@example.com",
+      "saveChanges": "Save changes",
+      "cancel": "Cancel",
+      "cropBanner": "Crop banner",
+      "cropProfile": "Crop profile photo",
+      "defaultName": "Administrator"
+    },
     "changeLanguage": "Change Language",
     "changeTheme": "Change Theme",
     "settings": "Settings",
@@ -52,7 +67,9 @@
     "consultations": "Consultations",
     "consultationsDescription": "Consultation type",
     "topSpecialties": "Top Specialties",
-    "topSpecialtiesDescription": "Specialties with best reviews"
+    "topSpecialtiesDescription": "Specialties with best reviews",
+    "topSpecialtiesRequested": "Most requested specialties",
+    "ratingLabel": "Rating"
   },
   "filters": {
     "filterBy": "Filter by",
@@ -61,5 +78,11 @@
     "threeMonths": "3 Months",
     "year": "Year",
     "all": "All"
+  },
+  "userSchema": {
+    "nameRequired": "Name is required",
+    "invalidEmail": "Invalid email address",
+    "phoneRequired": "Phone number is required",
+    "roleRequired": "Role is required"
   }
 }

@@ -20,6 +20,7 @@ import {
   ChartTooltipContent,
   type ChartConfig,
 } from "@/shared/ui/chart";
+import { useTranslation } from "react-i18next";
 
 interface TopSpecialtiesChartProps {
   dataType?: "All" | "Year" | "Monthly" | "ThreeMonths" | "Weekly";
@@ -31,17 +32,23 @@ interface TopSpecialtiesChartProps {
 
 function TopSpecialtiesChart({
   data = [],
-  title = "Top Especialidades",
-  description = "Especialidades más solicitadas",
+  title,
+  description,
   config,
 }: TopSpecialtiesChartProps) {
-  // Ordenar por rating descendente y tomar el top 5
+  const { t } = useTranslation("dashboard");
+
+  const resolvedTitle = title ?? t("charts.topSpecialties");
+  const resolvedDescription =
+    description ?? t("charts.topSpecialtiesRequested");
+
+  // Sort by rating descending and take top 5
   const top5 = [...data].sort((a, b) => b.rating - a.rating).slice(0, 5);
 
-  // Configuración por defecto para el color de la barra
+  // Default configuration for bar color
   const chartConfig: ChartConfig = config ?? {
     rating: {
-      label: "Rating",
+      label: t("charts.ratingLabel"),
       color: "var(--accent)",
     },
   };
@@ -49,16 +56,15 @@ function TopSpecialtiesChart({
   return (
     <Card className="h-full flex flex-col rounded-3xl border-none">
       <CardHeader className="flex flex-col items-center justify-center">
-        <CardTitle className="text-base md:text-lg font-semibold ">
-          {title}
+        <CardTitle className="text-base md:text-lg font-semibold">
+          {resolvedTitle}
         </CardTitle>
-        {description && (
-          <CardDescription className="text-xs md:text-sm  font-normal ">
-            {description}
+        {resolvedDescription && (
+          <CardDescription className="text-xs md:text-sm font-normal">
+            {resolvedDescription}
           </CardDescription>
         )}
       </CardHeader>
-
       <CardContent className="flex items-center justify-center h-full">
         <ChartContainer
           config={config ?? chartConfig}
@@ -84,7 +90,7 @@ function TopSpecialtiesChart({
               dataKey="rating"
               type="number"
               hide
-              domain={[0, Math.max(...top5.map((d) => d.rating)) * 1.2]} // Aumenta el rango máximo un 20%
+              domain={[0, Math.max(...top5.map((d) => d.rating)) * 1.2]}
             />
             <ChartTooltip
               cursor={false}
