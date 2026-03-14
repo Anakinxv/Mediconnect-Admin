@@ -6,23 +6,14 @@ export const changeEmailSchema = (t: TFunction) =>
     newEmail: z
       .string()
       .trim()
-      .min(1, t("changeEmail.errors.required", "El correo es obligatorio"))
-      .email(t("changeEmail.errors.invalid", "Correo inválido")),
+      .min(1, t("changeEmail.errors.required"))
+      .email(t("changeEmail.errors.invalid")),
     otp: z
       .string()
       .trim()
-      .min(
-        6,
-        t("verifyEmail.errors.otpLength", "El código debe tener 6 dígitos"),
-      )
-      .max(
-        6,
-        t("verifyEmail.errors.otpLength", "El código debe tener 6 dígitos"),
-      )
-      .regex(
-        /^\d+$/,
-        t("verifyEmail.errors.otpNumeric", "El código debe ser numérico"),
-      ),
+      .min(6, t("verifyEmail.errors.otpLength"))
+      .max(6, t("verifyEmail.errors.otpLength"))
+      .regex(/^\d+$/, t("verifyEmail.errors.otpNumeric")),
   });
 
 export const changePasswordSchema = (t: TFunction) =>
@@ -30,46 +21,20 @@ export const changePasswordSchema = (t: TFunction) =>
     .object({
       newPassword: z
         .string()
-        .min(
-          8,
-          t(
-            "changePassword.errors.min",
-            "La contraseña debe tener al menos 8 caracteres",
-          ),
-        )
-        .max(
-          64,
-          t(
-            "changePassword.errors.max",
-            "La contraseña no puede superar 64 caracteres",
-          ),
-        ),
+        .min(8, t("changePassword.errors.min"))
+        .max(64, t("changePassword.errors.max")),
       confirmNewPassword: z
         .string()
-        .min(
-          1,
-          t(
-            "changePassword.errors.confirmRequired",
-            "Debes confirmar la contraseña",
-          ),
-        ),
+        .min(1, t("changePassword.errors.confirmRequired")),
     })
     .refine((data) => data.newPassword === data.confirmNewPassword, {
       path: ["confirmNewPassword"],
-      message: t("changePassword.errors.match", "Las contraseñas no coinciden"),
+      message: t("changePassword.errors.match"),
     });
 
 export const verifyAccountSchema = (t: TFunction) =>
   z.object({
-    password: z
-      .string()
-      .min(
-        1,
-        t(
-          "verifyIdentity.errors.passwordRequired",
-          "La contraseña es obligatoria",
-        ),
-      ),
+    password: z.string().min(1, t("verifyIdentity.errors.passwordRequired")),
   });
 
 export type ChangeEmailForm = z.infer<ReturnType<typeof changeEmailSchema>>;

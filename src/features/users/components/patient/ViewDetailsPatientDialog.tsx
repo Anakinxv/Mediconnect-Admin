@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { MCModalBase } from "@/shared/components/MCModalBase";
 import { Avatar, AvatarImage } from "@/shared/ui/avatar";
 import { MCUserAvatar } from "@/shared/navigation/MCUserAvatar";
@@ -30,12 +31,13 @@ function ViewDetailsPatientDialog({
   patientName = "Derek Hernandez",
   patientImage,
 }: ViewDetailsPatientDialogProps) {
+  const { t } = useTranslation("common");
   const isMobile = useIsMobile();
 
   return (
     <MCModalBase
       id={`patient-modal-${patientId}`}
-      title="Detalles del Paciente"
+      title={t("patientDetails.title")}
       trigger={children}
       variant="info"
       size="lgAuto"
@@ -62,7 +64,6 @@ function ViewDetailsPatientDialog({
               </div>
             )}
           </Avatar>
-
           <h3
             className={`${isMobile ? "text-xl" : "text-3xl"} font-semibold text-primary`}
           >
@@ -74,18 +75,26 @@ function ViewDetailsPatientDialog({
 
         <section className="space-y-4">
           <h3 className="text-base sm:text-lg text-primary font-medium">
-            Información Personal
+            {t("patientDetails.personalInfo")}
           </h3>
-
           <div
             className={`grid ${isMobile ? "grid-cols-2" : "grid-cols-3"} gap-4 md:gap-6`}
           >
-            <InfoItem label="Nombre(s)" value="Derek" />
-            <InfoItem label="Apellido(s)" value="Hernandez" />
-            <InfoItem label="Género" value="Masculino" />
-            <InfoItem label="Fecha de Nacimiento" value="20/10/2004" />
-            <InfoItem label="Nacionalidad" value="Dominicano" />
-            <InfoItem label="Número de identificación" value="402-3445875-4" />
+            <InfoItem label={t("patientDetails.firstName")} value="Derek" />
+            <InfoItem label={t("patientDetails.lastName")} value="Hernandez" />
+            <InfoItem label={t("patientDetails.gender")} value="Masculino" />
+            <InfoItem
+              label={t("patientDetails.birthDate")}
+              value="20/10/2004"
+            />
+            <InfoItem
+              label={t("patientDetails.nationality")}
+              value="Dominicano"
+            />
+            <InfoItem
+              label={t("patientDetails.idNumber")}
+              value="402-3445875-4"
+            />
           </div>
         </section>
 
@@ -93,16 +102,18 @@ function ViewDetailsPatientDialog({
 
         <section className="space-y-4">
           <h3 className="text-base sm:text-lg text-primary font-medium">
-            Contacto
+            {t("patientDetails.contact")}
           </h3>
-
           <div
             className={`grid ${isMobile ? "grid-cols-2" : "grid-cols-2"} gap-4 md:gap-6`}
           >
-            <InfoItem label="Teléfono móvil" value="809-002-1525" />
-            <InfoItem label="Correo electrónico" value="derekh@coreo.com" />
+            <InfoItem label={t("patientDetails.phone")} value="809-002-1525" />
             <InfoItem
-              label="Dirección Física"
+              label={t("patientDetails.email")}
+              value="derekh@coreo.com"
+            />
+            <InfoItem
+              label={t("patientDetails.address")}
               value="Calle Benito Juárez, El Vergel, Zona Colonial, República Dominicana"
             />
           </div>

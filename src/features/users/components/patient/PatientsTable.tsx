@@ -1,4 +1,5 @@
 import * as React from "react";
+import { useTranslation } from "react-i18next";
 import { Avatar, AvatarFallback, AvatarImage } from "@/shared/ui/avatar";
 import {
   Table,
@@ -25,6 +26,7 @@ import {
 import { UserStatusBadge, type UserStatus } from "../UserStates";
 import UserAction from "../UserAction";
 import ViewDetailsPatientDialog from "./ViewDetailsPatientDialog";
+
 export interface Patient {
   id: string;
   name: string;
@@ -51,6 +53,7 @@ export default function PatientsTable({
   patients,
   onViewDetails,
 }: PatientsTableProps) {
+  const { t } = useTranslation("common");
   const [page, setPage] = React.useState(1);
 
   const totalPages = Math.ceil(patients.length / PAGE_SIZE);
@@ -58,9 +61,7 @@ export default function PatientsTable({
   const paginatedData = patients.slice(startIndex, startIndex + PAGE_SIZE);
 
   React.useEffect(() => {
-    if (page > totalPages && totalPages > 0) {
-      setPage(1);
-    }
+    if (page > totalPages && totalPages > 0) setPage(1);
   }, [patients.length, page, totalPages]);
 
   return (
@@ -68,18 +69,21 @@ export default function PatientsTable({
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead className="w-[250px]">Paciente</TableHead>
-            <TableHead className="w-[130px]">Estado</TableHead>
-            <TableHead className="w-[160px]">Fecha de Registro</TableHead>
-            <TableHead className="w-[200px]">Contacto</TableHead>
-            <TableHead className="w-[80px]">Acciones</TableHead>
+            <TableHead className="w-[250px]">
+              {t("patients.table.patient")}
+            </TableHead>
+            <TableHead className="w-[130px]">{t("table.status")}</TableHead>
+            <TableHead className="w-[160px]">
+              {t("table.registrationDate")}
+            </TableHead>
+            <TableHead className="w-[200px]">{t("table.contact")}</TableHead>
+            <TableHead className="w-[80px]">{t("table.actions")}</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {paginatedData.length > 0 ? (
             paginatedData.map((patient) => (
               <TableRow key={patient.id}>
-                {/* Paciente */}
                 <TableCell className="w-[250px]">
                   <div className="flex items-center gap-3">
                     <div className="h-12 w-12 relative overflow-hidden rounded-full border border-primary/10 bg-muted flex items-center justify-center">
@@ -111,20 +115,14 @@ export default function PatientsTable({
                     <span className="font-medium">{patient.name}</span>
                   </div>
                 </TableCell>
-
-                {/* Estado */}
                 <TableCell className="w-[130px]">
                   <UserStatusBadge status={patient.status} />
                 </TableCell>
-
-                {/* Fecha de Registro */}
                 <TableCell className="w-[160px]">
                   <span className="font-medium">
                     {patient.registrationDate}
                   </span>
                 </TableCell>
-
-                {/* Contacto */}
                 <TableCell className="w-[200px]">
                   <div className="font-medium">{patient.phone}</div>
                   {patient.email.length > 28 ? (
@@ -144,8 +142,6 @@ export default function PatientsTable({
                     </div>
                   )}
                 </TableCell>
-
-                {/* Acciones */}
                 <TableCell className="w-[80px]">
                   <ViewDetailsPatientDialog patientId={patient.id}>
                     <UserAction
@@ -161,13 +157,12 @@ export default function PatientsTable({
                 colSpan={5}
                 className="text-center py-8 text-muted-foreground"
               >
-                No hay pacientes para mostrar
+                {t("patients.table.noData")}
               </TableCell>
             </TableRow>
           )}
         </TableBody>
       </Table>
-
       {totalPages > 1 && (
         <Pagination className="mt-4">
           <PaginationContent>

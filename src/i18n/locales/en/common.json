@@ -126,23 +126,37 @@
     "passwordLabel": "Password",
     "passwordPlaceholder": "Enter your password",
     "verifyButton": "Verify",
-    "successMessage": "Identity verified without implementing real logic."
+    "successMessage": "Identity verified without implementing real logic.",
+    "errors": {
+      "passwordRequired": "Password is required"
+    }
   },
+
   "changeEmail": {
     "title": "Change email address",
     "description": "Enter your new email address. We'll send you a verification code.",
     "newEmailLabel": "New email address",
     "newEmailPlaceholder": "Enter your new email address",
-    "changeButton": "Change email"
+    "changeButton": "Change email",
+    "errors": {
+      "required": "Email is required",
+      "invalid": "Invalid email"
+    }
   },
+
   "verifyEmail": {
     "title": "Verify your new email",
     "instructions": "Enter the verification code we sent to",
     "tip": "Didn't receive the code?:Check your spam folder or wait a few minutes.",
     "resend": "Resend code",
     "verify": "Verify",
-    "currentOtp": "Current OTP:"
+    "currentOtp": "Current OTP:",
+    "errors": {
+      "otpLength": "Code must be 6 digits",
+      "otpNumeric": "Code must be numeric"
+    }
   },
+
   "changePassword": {
     "title": "Change password",
     "description": "Enter your current password and the new password you want to set.",
@@ -150,7 +164,13 @@
     "currentPasswordPlaceholder": "Enter your current password",
     "newPasswordLabel": "New password",
     "newPasswordPlaceholder": "Enter your new password",
-    "changeButton": "Change password"
+    "changeButton": "Change password",
+    "errors": {
+      "min": "Password must be at least 8 characters",
+      "max": "Password cannot exceed 64 characters",
+      "confirmRequired": "You must confirm the password",
+      "match": "Passwords do not match"
+    }
   },
   "deleteAccount": {
     "title": "Delete account",
@@ -359,7 +379,14 @@
       "selected": "selected"
     },
     "filters": {
-      "all": "All"
+      "all": "All",
+      "popover": {
+        "filters": "Filters",
+        "title": "Filters",
+        "clear": "Clear filters",
+        "apply": "Apply",
+        "openAriaLabel": "Open filters"
+      }
     },
     "pagination": {
       "previous": "Previous",
@@ -563,6 +590,249 @@
     "experience_plural": "{{years}} years of experience",
     "noExperience": "Experience not specified",
     "acceptedInsurances": "Accepted insurances",
-    "noLanguages": "Languages not specified"
+    "noLanguages": "Languages not specified",
+
+    "title": "Doctors",
+    "subtitle": "Management of doctors registered in the system",
+    "searchPlaceholder": "Search by name, email, phone or specialty...",
+    "table": {
+      "doctor": "Doctor",
+      "specialty": "Specialty",
+      "noData": "No doctors to display"
+    },
+    "status": {
+      "approved": "Approved",
+      "pending": "Pending",
+      "rejected": "Rejected"
+    },
+    "filters": {
+      "status": "Status",
+      "selectStatus": "Select status",
+      "allStatus": "All statuses",
+      "specialty": "Specialty",
+      "selectSpecialty": "Select specialty",
+      "allSpecialties": "All specialties",
+      "dateRange": "Date range"
+    },
+    "specialties": {
+      "cardiologia": "Cardiology",
+      "dermatologia": "Dermatology",
+      "neurologia": "Neurology",
+      "pediatria": "Pediatrics",
+      "psiquiatria": "Psychiatry",
+      "traumatologia": "Traumatology",
+      "ginecologia": "Gynecology",
+      "oftalmologia": "Ophthalmology",
+      "otorrinolaringologia": "Otolaryngology",
+      "urologia": "Urology"
+    },
+    "empty": {
+      "noResults": "No results",
+      "noDoctors": "No doctors registered",
+      "noResultsDescription": "No doctors match the applied filters. Try adjusting your search criteria.",
+      "noDoctorsDescription": "There are no doctors registered in the system yet.",
+      "clearFilters": "Clear filters"
+    },
+    "metrics": {
+      "total": "Approved Doctors",
+      "totalSubtitle": "Total approved doctors in the system",
+      "pending": "Pending Doctors",
+      "pendingSubtitle": "Doctors awaiting review",
+      "rejected": "Rejected Doctors",
+      "rejectedSubtitle": "Doctors with rejected request",
+      "approved": "Total Doctors",
+      "approvedSubtitle": "Total doctors registered in the system"
+    }
+  },
+
+  "userStatus": {
+    "approved": "Approved",
+    "rejected": "Rejected",
+    "pending": "Pending"
+  },
+
+  "table": {
+    "actions": "Actions",
+    "status": "Status",
+    "registrationDate": "Registration Date",
+    "contact": "Contact",
+    "phone": "Phone",
+    "email": "Email"
+  },
+
+  "centers": {
+    "title": "Health Centers",
+    "subtitle": "Management of health centers registered in the system",
+    "searchPlaceholder": "Search by name, email, phone or type...",
+    "table": {
+      "center": "Center",
+      "centerType": "Center Type",
+      "noData": "No centers to display"
+    },
+    "status": {
+      "approved": "Approved",
+      "pending": "Pending",
+      "rejected": "Rejected"
+    },
+    "filters": {
+      "status": "Status",
+      "selectStatus": "Select status",
+      "allStatus": "All statuses",
+      "centerType": "Center Type",
+      "selectCenterType": "Select type",
+      "allTypes": "All types",
+      "dateRange": "Date range"
+    },
+    "centerTypes": {
+      "hospital": "Hospital",
+      "clinica": "Clinic",
+      "centro_especializado": "Specialized Center",
+      "laboratorio": "Laboratory",
+      "centro_diagnostico": "Diagnostic Center",
+      "farmacia": "Pharmacy",
+      "centro_rehabilitacion": "Rehabilitation Center",
+      "centro_emergencia": "Emergency Center",
+      "centro_dialisis": "Dialysis Center",
+      "centro_oncologico": "Oncology Center"
+    },
+    "empty": {
+      "noResults": "No results",
+      "noCenters": "No centers registered",
+      "noResultsDescription": "No centers match the applied filters. Try adjusting your search criteria.",
+      "noCentersDescription": "There are no health centers registered in the system yet.",
+      "clearFilters": "Clear filters"
+    },
+    "metrics": {
+      "total": "Approved Centers",
+      "totalSubtitle": "Total approved centers in the system",
+      "pending": "Pending Centers",
+      "pendingSubtitle": "Centers awaiting review",
+      "rejected": "Rejected Centers",
+      "rejectedSubtitle": "Centers with rejected request",
+      "approved": "Total Centers",
+      "approvedSubtitle": "Total centers registered in the system"
+    }
+  },
+
+  "patients": {
+    "title": "Patients",
+    "subtitle": "Management of patients registered in the system",
+    "searchPlaceholder": "Search by name, email or phone...",
+    "table": {
+      "patient": "Patient",
+      "noData": "No patients to display"
+    },
+    "status": {
+      "approved": "Approved",
+      "pending": "Pending",
+      "rejected": "Rejected"
+    },
+    "filters": {
+      "statusLabel": "Status",
+      "statusPlaceholder": "Select status",
+      "dateRangeLabel": "Date range",
+      "status": {
+        "all": "All",
+        "approved": "Approved",
+        "pending": "Pending",
+        "rejected": "Rejected"
+      }
+    },
+    "empty": {
+      "noResults": "No results",
+      "noPatients": "No patients registered",
+      "noResultsDescription": "No patients match the applied filters. Try adjusting your search criteria.",
+      "noPatientsDescription": "There are no patients registered in the system yet.",
+      "clearFilters": "Clear filters"
+    },
+    "metrics": {
+      "total": "Approved Patients",
+      "totalSubtitle": "Total approved patients in the system",
+      "pending": "Pending Patients",
+      "pendingSubtitle": "Patients awaiting review",
+      "rejected": "Rejected Patients",
+      "rejectedSubtitle": "Patients with rejected request",
+      "approved": "Total Patients",
+      "approvedSubtitle": "Total patients registered in the system"
+    }
+  },
+
+  "patientDetails": {
+    "title": "Patient Details",
+    "personalInfo": "Personal Information",
+    "contact": "Contact",
+    "firstName": "First Name(s)",
+    "lastName": "Last Name(s)",
+    "gender": "Gender",
+    "birthDate": "Date of Birth",
+    "nationality": "Nationality",
+    "idNumber": "Identification Number",
+    "phone": "Mobile Phone",
+    "email": "Email Address",
+    "address": "Physical Address"
+  },
+
+  "doctors": {
+    "profile": "View profile",
+    "schedule": "Schedule appointment",
+    "history": "History",
+    "lastAppointment": "Last appointment",
+    "experience": "{{years}} year of experience",
+    "experience_plural": "{{years}} years of experience",
+    "noExperience": "Experience not specified",
+    "acceptedInsurances": "Accepted insurances",
+    "noLanguages": "Languages not specified",
+
+    "title": "Doctors",
+    "subtitle": "Management of doctors registered in the system",
+    "searchPlaceholder": "Search by name, email, phone or specialty...",
+    "table": {
+      "doctor": "Doctor",
+      "specialty": "Specialty",
+      "noData": "No doctors to display"
+    },
+    "status": {
+      "approved": "Approved",
+      "pending": "Pending",
+      "rejected": "Rejected"
+    },
+    "filters": {
+      "status": "Status",
+      "selectStatus": "Select status",
+      "allStatus": "All statuses",
+      "specialty": "Specialty",
+      "selectSpecialty": "Select specialty",
+      "allSpecialties": "All specialties",
+      "dateRange": "Date range"
+    },
+    "specialties": {
+      "cardiologia": "Cardiology",
+      "dermatologia": "Dermatology",
+      "neurologia": "Neurology",
+      "pediatria": "Pediatrics",
+      "psiquiatria": "Psychiatry",
+      "traumatologia": "Traumatology",
+      "ginecologia": "Gynecology",
+      "oftalmologia": "Ophthalmology",
+      "otorrinolaringologia": "Otolaryngology",
+      "urologia": "Urology"
+    },
+    "empty": {
+      "noResults": "No results",
+      "noDoctors": "No doctors registered",
+      "noResultsDescription": "No doctors match the applied filters. Try adjusting your search criteria.",
+      "noDoctorsDescription": "There are no doctors registered in the system yet.",
+      "clearFilters": "Clear filters"
+    },
+    "metrics": {
+      "total": "Approved Doctors",
+      "totalSubtitle": "Total approved doctors in the system",
+      "pending": "Pending Doctors",
+      "pendingSubtitle": "Doctors awaiting review",
+      "rejected": "Rejected Doctors",
+      "rejectedSubtitle": "Doctors with rejected request",
+      "approved": "Total Doctors",
+      "approvedSubtitle": "Total doctors registered in the system"
+    }
   }
 }

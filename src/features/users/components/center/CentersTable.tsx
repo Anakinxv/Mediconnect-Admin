@@ -1,4 +1,5 @@
 import * as React from "react";
+import { useTranslation } from "react-i18next";
 import { Avatar, AvatarFallback, AvatarImage } from "@/shared/ui/avatar";
 import {
   Table,
@@ -52,6 +53,7 @@ export default function CentersTable({
   centers,
   onViewDetails,
 }: CentersTableProps) {
+  const { t } = useTranslation("common");
   const [page, setPage] = React.useState(1);
 
   const totalPages = Math.ceil(centers.length / PAGE_SIZE);
@@ -59,9 +61,7 @@ export default function CentersTable({
   const paginatedData = centers.slice(startIndex, startIndex + PAGE_SIZE);
 
   React.useEffect(() => {
-    if (page > totalPages && totalPages > 0) {
-      setPage(1);
-    }
+    if (page > totalPages && totalPages > 0) setPage(1);
   }, [centers.length, page, totalPages]);
 
   return (
@@ -69,19 +69,24 @@ export default function CentersTable({
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead className="w-[220px]">Centro</TableHead>
-            <TableHead className="w-[140px]">Tipo de Centro</TableHead>
-            <TableHead className="w-[130px]">Estado</TableHead>
-            <TableHead className="w-[160px]">Fecha de Registro</TableHead>
-            <TableHead className="w-[200px]">Contacto</TableHead>
-            <TableHead className="w-[80px]">Acciones</TableHead>
+            <TableHead className="w-[220px]">
+              {t("centers.table.center")}
+            </TableHead>
+            <TableHead className="w-[140px]">
+              {t("centers.table.centerType")}
+            </TableHead>
+            <TableHead className="w-[130px]">{t("table.status")}</TableHead>
+            <TableHead className="w-[160px]">
+              {t("table.registrationDate")}
+            </TableHead>
+            <TableHead className="w-[200px]">{t("table.contact")}</TableHead>
+            <TableHead className="w-[80px]">{t("table.actions")}</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {paginatedData.length > 0 ? (
             paginatedData.map((center) => (
               <TableRow key={center.id}>
-                {/* Centro */}
                 <TableCell className="w-[220px]">
                   <div className="flex items-center gap-3">
                     <div className="h-12 w-12 relative overflow-hidden rounded-full border border-primary/10 bg-muted flex items-center justify-center">
@@ -113,25 +118,17 @@ export default function CentersTable({
                     <span className="font-medium">{center.name}</span>
                   </div>
                 </TableCell>
-
-                {/* Tipo de Centro */}
                 <TableCell className="w-[140px]">
                   <span className="font-medium text-primary">
                     {center.centerType}
                   </span>
                 </TableCell>
-
-                {/* Estado */}
                 <TableCell className="w-[130px]">
                   <UserStatusBadge status={center.status} />
                 </TableCell>
-
-                {/* Fecha de Registro */}
                 <TableCell className="w-[160px]">
                   <span className="font-medium">{center.registrationDate}</span>
                 </TableCell>
-
-                {/* Contacto */}
                 <TableCell className="w-[200px]">
                   <div className="font-medium">{center.phone}</div>
                   {center.email.length > 28 ? (
@@ -151,8 +148,6 @@ export default function CentersTable({
                     </div>
                   )}
                 </TableCell>
-
-                {/* Acciones */}
                 <TableCell className="w-[80px]">
                   <UserAction onViewDetails={() => onViewDetails?.(center)} />
                 </TableCell>
@@ -164,13 +159,12 @@ export default function CentersTable({
                 colSpan={6}
                 className="text-center py-8 text-muted-foreground"
               >
-                No hay centros para mostrar
+                {t("centers.table.noData")}
               </TableCell>
             </TableRow>
           )}
         </TableBody>
       </Table>
-
       {totalPages > 1 && (
         <Pagination className="mt-4">
           <PaginationContent>

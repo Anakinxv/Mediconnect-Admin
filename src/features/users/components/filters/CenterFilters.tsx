@@ -12,24 +12,24 @@ interface CenterFiltersProps {
   onFiltersChange: (newFilters: Partial<CenterFiltersProps["filters"]>) => void;
 }
 
-const centerTypes = [
-  { value: "hospital", label: "Hospital" },
-  { value: "clinica", label: "Clínica" },
-  { value: "centro_especializado", label: "Centro Especializado" },
-  { value: "laboratorio", label: "Laboratorio" },
-  { value: "centro_diagnostico", label: "Centro de Diagnóstico" },
-  { value: "farmacia", label: "Farmacia" },
-  { value: "centro_rehabilitacion", label: "Centro de Rehabilitación" },
-  { value: "centro_emergencia", label: "Centro de Emergencia" },
-  { value: "centro_dialisis", label: "Centro de Diálisis" },
-  { value: "centro_oncologico", label: "Centro Oncológico" },
-];
-
 export default function CenterFilters({
   filters,
   onFiltersChange,
 }: CenterFiltersProps) {
-  const { t } = useTranslation("center");
+  const { t } = useTranslation("common");
+
+  const centerTypeValues = [
+    "hospital",
+    "clinica",
+    "centro_especializado",
+    "laboratorio",
+    "centro_diagnostico",
+    "farmacia",
+    "centro_rehabilitacion",
+    "centro_emergencia",
+    "centro_dialisis",
+    "centro_oncologico",
+  ];
 
   const statusOptions = [
     { value: "all", label: t("centers.filters.allStatus") },
@@ -40,23 +40,22 @@ export default function CenterFilters({
 
   const centerTypeOptions = [
     { value: "all", label: t("centers.filters.allTypes") },
-    ...centerTypes,
+    ...centerTypeValues.map((value) => ({
+      value,
+      label: t(`centers.centerTypes.${value}`),
+    })),
   ];
 
-  // Handle string values only
   const handleStatusChange = (value: string | string[]) => {
-    const stringValue = Array.isArray(value) ? value[0] : value;
-    onFiltersChange({ status: stringValue });
+    onFiltersChange({ status: Array.isArray(value) ? value[0] : value });
   };
 
   const handleCenterTypeChange = (value: string | string[]) => {
-    const stringValue = Array.isArray(value) ? value[0] : value;
-    onFiltersChange({ centerType: stringValue });
+    onFiltersChange({ centerType: Array.isArray(value) ? value[0] : value });
   };
 
   return (
     <div className="flex flex-col gap-4">
-      {/* Estado */}
       <MCFilterSelect
         name="status"
         label={t("centers.filters.status")}
@@ -66,8 +65,6 @@ export default function CenterFilters({
         placeholder={t("centers.filters.selectStatus")}
         size="small"
       />
-
-      {/* Tipo de Centro */}
       <MCFilterSelect
         name="centerType"
         label={t("centers.filters.centerType")}
@@ -77,8 +74,6 @@ export default function CenterFilters({
         placeholder={t("centers.filters.selectCenterType")}
         size="small"
       />
-
-      {/* Rango de fechas */}
       <MCFilterDates
         label={t("centers.filters.dateRange")}
         value={filters.dateRange}

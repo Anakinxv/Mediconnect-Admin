@@ -91,11 +91,10 @@ const mockCenters: Center[] = [
 ];
 
 function CenterPage() {
-  const { t } = useTranslation("center");
+  const { t } = useTranslation("common");
   const isMobile = useIsMobile();
   const navigate = useNavigate();
 
-  // Estados
   const [searchTerm, setSearchTerm] = useState("");
   const [filters, setFilters] = useState({
     status: "all",
@@ -103,76 +102,59 @@ function CenterPage() {
     dateRange: undefined as [Date, Date] | undefined,
   });
 
-  // Contar filtros activos
   const activeFiltersCount = Object.entries(filters).filter(([key, value]) => {
-    if (key === "dateRange") {
-      return value !== undefined;
-    }
+    if (key === "dateRange") return value !== undefined;
     return value !== "all" && value !== "";
   }).length;
 
-  // Limpiar filtros
-  const clearFilters = () => {
-    setFilters({
-      status: "all",
-      centerType: "all",
-      dateRange: undefined,
-    });
-  };
+  const clearFilters = () =>
+    setFilters({ status: "all", centerType: "all", dateRange: undefined });
 
-  // Función auxiliar para parsear fecha
   const parseDate = (dateStr: string) => {
     const [day, month, year] = dateStr.split("/");
     return new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
   };
 
-  // Función para filtrar por rango de fechas
   const matchesCustomDateRange = (
     dateStr: string,
     range?: [Date, Date],
   ): boolean => {
     if (!range) return true;
-
-    const registrationDate = parseDate(dateStr);
-    registrationDate.setHours(0, 0, 0, 0);
-
-    const startDate = new Date(range[0]);
-    startDate.setHours(0, 0, 0, 0);
-
-    const endDate = new Date(range[1]);
-    endDate.setHours(23, 59, 59, 999);
-
-    return registrationDate >= startDate && registrationDate <= endDate;
+    const reg = parseDate(dateStr);
+    reg.setHours(0, 0, 0, 0);
+    const start = new Date(range[0]);
+    start.setHours(0, 0, 0, 0);
+    const end = new Date(range[1]);
+    end.setHours(23, 59, 59, 999);
+    return reg >= start && reg <= end;
   };
 
-  // Filtrar centros
-  const filteredCenters = useMemo(() => {
-    return mockCenters.filter((center) => {
-      // Búsqueda por texto
-      const matchesSearch =
-        center.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        center.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        center.phone.includes(searchTerm) ||
-        center.centerType.toLowerCase().includes(searchTerm.toLowerCase());
+  const filteredCenters = useMemo(
+    () =>
+      mockCenters.filter((center) => {
+        const matchesSearch =
+          center.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          center.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          center.phone.includes(searchTerm) ||
+          center.centerType.toLowerCase().includes(searchTerm.toLowerCase());
+        const matchesStatus =
+          filters.status === "all" || center.status === filters.status;
+        const matchesCenterType =
+          filters.centerType === "all" ||
+          center.centerType
+            .toLowerCase()
+            .includes(filters.centerType.toLowerCase());
+        const matchesDate = matchesCustomDateRange(
+          center.registrationDate,
+          filters.dateRange,
+        );
+        return (
+          matchesSearch && matchesStatus && matchesCenterType && matchesDate
+        );
+      }),
+    [searchTerm, filters],
+  );
 
-      // Filtros
-      const matchesStatus =
-        filters.status === "all" || center.status === filters.status;
-      const matchesCenterType =
-        filters.centerType === "all" ||
-        center.centerType
-          .toLowerCase()
-          .includes(filters.centerType.toLowerCase());
-      const matchesDate = matchesCustomDateRange(
-        center.registrationDate,
-        filters.dateRange,
-      );
-
-      return matchesSearch && matchesStatus && matchesCenterType && matchesDate;
-    });
-  }, [searchTerm, filters]);
-
-  // Search input
   const searchComponent = (
     <div className="w-full sm:w-auto sm:min-w-[200px] lg:min-w-[250px]">
       <MCFilterInput
@@ -183,7 +165,6 @@ function CenterPage() {
     </div>
   );
 
-  // PDF generator
   const pdfGeneratorComponent = (
     <MCPDFButton
       onClick={async () => {
@@ -191,13 +172,10 @@ function CenterPage() {
           columns: [
             { title: t("centers.table.center"), key: "name" },
             { title: t("centers.table.centerType"), key: "centerType" },
-            { title: t("centers.table.status"), key: "status" },
-            {
-              title: t("centers.table.registrationDate"),
-              key: "registrationDate",
-            },
-            { title: t("centers.table.phone"), key: "phone" },
-            { title: t("centers.table.email"), key: "email" },
+            { title: t("table.status"), key: "status" },
+            { title: t("table.registrationDate"), key: "registrationDate" },
+            { title: t("table.phone"), key: "phone" },
+            { title: t("table.email"), key: "email" },
           ],
           data: filteredCenters.map((center) => ({
             ...center,
@@ -211,7 +189,6 @@ function CenterPage() {
     />
   );
 
-  // Filter component
   const filterComponent = (
     <MCFilterPopover
       activeFiltersCount={activeFiltersCount}
@@ -226,7 +203,6 @@ function CenterPage() {
     </MCFilterPopover>
   );
 
-  // Empty state
   const emptyState = (
     <Empty>
       <EmptyHeader>
@@ -246,9 +222,7 @@ function CenterPage() {
             </EmptyTitle>
           </span>
           <EmptyDescription
-            className={`text-muted-foreground text-center max-w-md mx-auto ${
-              isMobile ? "text-sm" : "text-base"
-            }`}
+            className={`text-muted-foreground text-center max-w-md mx-auto ${isMobile ? "text-sm" : "text-base"}`}
           >
             {activeFiltersCount > 0
               ? t("centers.empty.noResultsDescription")
@@ -273,7 +247,6 @@ function CenterPage() {
     </Empty>
   );
 
-  // Tabla con empty state
   const tableComponent =
     filteredCenters.length === 0 ? (
       emptyState
@@ -286,7 +259,6 @@ function CenterPage() {
       />
     );
 
-  // Métricas
   const metrics = [
     {
       title: t("centers.metrics.total"),

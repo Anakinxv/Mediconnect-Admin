@@ -14,14 +14,7 @@ import {
   EmptyContent,
 } from "@/shared/ui/empty";
 import MCButton from "@/shared/components/forms/MCButton";
-import {
-  UserCheck,
-  UserX,
-  Clock,
-  Filter,
-  Users,
-  Stethoscope,
-} from "lucide-react";
+import { UserCheck, UserX, Clock, Filter, Stethoscope } from "lucide-react";
 import DoctorsTable, { type Doctor } from "../components/doctor/DoctorsTable";
 import DoctorFilters from "../components/filters/DoctorFilters";
 import { useNavigate } from "react-router-dom";
@@ -91,11 +84,10 @@ const mockDoctors: Doctor[] = [
 ];
 
 function DoctorsPage() {
-  const { t } = useTranslation("doctor");
+  const { t } = useTranslation("common");
   const isMobile = useIsMobile();
   const navigate = useNavigate();
 
-  // Estados
   const [searchTerm, setSearchTerm] = useState("");
   const [filters, setFilters] = useState({
     status: "all",
@@ -103,76 +95,59 @@ function DoctorsPage() {
     dateRange: undefined as [Date, Date] | undefined,
   });
 
-  // Contar filtros activos
   const activeFiltersCount = Object.entries(filters).filter(([key, value]) => {
-    if (key === "dateRange") {
-      return value !== undefined;
-    }
+    if (key === "dateRange") return value !== undefined;
     return value !== "all" && value !== "";
   }).length;
 
-  // Limpiar filtros
-  const clearFilters = () => {
-    setFilters({
-      status: "all",
-      specialty: "all",
-      dateRange: undefined,
-    });
-  };
+  const clearFilters = () =>
+    setFilters({ status: "all", specialty: "all", dateRange: undefined });
 
-  // Función auxiliar para parsear fecha
   const parseDate = (dateStr: string) => {
     const [day, month, year] = dateStr.split("/");
     return new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
   };
 
-  // Función para filtrar por rango de fechas
   const matchesCustomDateRange = (
     dateStr: string,
     range?: [Date, Date],
   ): boolean => {
     if (!range) return true;
-
-    const registrationDate = parseDate(dateStr);
-    registrationDate.setHours(0, 0, 0, 0);
-
-    const startDate = new Date(range[0]);
-    startDate.setHours(0, 0, 0, 0);
-
-    const endDate = new Date(range[1]);
-    endDate.setHours(23, 59, 59, 999);
-
-    return registrationDate >= startDate && registrationDate <= endDate;
+    const reg = parseDate(dateStr);
+    reg.setHours(0, 0, 0, 0);
+    const start = new Date(range[0]);
+    start.setHours(0, 0, 0, 0);
+    const end = new Date(range[1]);
+    end.setHours(23, 59, 59, 999);
+    return reg >= start && reg <= end;
   };
 
-  // Filtrar doctores
-  const filteredDoctors = useMemo(() => {
-    return mockDoctors.filter((doctor) => {
-      // Búsqueda por texto
-      const matchesSearch =
-        doctor.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        doctor.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        doctor.phone.includes(searchTerm) ||
-        doctor.specialty.toLowerCase().includes(searchTerm.toLowerCase());
+  const filteredDoctors = useMemo(
+    () =>
+      mockDoctors.filter((doctor) => {
+        const matchesSearch =
+          doctor.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          doctor.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          doctor.phone.includes(searchTerm) ||
+          doctor.specialty.toLowerCase().includes(searchTerm.toLowerCase());
+        const matchesStatus =
+          filters.status === "all" || doctor.status === filters.status;
+        const matchesSpecialty =
+          filters.specialty === "all" ||
+          doctor.specialty
+            .toLowerCase()
+            .includes(filters.specialty.toLowerCase());
+        const matchesDate = matchesCustomDateRange(
+          doctor.registrationDate,
+          filters.dateRange,
+        );
+        return (
+          matchesSearch && matchesStatus && matchesSpecialty && matchesDate
+        );
+      }),
+    [searchTerm, filters],
+  );
 
-      // Filtros
-      const matchesStatus =
-        filters.status === "all" || doctor.status === filters.status;
-      const matchesSpecialty =
-        filters.specialty === "all" ||
-        doctor.specialty
-          .toLowerCase()
-          .includes(filters.specialty.toLowerCase());
-      const matchesDate = matchesCustomDateRange(
-        doctor.registrationDate,
-        filters.dateRange,
-      );
-
-      return matchesSearch && matchesStatus && matchesSpecialty && matchesDate;
-    });
-  }, [searchTerm, filters]);
-
-  // Search input
   const searchComponent = (
     <div className="w-full sm:w-auto sm:min-w-[200px] lg:min-w-[250px]">
       <MCFilterInput
@@ -183,7 +158,6 @@ function DoctorsPage() {
     </div>
   );
 
-  // PDF generator
   const pdfGeneratorComponent = (
     <MCPDFButton
       onClick={async () => {
@@ -191,13 +165,10 @@ function DoctorsPage() {
           columns: [
             { title: t("doctors.table.doctor"), key: "name" },
             { title: t("doctors.table.specialty"), key: "specialty" },
-            { title: t("doctors.table.status"), key: "status" },
-            {
-              title: t("doctors.table.registrationDate"),
-              key: "registrationDate",
-            },
-            { title: t("doctors.table.phone"), key: "phone" },
-            { title: t("doctors.table.email"), key: "email" },
+            { title: t("table.status"), key: "status" },
+            { title: t("table.registrationDate"), key: "registrationDate" },
+            { title: t("table.phone"), key: "phone" },
+            { title: t("table.email"), key: "email" },
           ],
           data: filteredDoctors.map((doctor) => ({
             ...doctor,
@@ -211,7 +182,6 @@ function DoctorsPage() {
     />
   );
 
-  // Filter component
   const filterComponent = (
     <MCFilterPopover
       activeFiltersCount={activeFiltersCount}
@@ -226,7 +196,6 @@ function DoctorsPage() {
     </MCFilterPopover>
   );
 
-  // Empty state
   const emptyState = (
     <Empty>
       <EmptyHeader>
@@ -246,9 +215,7 @@ function DoctorsPage() {
             </EmptyTitle>
           </span>
           <EmptyDescription
-            className={`text-muted-foreground text-center max-w-md mx-auto ${
-              isMobile ? "text-sm" : "text-base"
-            }`}
+            className={`text-muted-foreground text-center max-w-md mx-auto ${isMobile ? "text-sm" : "text-base"}`}
           >
             {activeFiltersCount > 0
               ? t("doctors.empty.noResultsDescription")
@@ -273,7 +240,6 @@ function DoctorsPage() {
     </Empty>
   );
 
-  // Tabla con empty state
   const tableComponent =
     filteredDoctors.length === 0 ? (
       emptyState
@@ -286,7 +252,6 @@ function DoctorsPage() {
       />
     );
 
-  // Métricas
   const metrics = [
     {
       title: t("doctors.metrics.total"),

@@ -1,4 +1,5 @@
 import { Badge } from "@/shared/ui/badge";
+import { useTranslation } from "react-i18next";
 
 type UserStatus = "approved" | "rejected" | "pending";
 
@@ -8,20 +9,16 @@ const statusStyles: Record<UserStatus, string> = {
   pending: "bg-[#C77A1F]/15 border-transparent text-[#C77A1F]",
 };
 
-const statusLabels: Record<UserStatus, string> = {
-  approved: "Aprobado",
-  rejected: "Rechazado",
-  pending: "Pendiente",
-};
-
 interface UserStatusBadgeProps {
   status: UserStatus;
 }
 
 export function UserStatusBadge({ status }: UserStatusBadgeProps) {
+  const { t } = useTranslation("common");
+
   return (
     <Badge className={`${statusStyles[status]} font-medium px-3 py-1`}>
-      {statusLabels[status]}
+      {t(`userStatus.${status}`)}
     </Badge>
   );
 }

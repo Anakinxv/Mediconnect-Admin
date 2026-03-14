@@ -12,24 +12,24 @@ interface DoctorFiltersProps {
   onFiltersChange: (newFilters: Partial<DoctorFiltersProps["filters"]>) => void;
 }
 
-const specialties = [
-  { value: "cardiologia", label: "Cardiología" },
-  { value: "dermatologia", label: "Dermatología" },
-  { value: "neurologia", label: "Neurología" },
-  { value: "pediatria", label: "Pediatría" },
-  { value: "psiquiatria", label: "Psiquiatría" },
-  { value: "traumatologia", label: "Traumatología" },
-  { value: "ginecologia", label: "Ginecología" },
-  { value: "oftalmologia", label: "Oftalmología" },
-  { value: "otorrinolaringologia", label: "Otorrinolaringología" },
-  { value: "urologia", label: "Urología" },
-];
-
 export default function DoctorFilters({
   filters,
   onFiltersChange,
 }: DoctorFiltersProps) {
-  const { t } = useTranslation("doctor");
+  const { t } = useTranslation("common");
+
+  const specialtyValues = [
+    "cardiologia",
+    "dermatologia",
+    "neurologia",
+    "pediatria",
+    "psiquiatria",
+    "traumatologia",
+    "ginecologia",
+    "oftalmologia",
+    "otorrinolaringologia",
+    "urologia",
+  ];
 
   const statusOptions = [
     { value: "all", label: t("doctors.filters.allStatus") },
@@ -40,23 +40,22 @@ export default function DoctorFilters({
 
   const specialtyOptions = [
     { value: "all", label: t("doctors.filters.allSpecialties") },
-    ...specialties,
+    ...specialtyValues.map((value) => ({
+      value,
+      label: t(`doctors.specialties.${value}`),
+    })),
   ];
 
-  // Handle string values only
   const handleStatusChange = (value: string | string[]) => {
-    const stringValue = Array.isArray(value) ? value[0] : value;
-    onFiltersChange({ status: stringValue });
+    onFiltersChange({ status: Array.isArray(value) ? value[0] : value });
   };
 
   const handleSpecialtyChange = (value: string | string[]) => {
-    const stringValue = Array.isArray(value) ? value[0] : value;
-    onFiltersChange({ specialty: stringValue });
+    onFiltersChange({ specialty: Array.isArray(value) ? value[0] : value });
   };
 
   return (
     <div className="flex flex-col gap-4">
-      {/* Estado */}
       <MCFilterSelect
         name="status"
         label={t("doctors.filters.status")}
@@ -66,8 +65,6 @@ export default function DoctorFilters({
         placeholder={t("doctors.filters.selectStatus")}
         size="small"
       />
-
-      {/* Especialidad */}
       <MCFilterSelect
         name="specialty"
         label={t("doctors.filters.specialty")}
@@ -77,8 +74,6 @@ export default function DoctorFilters({
         placeholder={t("doctors.filters.selectSpecialty")}
         size="small"
       />
-
-      {/* Rango de fechas */}
       <MCFilterDates
         label={t("doctors.filters.dateRange")}
         value={filters.dateRange}

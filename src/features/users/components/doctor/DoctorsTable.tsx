@@ -1,4 +1,5 @@
 import * as React from "react";
+import { useTranslation } from "react-i18next";
 import { Avatar, AvatarFallback, AvatarImage } from "@/shared/ui/avatar";
 import {
   Table,
@@ -22,7 +23,6 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/shared/ui/tooltip";
-import { Badge } from "@/shared/ui/badge";
 import { UserStatusBadge, type UserStatus } from "../UserStates";
 import UserAction from "../UserAction";
 
@@ -53,6 +53,7 @@ export default function DoctorsTable({
   doctors,
   onViewDetails,
 }: DoctorsTableProps) {
+  const { t } = useTranslation("common");
   const [page, setPage] = React.useState(1);
 
   const totalPages = Math.ceil(doctors.length / PAGE_SIZE);
@@ -60,9 +61,7 @@ export default function DoctorsTable({
   const paginatedData = doctors.slice(startIndex, startIndex + PAGE_SIZE);
 
   React.useEffect(() => {
-    if (page > totalPages && totalPages > 0) {
-      setPage(1);
-    }
+    if (page > totalPages && totalPages > 0) setPage(1);
   }, [doctors.length, page, totalPages]);
 
   return (
@@ -70,19 +69,24 @@ export default function DoctorsTable({
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead className="w-[220px]">Doctor</TableHead>
-            <TableHead className="w-[140px]">Especialidad</TableHead>
-            <TableHead className="w-[130px]">Estado</TableHead>
-            <TableHead className="w-[160px]">Fecha de Registro</TableHead>
-            <TableHead className="w-[200px]">Contacto</TableHead>
-            <TableHead className="w-[80px]">Acciones</TableHead>
+            <TableHead className="w-[220px]">
+              {t("doctors.table.doctor")}
+            </TableHead>
+            <TableHead className="w-[140px]">
+              {t("doctors.table.specialty")}
+            </TableHead>
+            <TableHead className="w-[130px]">{t("table.status")}</TableHead>
+            <TableHead className="w-[160px]">
+              {t("table.registrationDate")}
+            </TableHead>
+            <TableHead className="w-[200px]">{t("table.contact")}</TableHead>
+            <TableHead className="w-[80px]">{t("table.actions")}</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {paginatedData.length > 0 ? (
             paginatedData.map((doctor) => (
               <TableRow key={doctor.id}>
-                {/* Doctor */}
                 <TableCell className="w-[220px]">
                   <div className="flex items-center gap-3">
                     <div className="h-12 w-12 relative overflow-hidden rounded-full border border-primary/10 bg-muted flex items-center justify-center">
@@ -114,25 +118,17 @@ export default function DoctorsTable({
                     <span className="font-medium">{doctor.name}</span>
                   </div>
                 </TableCell>
-
-                {/* Especialidad */}
                 <TableCell className="w-[140px]">
                   <span className="font-medium text-primary">
                     {doctor.specialty}
                   </span>
                 </TableCell>
-
-                {/* Estado */}
                 <TableCell className="w-[130px]">
                   <UserStatusBadge status={doctor.status} />
                 </TableCell>
-
-                {/* Fecha de Registro */}
                 <TableCell className="w-[160px]">
                   <span className="font-medium">{doctor.registrationDate}</span>
                 </TableCell>
-
-                {/* Contacto */}
                 <TableCell className="w-[200px]">
                   <div className="font-medium">{doctor.phone}</div>
                   {doctor.email.length > 28 ? (
@@ -152,8 +148,6 @@ export default function DoctorsTable({
                     </div>
                   )}
                 </TableCell>
-
-                {/* Acciones */}
                 <TableCell className="w-[80px]">
                   <UserAction onViewDetails={() => onViewDetails?.(doctor)} />
                 </TableCell>
@@ -165,13 +159,12 @@ export default function DoctorsTable({
                 colSpan={6}
                 className="text-center py-8 text-muted-foreground"
               >
-                No hay doctores para mostrar
+                {t("doctors.table.noData")}
               </TableCell>
             </TableRow>
           )}
         </TableBody>
       </Table>
-
       {totalPages > 1 && (
         <Pagination className="mt-4">
           <PaginationContent>

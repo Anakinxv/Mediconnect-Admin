@@ -126,23 +126,37 @@
     "passwordLabel": "Contraseña",
     "passwordPlaceholder": "Ingresa tu contraseña",
     "verifyButton": "Verificar",
-    "successMessage": "Identidad verificada sin implementar lógica real."
+    "successMessage": "Identidad verificada sin implementar lógica real.",
+    "errors": {
+      "passwordRequired": "La contraseña es obligatoria"
+    }
   },
+
   "changeEmail": {
     "title": "Cambiar correo electrónico",
     "description": "Ingresa tu nueva dirección de correo. Te enviaremos un código de verificación.",
     "newEmailLabel": "Nuevo correo electrónico",
     "newEmailPlaceholder": "Ingresa tu nuevo correo electrónico",
-    "changeButton": "Cambiar correo"
+    "changeButton": "Cambiar correo",
+    "errors": {
+      "required": "El correo es obligatorio",
+      "invalid": "Correo inválido"
+    }
   },
+
   "verifyEmail": {
     "title": "Verifica tu nuevo correo",
     "instructions": "Ingresa el código de verificación que enviamos a",
     "tip": "¿No recibiste el código?:Revisa tu carpeta de spam o espera unos minutos.",
     "resend": "Reenviar código",
     "verify": "Verificar",
-    "currentOtp": "OTP actual:"
+    "currentOtp": "OTP actual:",
+    "errors": {
+      "otpLength": "El código debe tener 6 dígitos",
+      "otpNumeric": "El código debe ser numérico"
+    }
   },
+
   "changePassword": {
     "title": "Cambiar contraseña",
     "description": "Ingresa tu contraseña actual y la nueva contraseña que deseas establecer.",
@@ -150,7 +164,13 @@
     "currentPasswordPlaceholder": "Ingresa tu contraseña actual",
     "newPasswordLabel": "Nueva contraseña",
     "newPasswordPlaceholder": "Ingresa tu nueva contraseña",
-    "changeButton": "Cambiar contraseña"
+    "changeButton": "Cambiar contraseña",
+    "errors": {
+      "min": "La contraseña debe tener al menos 8 caracteres",
+      "max": "La contraseña no puede superar 64 caracteres",
+      "confirmRequired": "Debes confirmar la contraseña",
+      "match": "Las contraseñas no coinciden"
+    }
   },
   "deleteAccount": {
     "title": "Eliminar cuenta",
@@ -359,7 +379,14 @@
       "selected": "seleccionado(s)"
     },
     "filters": {
-      "all": "Todos"
+      "all": "Todos",
+      "popover": {
+        "filters": "Filtros",
+        "title": "Filtros",
+        "clear": "Limpiar filtros",
+        "apply": "Aplicar",
+        "openAriaLabel": "Abrir filtros"
+      }
     },
     "pagination": {
       "previous": "Anterior",
@@ -563,6 +590,249 @@
     "experience_plural": "{{years}} años de experiencia",
     "noExperience": "Experiencia no especificada",
     "acceptedInsurances": "Seguros aceptados",
-    "noLanguages": "Idiomas no especificados"
+    "noLanguages": "Idiomas no especificados",
+
+    "title": "Doctores",
+    "subtitle": "Gestión de doctores registrados en el sistema",
+    "searchPlaceholder": "Buscar por nombre, email, teléfono o especialidad...",
+    "table": {
+      "doctor": "Doctor",
+      "specialty": "Especialidad",
+      "noData": "No hay doctores para mostrar"
+    },
+    "status": {
+      "approved": "Aprobado",
+      "pending": "Pendiente",
+      "rejected": "Rechazado"
+    },
+    "filters": {
+      "status": "Estado",
+      "selectStatus": "Seleccionar estado",
+      "allStatus": "Todos los estados",
+      "specialty": "Especialidad",
+      "selectSpecialty": "Seleccionar especialidad",
+      "allSpecialties": "Todas las especialidades",
+      "dateRange": "Rango de fechas"
+    },
+    "specialties": {
+      "cardiologia": "Cardiología",
+      "dermatologia": "Dermatología",
+      "neurologia": "Neurología",
+      "pediatria": "Pediatría",
+      "psiquiatria": "Psiquiatría",
+      "traumatologia": "Traumatología",
+      "ginecologia": "Ginecología",
+      "oftalmologia": "Oftalmología",
+      "otorrinolaringologia": "Otorrinolaringología",
+      "urologia": "Urología"
+    },
+    "empty": {
+      "noResults": "Sin resultados",
+      "noDoctors": "Sin doctores registrados",
+      "noResultsDescription": "No hay doctores que coincidan con los filtros aplicados. Intenta ajustar los criterios de búsqueda.",
+      "noDoctorsDescription": "Aún no hay doctores registrados en el sistema.",
+      "clearFilters": "Limpiar filtros"
+    },
+    "metrics": {
+      "total": "Doctores Aprobados",
+      "totalSubtitle": "Total de doctores aprobados en el sistema",
+      "pending": "Doctores Pendientes",
+      "pendingSubtitle": "Doctores en espera de revisión",
+      "rejected": "Doctores Rechazados",
+      "rejectedSubtitle": "Doctores con solicitud rechazada",
+      "approved": "Total Doctores",
+      "approvedSubtitle": "Total de doctores registrados en el sistema"
+    }
+  },
+
+  "userStatus": {
+    "approved": "Aprobado",
+    "rejected": "Rechazado",
+    "pending": "Pendiente"
+  },
+
+  "table": {
+    "actions": "Acciones",
+    "status": "Estado",
+    "registrationDate": "Fecha de Registro",
+    "contact": "Contacto",
+    "phone": "Teléfono",
+    "email": "Email"
+  },
+
+  "centers": {
+    "title": "Centros de Salud",
+    "subtitle": "Gestión de centros de salud registrados en el sistema",
+    "searchPlaceholder": "Buscar por nombre, email, teléfono o tipo...",
+    "table": {
+      "center": "Centro",
+      "centerType": "Tipo de Centro",
+      "noData": "No hay centros para mostrar"
+    },
+    "status": {
+      "approved": "Aprobado",
+      "pending": "Pendiente",
+      "rejected": "Rechazado"
+    },
+    "filters": {
+      "status": "Estado",
+      "selectStatus": "Seleccionar estado",
+      "allStatus": "Todos los estados",
+      "centerType": "Tipo de Centro",
+      "selectCenterType": "Seleccionar tipo",
+      "allTypes": "Todos los tipos",
+      "dateRange": "Rango de fechas"
+    },
+    "centerTypes": {
+      "hospital": "Hospital",
+      "clinica": "Clínica",
+      "centro_especializado": "Centro Especializado",
+      "laboratorio": "Laboratorio",
+      "centro_diagnostico": "Centro de Diagnóstico",
+      "farmacia": "Farmacia",
+      "centro_rehabilitacion": "Centro de Rehabilitación",
+      "centro_emergencia": "Centro de Emergencia",
+      "centro_dialisis": "Centro de Diálisis",
+      "centro_oncologico": "Centro Oncológico"
+    },
+    "empty": {
+      "noResults": "Sin resultados",
+      "noCenters": "Sin centros registrados",
+      "noResultsDescription": "No hay centros que coincidan con los filtros aplicados. Intenta ajustar los criterios de búsqueda.",
+      "noCentersDescription": "Aún no hay centros de salud registrados en el sistema.",
+      "clearFilters": "Limpiar filtros"
+    },
+    "metrics": {
+      "total": "Centros Aprobados",
+      "totalSubtitle": "Total de centros aprobados en el sistema",
+      "pending": "Centros Pendientes",
+      "pendingSubtitle": "Centros en espera de revisión",
+      "rejected": "Centros Rechazados",
+      "rejectedSubtitle": "Centros con solicitud rechazada",
+      "approved": "Total Centros",
+      "approvedSubtitle": "Total de centros registrados en el sistema"
+    }
+  },
+
+  "patients": {
+    "title": "Pacientes",
+    "subtitle": "Gestión de pacientes registrados en el sistema",
+    "searchPlaceholder": "Buscar por nombre, email o teléfono...",
+    "table": {
+      "patient": "Paciente",
+      "noData": "No hay pacientes para mostrar"
+    },
+    "status": {
+      "approved": "Aprobado",
+      "pending": "Pendiente",
+      "rejected": "Rechazado"
+    },
+    "filters": {
+      "statusLabel": "Estado",
+      "statusPlaceholder": "Seleccionar estado",
+      "dateRangeLabel": "Rango de fechas",
+      "status": {
+        "all": "Todos",
+        "approved": "Aprobado",
+        "pending": "Pendiente",
+        "rejected": "Rechazado"
+      }
+    },
+    "empty": {
+      "noResults": "Sin resultados",
+      "noPatients": "Sin pacientes registrados",
+      "noResultsDescription": "No hay pacientes que coincidan con los filtros aplicados. Intenta ajustar los criterios de búsqueda.",
+      "noPatientsDescription": "Aún no hay pacientes registrados en el sistema.",
+      "clearFilters": "Limpiar filtros"
+    },
+    "metrics": {
+      "total": "Pacientes Aprobados",
+      "totalSubtitle": "Total de pacientes aprobados en el sistema",
+      "pending": "Pacientes Pendientes",
+      "pendingSubtitle": "Pacientes en espera de revisión",
+      "rejected": "Pacientes Rechazados",
+      "rejectedSubtitle": "Pacientes con solicitud rechazada",
+      "approved": "Total Pacientes",
+      "approvedSubtitle": "Total de pacientes registrados en el sistema"
+    }
+  },
+
+  "patientDetails": {
+    "title": "Detalles del Paciente",
+    "personalInfo": "Información Personal",
+    "contact": "Contacto",
+    "firstName": "Nombre(s)",
+    "lastName": "Apellido(s)",
+    "gender": "Género",
+    "birthDate": "Fecha de Nacimiento",
+    "nationality": "Nacionalidad",
+    "idNumber": "Número de identificación",
+    "phone": "Teléfono móvil",
+    "email": "Correo electrónico",
+    "address": "Dirección Física"
+  },
+
+  "doctors": {
+    "profile": "Ver perfil",
+    "schedule": "Agendar cita",
+    "history": "Historial",
+    "lastAppointment": "Última cita",
+    "experience": "{{years}} año de experiencia",
+    "experience_plural": "{{years}} años de experiencia",
+    "noExperience": "Experiencia no especificada",
+    "acceptedInsurances": "Seguros aceptados",
+    "noLanguages": "Idiomas no especificados",
+
+    "title": "Doctores",
+    "subtitle": "Gestión de doctores registrados en el sistema",
+    "searchPlaceholder": "Buscar por nombre, email, teléfono o especialidad...",
+    "table": {
+      "doctor": "Doctor",
+      "specialty": "Especialidad",
+      "noData": "No hay doctores para mostrar"
+    },
+    "status": {
+      "approved": "Aprobado",
+      "pending": "Pendiente",
+      "rejected": "Rechazado"
+    },
+    "filters": {
+      "status": "Estado",
+      "selectStatus": "Seleccionar estado",
+      "allStatus": "Todos los estados",
+      "specialty": "Especialidad",
+      "selectSpecialty": "Seleccionar especialidad",
+      "allSpecialties": "Todas las especialidades",
+      "dateRange": "Rango de fechas"
+    },
+    "specialties": {
+      "cardiologia": "Cardiología",
+      "dermatologia": "Dermatología",
+      "neurologia": "Neurología",
+      "pediatria": "Pediatría",
+      "psiquiatria": "Psiquiatría",
+      "traumatologia": "Traumatología",
+      "ginecologia": "Ginecología",
+      "oftalmologia": "Oftalmología",
+      "otorrinolaringologia": "Otorrinolaringología",
+      "urologia": "Urología"
+    },
+    "empty": {
+      "noResults": "Sin resultados",
+      "noDoctors": "Sin doctores registrados",
+      "noResultsDescription": "No hay doctores que coincidan con los filtros aplicados. Intenta ajustar los criterios de búsqueda.",
+      "noDoctorsDescription": "Aún no hay doctores registrados en el sistema.",
+      "clearFilters": "Limpiar filtros"
+    },
+    "metrics": {
+      "total": "Doctores Aprobados",
+      "totalSubtitle": "Total de doctores aprobados en el sistema",
+      "pending": "Doctores Pendientes",
+      "pendingSubtitle": "Doctores en espera de revisión",
+      "rejected": "Doctores Rechazados",
+      "rejectedSubtitle": "Doctores con solicitud rechazada",
+      "approved": "Total Doctores",
+      "approvedSubtitle": "Total de doctores registrados en el sistema"
+    }
   }
 }

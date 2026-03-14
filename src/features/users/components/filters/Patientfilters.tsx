@@ -11,29 +11,28 @@ interface PatientFiltersProps {
 }
 
 function PatientFilters({ filters, onFiltersChange }: PatientFiltersProps) {
-  const { t } = useTranslation("patient");
+  const { t } = useTranslation("common");
 
   const statusOptions = [
-    { value: "all", label: t("filters.status.all") },
-    { value: "approved", label: t("filters.status.approved") },
-    { value: "pending", label: t("filters.status.pending") },
-    { value: "rejected", label: t("filters.status.rejected") },
+    { value: "all", label: t("patients.filters.status.all") },
+    { value: "approved", label: t("patients.filters.status.approved") },
+    { value: "pending", label: t("patients.filters.status.pending") },
+    { value: "rejected", label: t("patients.filters.status.rejected") },
   ];
 
   return (
     <div className="flex flex-col gap-4">
       <MCFilterSelect
         name="status"
-        label={t("filters.statusLabel")}
+        label={t("patients.filters.statusLabel")}
         options={statusOptions}
         value={filters.status}
         onChange={(value) => onFiltersChange({ status: value as string })}
-        placeholder={t("filters.statusPlaceholder")}
+        placeholder={t("patients.filters.statusPlaceholder")}
         size="small"
       />
-
       <MCFilterDates
-        label={t("filters.dateRangeLabel")}
+        label={t("patients.filters.dateRangeLabel")}
         value={filters.dateRange}
         onChange={(dateRange) => onFiltersChange({ dateRange })}
         size="small"

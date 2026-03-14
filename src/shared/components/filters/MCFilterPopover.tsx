@@ -1,5 +1,4 @@
 import React from "react";
-import { useTranslation } from "react-i18next";
 import { Popover, PopoverTrigger, PopoverContent } from "@/shared/ui/popover";
 import { SlidersHorizontal, X } from "lucide-react";
 import { Button } from "@/shared/ui/button";
@@ -10,25 +9,24 @@ type MCFilterPopoverProps = {
   children: React.ReactNode;
   activeFiltersCount: number;
   onClearFilters: () => void;
-  compact?: boolean; // nueva prop
+  compact?: boolean;
 };
 
 export function MCFilterPopover({
   children,
   activeFiltersCount,
   onClearFilters,
-  compact = false, // valor por defecto
+  compact = false,
 }: MCFilterPopoverProps) {
   const [open, setOpen] = React.useState(false);
   const isMobile = useIsMobile();
-  const { t } = useTranslation("patient");
 
   return (
     <>
       {isMobile ? (
         <>
           <Button
-            variant={`outline`}
+            variant="outline"
             onClick={() => setOpen(true)}
             className={`flex w-full items-center text-primary px-4 py-3.5 text-base rounded-4xl border-primary/20 bg-bg-btn-secondary ${
               open
@@ -38,7 +36,7 @@ export function MCFilterPopover({
             aria-label="Abrir filtros"
           >
             <SlidersHorizontal className="w-4.5 h-4.5" />
-            {t("filters.popover.filters")}
+            Filtros
             {activeFiltersCount > 0 && (
               <span className="ml-1 px-2 py-0.5 rounded-full bg-primary text-primary-foreground text-xs font-medium">
                 {activeFiltersCount}
@@ -50,9 +48,7 @@ export function MCFilterPopover({
             <div
               className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
               onClick={(e) => {
-                if (e.target === e.currentTarget) {
-                  setOpen(false);
-                }
+                if (e.target === e.currentTarget) setOpen(false);
               }}
             >
               <div
@@ -62,7 +58,7 @@ export function MCFilterPopover({
                 <div className="space-y-4">
                   <div className="flex items-center justify-between pb-2 border-b border-border/50">
                     <h4 className="font-semibold text-foreground text-lg">
-                      {t("filters.popover.title")}
+                      Filtros
                     </h4>
                     <Button
                       variant="ghost"
@@ -92,7 +88,7 @@ export function MCFilterPopover({
                           setOpen(false);
                         }}
                       >
-                        {t("filters.popover.clear")}
+                        Limpiar filtros
                       </Button>
                     )}
                     <Button
@@ -102,7 +98,7 @@ export function MCFilterPopover({
                         setOpen(false);
                       }}
                     >
-                      {t("filters.popover.apply")}
+                      Aplicar
                     </Button>
                   </div>
                 </div>
@@ -114,7 +110,7 @@ export function MCFilterPopover({
         <Popover open={open} onOpenChange={setOpen}>
           <PopoverTrigger asChild>
             <Button
-              variant={`outline`}
+              variant="outline"
               className={`flex w-full items-center text-primary px-4 py-3.5 text-base sm:px-8 sm:py-4 md:px-10 md:py-5 lg:px-5 lg:py-5 lg:text-md rounded-4xl border-primary/20 bg-bg-btn-secondary ${
                 open
                   ? "opacity ring-2 ring-accent/70 border-secondary"
@@ -123,7 +119,7 @@ export function MCFilterPopover({
               aria-label="Abrir filtros"
             >
               <SlidersHorizontal className="w-4.5 h-4.5" />
-              {t("filters.popover.filters")}
+              Filtros
               {activeFiltersCount > 0 && (
                 <span className="ml-1 px-2 py-0.5 rounded-full bg-primary text-primary-foreground text-xs font-medium">
                   {activeFiltersCount}
@@ -144,22 +140,21 @@ export function MCFilterPopover({
             sideOffset={8}
             avoidCollisions={false}
           >
-            {/* Desktop content remains the same */}
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <h4 className="font-semibold text-foreground text-lg">
-                  {t("filters.popover.title")}
+                  Filtros
                 </h4>
                 {activeFiltersCount > 0 && (
                   <Button
                     variant="ghost"
                     size="sm"
-                    aria-label={t("filters.popover.clear")}
+                    aria-label="Limpiar filtros"
                     onClick={onClearFilters}
                     className="transition-all duration-200 ease-in-out hover:bg-primary/10 active:scale-95 focus:ring-2 focus:ring-primary/30 rounded-full gap-1.5 text-sm px-3 py-2"
                   >
                     <X className="w-4 h-4" />
-                    {t("filters.popover.clear")}
+                    Limpiar filtros
                   </Button>
                 )}
               </div>

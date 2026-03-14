@@ -95,7 +95,7 @@ function AdminNavbar() {
                         href={ROUTES.PATIENTS}
                         active={location.pathname === ROUTES.PATIENTS}
                         isChild
-                        className="text-sm"
+                        className="text-sm text-primary/80 hover:text-primary"
                       >
                         {t("navbar.pacientes")}
                       </NavigationMenuLink>
@@ -105,7 +105,7 @@ function AdminNavbar() {
                         href={ROUTES.DOCTORS}
                         active={location.pathname === ROUTES.DOCTORS}
                         isChild
-                        className="text-sm"
+                        className="text-sm text-primary/80 hover:text-primary"
                       >
                         {t("navbar.doctores")}
                       </NavigationMenuLink>
@@ -115,7 +115,7 @@ function AdminNavbar() {
                         href={ROUTES.CENTERS}
                         active={location.pathname === ROUTES.CENTERS}
                         isChild
-                        className="text-sm"
+                        className="text-sm text-primary/80 hover:text-primary"
                       >
                         {t("navbar.centros")}
                       </NavigationMenuLink>
@@ -148,7 +148,7 @@ function AdminNavbar() {
                         href={ROUTES.HEALTH_CENTER_TYPE}
                         active={location.pathname === ROUTES.HEALTH_CENTER_TYPE}
                         isChild
-                        className="text-sm"
+                        className="text-sm text-primary/80 hover:text-primary"
                       >
                         {t("navbar.tipoCentroSalud")}
                       </NavigationMenuLink>
@@ -158,7 +158,7 @@ function AdminNavbar() {
                         href={ROUTES.PROFESSION}
                         active={location.pathname === ROUTES.PROFESSION}
                         isChild
-                        className="text-sm"
+                        className="text-sm text-primary/80 hover:text-primary"
                       >
                         {t("navbar.profesion")}
                       </NavigationMenuLink>
@@ -168,7 +168,7 @@ function AdminNavbar() {
                         href={ROUTES.SERVICE_TYPE}
                         active={location.pathname === ROUTES.SERVICE_TYPE}
                         isChild
-                        className="text-sm"
+                        className="text-sm text-primary/80 hover:text-primary"
                       >
                         {t("navbar.tipoServicio")}
                       </NavigationMenuLink>
@@ -178,7 +178,7 @@ function AdminNavbar() {
                         href={ROUTES.COUNTRY}
                         active={location.pathname === ROUTES.COUNTRY}
                         isChild
-                        className="text-sm"
+                        className="text-sm text-primary/80 hover:text-primary"
                       >
                         {t("navbar.pais")}
                       </NavigationMenuLink>
@@ -188,7 +188,7 @@ function AdminNavbar() {
                         href={ROUTES.INSURANCE_TYPE}
                         active={location.pathname === ROUTES.INSURANCE_TYPE}
                         isChild
-                        className="text-sm"
+                        className="text-sm text-primary/80 hover:text-primary"
                       >
                         {t("navbar.tipoSeguro")}
                       </NavigationMenuLink>
@@ -198,7 +198,7 @@ function AdminNavbar() {
                         href={ROUTES.INSURANCES}
                         active={location.pathname === ROUTES.INSURANCES}
                         isChild
-                        className="text-sm"
+                        className="text-sm text-primary/80 hover:text-primary"
                       >
                         {t("navbar.seguros")}
                       </NavigationMenuLink>
@@ -208,7 +208,7 @@ function AdminNavbar() {
                         href={ROUTES.ALLERGIES}
                         active={location.pathname === ROUTES.ALLERGIES}
                         isChild
-                        className="text-sm"
+                        className="text-sm text-primary/80 hover:text-primary"
                       >
                         {t("navbar.alergias")}
                       </NavigationMenuLink>

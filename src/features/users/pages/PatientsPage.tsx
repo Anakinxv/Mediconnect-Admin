@@ -78,79 +78,60 @@ const mockPatients: Patient[] = [
 ];
 
 function PatientsPage() {
-  const { t } = useTranslation("patient");
+  const { t } = useTranslation("common");
   const isMobile = useIsMobile();
 
-  // Estados
   const [searchTerm, setSearchTerm] = useState("");
   const [filters, setFilters] = useState({
     status: "all",
     dateRange: undefined as [Date, Date] | undefined,
   });
 
-  // Contar filtros activos
   const activeFiltersCount = Object.entries(filters).filter(([key, value]) => {
-    if (key === "dateRange") {
-      return value !== undefined;
-    }
+    if (key === "dateRange") return value !== undefined;
     return value !== "all" && value !== "";
   }).length;
 
-  // Limpiar filtros
-  const clearFilters = () => {
-    setFilters({
-      status: "all",
-      dateRange: undefined,
-    });
-  };
+  const clearFilters = () =>
+    setFilters({ status: "all", dateRange: undefined });
 
-  // Función auxiliar para parsear fecha
   const parseDate = (dateStr: string) => {
     const [day, month, year] = dateStr.split("/");
     return new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
   };
 
-  // Función para filtrar por rango de fechas
   const matchesCustomDateRange = (
     dateStr: string,
     range?: [Date, Date],
   ): boolean => {
     if (!range) return true;
-
-    const registrationDate = parseDate(dateStr);
-    registrationDate.setHours(0, 0, 0, 0);
-
-    const startDate = new Date(range[0]);
-    startDate.setHours(0, 0, 0, 0);
-
-    const endDate = new Date(range[1]);
-    endDate.setHours(23, 59, 59, 999);
-
-    return registrationDate >= startDate && registrationDate <= endDate;
+    const reg = parseDate(dateStr);
+    reg.setHours(0, 0, 0, 0);
+    const start = new Date(range[0]);
+    start.setHours(0, 0, 0, 0);
+    const end = new Date(range[1]);
+    end.setHours(23, 59, 59, 999);
+    return reg >= start && reg <= end;
   };
 
-  // Filtrar pacientes
-  const filteredPatients = useMemo(() => {
-    return mockPatients.filter((patient) => {
-      // Búsqueda por texto
-      const matchesSearch =
-        patient.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        patient.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        patient.phone.includes(searchTerm);
+  const filteredPatients = useMemo(
+    () =>
+      mockPatients.filter((patient) => {
+        const matchesSearch =
+          patient.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          patient.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          patient.phone.includes(searchTerm);
+        const matchesStatus =
+          filters.status === "all" || patient.status === filters.status;
+        const matchesDate = matchesCustomDateRange(
+          patient.registrationDate,
+          filters.dateRange,
+        );
+        return matchesSearch && matchesStatus && matchesDate;
+      }),
+    [searchTerm, filters],
+  );
 
-      // Filtros
-      const matchesStatus =
-        filters.status === "all" || patient.status === filters.status;
-      const matchesDate = matchesCustomDateRange(
-        patient.registrationDate,
-        filters.dateRange,
-      );
-
-      return matchesSearch && matchesStatus && matchesDate;
-    });
-  }, [searchTerm, filters]);
-
-  // Search input
   const searchComponent = (
     <div className="w-full sm:w-auto sm:min-w-[200px] lg:min-w-[250px]">
       <MCFilterInput
@@ -161,20 +142,16 @@ function PatientsPage() {
     </div>
   );
 
-  // PDF generator
   const pdfGeneratorComponent = (
     <MCPDFButton
       onClick={async () => {
         await MCGeneratePDF({
           columns: [
             { title: t("patients.table.patient"), key: "name" },
-            { title: t("patients.table.status"), key: "status" },
-            {
-              title: t("patients.table.registrationDate"),
-              key: "registrationDate",
-            },
-            { title: t("patients.table.phone"), key: "phone" },
-            { title: t("patients.table.email"), key: "email" },
+            { title: t("table.status"), key: "status" },
+            { title: t("table.registrationDate"), key: "registrationDate" },
+            { title: t("table.phone"), key: "phone" },
+            { title: t("table.email"), key: "email" },
           ],
           data: filteredPatients.map((patient) => ({
             ...patient,
@@ -188,7 +165,6 @@ function PatientsPage() {
     />
   );
 
-  // Filter component
   const filterComponent = (
     <MCFilterPopover
       activeFiltersCount={activeFiltersCount}
@@ -203,7 +179,6 @@ function PatientsPage() {
     </MCFilterPopover>
   );
 
-  // Empty state
   const emptyState = (
     <Empty>
       <EmptyHeader>
@@ -223,9 +198,7 @@ function PatientsPage() {
             </EmptyTitle>
           </span>
           <EmptyDescription
-            className={`text-muted-foreground text-center max-w-md mx-auto ${
-              isMobile ? "text-sm" : "text-base"
-            }`}
+            className={`text-muted-foreground text-center max-w-md mx-auto ${isMobile ? "text-sm" : "text-base"}`}
           >
             {activeFiltersCount > 0
               ? t("patients.empty.noResultsDescription")
@@ -250,18 +223,16 @@ function PatientsPage() {
     </Empty>
   );
 
-  // Tabla con empty state
   const tableComponent =
     filteredPatients.length === 0 ? (
       emptyState
     ) : (
       <PatientsTable
         patients={filteredPatients}
-        onViewDetails={(patient) => console.log("Ver detalles:", patient)}
+        onViewDetails={(patient) => console.log("View details:", patient)}
       />
     );
 
-  // Métricas
   const metrics = [
     {
       title: t("patients.metrics.total"),
