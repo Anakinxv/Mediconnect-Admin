@@ -9,7 +9,6 @@ import {
   NavigationMenuContent,
 } from "@/shared/ui/navigation-menu";
 import { useLocation } from "react-router-dom";
-import AdminNavbarBell from "../components/AdminNavbarBell";
 import { useTranslation } from "react-i18next";
 import { useAppStore } from "@/stores/useAppStore";
 import { ROUTES } from "@/router/routes";
@@ -22,12 +21,10 @@ function AdminNavbar() {
   const usuariosRoutes = [ROUTES.PATIENTS, ROUTES.DOCTORS, ROUTES.CENTERS];
 
   const contenidoRoutes = [
-    ROUTES.HEALTH_CENTER_TYPE,
-    ROUTES.PROFESSION,
-    ROUTES.SERVICE_TYPE,
-    ROUTES.COUNTRY,
+    ROUTES.SPECIALTIES,
+    ROUTES.MEDICAL_INSURANCES,
     ROUTES.INSURANCE_TYPE,
-    ROUTES.INSURANCES,
+    ROUTES.HEALTH_CENTER_TYPE,
     ROUTES.ALLERGIES,
   ];
 
@@ -145,42 +142,22 @@ function AdminNavbar() {
                   <ul className="p-2 flex flex-col gap-1">
                     <li>
                       <NavigationMenuLink
-                        href={ROUTES.HEALTH_CENTER_TYPE}
-                        active={location.pathname === ROUTES.HEALTH_CENTER_TYPE}
+                        href={ROUTES.SPECIALTIES}
+                        active={location.pathname === ROUTES.SPECIALTIES}
                         isChild
                         className="text-sm text-primary/80 hover:text-primary"
                       >
-                        {t("navbar.tipoCentroSalud")}
+                        {t("navbar.especialidades")}
                       </NavigationMenuLink>
                     </li>
                     <li>
                       <NavigationMenuLink
-                        href={ROUTES.PROFESSION}
-                        active={location.pathname === ROUTES.PROFESSION}
+                        href={ROUTES.MEDICAL_INSURANCES}
+                        active={location.pathname === ROUTES.MEDICAL_INSURANCES}
                         isChild
                         className="text-sm text-primary/80 hover:text-primary"
                       >
-                        {t("navbar.profesion")}
-                      </NavigationMenuLink>
-                    </li>
-                    <li>
-                      <NavigationMenuLink
-                        href={ROUTES.SERVICE_TYPE}
-                        active={location.pathname === ROUTES.SERVICE_TYPE}
-                        isChild
-                        className="text-sm text-primary/80 hover:text-primary"
-                      >
-                        {t("navbar.tipoServicio")}
-                      </NavigationMenuLink>
-                    </li>
-                    <li>
-                      <NavigationMenuLink
-                        href={ROUTES.COUNTRY}
-                        active={location.pathname === ROUTES.COUNTRY}
-                        isChild
-                        className="text-sm text-primary/80 hover:text-primary"
-                      >
-                        {t("navbar.pais")}
+                        {t("navbar.segurosMedicos")}
                       </NavigationMenuLink>
                     </li>
                     <li>
@@ -195,12 +172,12 @@ function AdminNavbar() {
                     </li>
                     <li>
                       <NavigationMenuLink
-                        href={ROUTES.INSURANCES}
-                        active={location.pathname === ROUTES.INSURANCES}
+                        href={ROUTES.HEALTH_CENTER_TYPE}
+                        active={location.pathname === ROUTES.HEALTH_CENTER_TYPE}
                         isChild
                         className="text-sm text-primary/80 hover:text-primary"
                       >
-                        {t("navbar.seguros")}
+                        {t("navbar.tipoCentroSalud")}
                       </NavigationMenuLink>
                     </li>
                     <li>
@@ -223,7 +200,6 @@ function AdminNavbar() {
 
       {/* User Menu */}
       <div className="flex items-center gap-2 sm:gap-3">
-        {/* <AdminNavbarBell /> */}
         <div className="hidden md:block">
           <AdminUserMenu />
         </div>

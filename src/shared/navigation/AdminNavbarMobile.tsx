@@ -8,10 +8,10 @@ import {
   CollapsibleTrigger,
 } from "@/shared/ui/collapsible";
 import AdminUserMenu from "./AdminUserMenu";
-
 import { useAppStore } from "@/stores/useAppStore";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { ROUTES } from "@/router/routes";
 
 function AdminNavbarMobile() {
   const [open, setOpen] = useState(false);
@@ -23,26 +23,19 @@ function AdminNavbarMobile() {
   const navigate = useNavigate();
   const { t } = useTranslation("dashboard");
 
-  const usuariosRoutes = [
-    "/a",
-    "/usuarios/pacientes",
-    "/usuarios/doctores",
-    "/usuarios/centros",
-  ];
+  const usuariosRoutes = [ROUTES.PATIENTS, ROUTES.DOCTORS, ROUTES.CENTERS];
 
   const contenidoRoutes = [
-    "/contenido/tipo-centro-salud",
-    "/contenido/profesion",
-    "/contenido/tipo-servicio",
-    "/contenido/pais",
-    "/contenido/tipo-seguro",
-    "/contenido/seguros",
-    "/contenido/alergias",
+    ROUTES.SPECIALTIES,
+    ROUTES.MEDICAL_INSURANCES,
+    ROUTES.INSURANCE_TYPE,
+    ROUTES.HEALTH_CENTER_TYPE,
+    ROUTES.ALLERGIES,
   ];
 
   const isUsuariosActive = usuariosRoutes.includes(location.pathname);
   const isContenidoActive = contenidoRoutes.includes(location.pathname);
-  const isDashboardActive = location.pathname === "/";
+  const isDashboardActive = location.pathname === ROUTES.DASHBOARD;
 
   const handleNavigation = (route: string) => {
     navigate(route);
@@ -50,14 +43,21 @@ function AdminNavbarMobile() {
   };
 
   const handleLogout = () => {
-    // Aquí puedes agregar tu lógica de logout
     console.log("Logout clicked");
     setOpen(false);
   };
 
+  const contenidoItems = [
+    { route: ROUTES.SPECIALTIES, label: t("navbar.especialidades") },
+    { route: ROUTES.MEDICAL_INSURANCES, label: t("navbar.segurosMedicos") },
+    { route: ROUTES.INSURANCE_TYPE, label: t("navbar.tipoSeguro") },
+    { route: ROUTES.HEALTH_CENTER_TYPE, label: t("navbar.tipoCentroSalud") },
+    { route: ROUTES.ALLERGIES, label: t("navbar.alergias") },
+  ];
+
   return (
     <div className="flex items-center justify-between w-full px-6 py-4 md:hidden bg-background rounded-full shadow-md border border-border">
-      {/* Logo/Brand */}
+      {/* Logo */}
       <div className="flex items-center gap-3">
         <img
           src={
@@ -70,9 +70,8 @@ function AdminNavbarMobile() {
         />
       </div>
 
-      {/* Right side - Notifications + Menu */}
+      {/* Right side - Menu */}
       <div className="flex items-center gap-4">
-        {/* Mobile Menu */}
         <Sheet open={open} onOpenChange={setOpen}>
           <SheetTrigger asChild>
             <Button
@@ -90,17 +89,15 @@ function AdminNavbarMobile() {
             <div className="flex flex-col h-full">
               {/* Header */}
               <div className="flex items-center justify-between p-6 border-b border-border">
-                <div className="flex items-center gap-3">
-                  <img
-                    src={
-                      theme === "dark"
-                        ? "https://res.cloudinary.com/dy2wtanhl/image/upload/v1771637881/MediConnectLanding_ryopcw.png"
-                        : "https://res.cloudinary.com/dy2wtanhl/image/upload/v1771637879/MediConnectLanding-green_trpgvu.png"
-                    }
-                    alt="MediConnect"
-                    className="h-12 w-auto"
-                  />
-                </div>
+                <img
+                  src={
+                    theme === "dark"
+                      ? "https://res.cloudinary.com/dy2wtanhl/image/upload/v1771637881/MediConnectLanding_ryopcw.png"
+                      : "https://res.cloudinary.com/dy2wtanhl/image/upload/v1771637879/MediConnectLanding-green_trpgvu.png"
+                  }
+                  alt="MediConnect"
+                  className="h-12 w-auto"
+                />
                 <Button
                   variant="ghost"
                   size="icon"
@@ -111,12 +108,12 @@ function AdminNavbarMobile() {
                 </Button>
               </div>
 
-              {/* User Profile Section */}
+              {/* User Profile */}
               <div className="p-6 border-b border-border">
                 <AdminUserMenu />
               </div>
 
-              {/* Navigation Menu */}
+              {/* Navigation */}
               <div className="flex-1 p-6 overflow-y-auto">
                 <nav className="space-y-3">
                   {/* Dashboard */}
@@ -127,7 +124,7 @@ function AdminNavbarMobile() {
                         ? "bg-primary text-primary-foreground hover:bg-primary focus:bg-primary"
                         : "text-primary hover:bg-accent/70 hover:text-primary focus:bg-accent"
                     }`}
-                    onClick={() => handleNavigation("/")}
+                    onClick={() => handleNavigation(ROUTES.DASHBOARD)}
                   >
                     {t("navbar.dashboard")}
                   </Button>
@@ -155,57 +152,29 @@ function AdminNavbarMobile() {
                       </Button>
                     </CollapsibleTrigger>
                     <CollapsibleContent className="pl-4 space-y-1 mt-2">
-                      {/* Admin eliminado */}
-                      <Button
-                        variant="ghost"
-                        className={`w-full justify-start text-left h-10 px-4 rounded-lg text-sm transition-all duration-200 active:scale-95 ${
-                          location.pathname === "/usuarios/pacientes"
-                            ? "bg-accent/50 text-primary"
-                            : "text-primary/80 hover:bg-accent/60 hover:text-primary focus:bg-accent"
-                        }`}
-                        onClick={() => handleNavigation("/usuarios/pacientes")}
-                      >
-                        {t("navbar.pacientes")}
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        className={`w-full justify-start text-left h-10 px-4 rounded-lg text-sm transition-all duration-200 active:scale-95 ${
-                          location.pathname === "/usuarios/doctores"
-                            ? "bg-accent/50 text-primary"
-                            : "text-primary/80 hover:bg-accent/60 hover:text-primary focus:bg-accent"
-                        }`}
-                        onClick={() => handleNavigation("/usuarios/doctores")}
-                      >
-                        {t("navbar.doctores")}
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        className={`w-full justify-start text-left h-10 px-4 rounded-lg text-sm transition-all duration-200 active:scale-95 ${
-                          location.pathname === "/usuarios/centros"
-                            ? "bg-acent/50 text-primary"
-                            : "text-primary/80 hover:bg-accent/60 hover:text-primary focus:bg-accent"
-                        }`}
-                        onClick={() => handleNavigation("/usuarios/centros")}
-                      >
-                        {t("navbar.centros")}
-                      </Button>
+                      {[
+                        {
+                          route: ROUTES.PATIENTS,
+                          label: t("navbar.pacientes"),
+                        },
+                        { route: ROUTES.DOCTORS, label: t("navbar.doctores") },
+                        { route: ROUTES.CENTERS, label: t("navbar.centros") },
+                      ].map(({ route, label }) => (
+                        <Button
+                          key={route}
+                          variant="ghost"
+                          className={`w-full justify-start text-left h-10 px-4 rounded-lg text-sm transition-all duration-200 active:scale-95 ${
+                            location.pathname === route
+                              ? "bg-accent/50 text-primary"
+                              : "text-primary/80 hover:bg-accent/60 hover:text-primary focus:bg-accent"
+                          }`}
+                          onClick={() => handleNavigation(route)}
+                        >
+                          {label}
+                        </Button>
+                      ))}
                     </CollapsibleContent>
                   </Collapsible>
-
-                  {/* Reporte de cuentas eliminado */}
-                  {/* 
-                  <Button
-                    variant="ghost"
-                    className={`w-full justify-start text-left h-12 px-4 rounded-xl transition-all duration-200 active:scale-95 ${
-                      isReporteActive
-                        ? "bg-primary text-primary-foreground hover:bg-primary focus:bg-primary"
-                        : "text-primary hover:bg-accent/70 hover:text-primary focus:bg-accent"
-                    }`}
-                    onClick={() => handleNavigation("/reporte-cuentas")}
-                  >
-                    {t("navbar.reporteCuentas")}
-                  </Button>
-                  */}
 
                   {/* Contenido Dropdown */}
                   <Collapsible
@@ -230,109 +199,39 @@ function AdminNavbarMobile() {
                       </Button>
                     </CollapsibleTrigger>
                     <CollapsibleContent className="pl-4 space-y-1 mt-2">
-                      <Button
-                        variant="ghost"
-                        className={`w-full justify-start text-left h-10 px-4 rounded-lg text-sm transition-all duration-200 active:scale-95 ${
-                          location.pathname === "/contenido/tipo-centro-salud"
-                            ? "bg-accent/50 text-primary"
-                            : "text-primary/80 hover:bg-accent/60 hover:text-primary focus:bg-accent"
-                        }`}
-                        onClick={() =>
-                          handleNavigation("/contenido/tipo-centro-salud")
-                        }
-                      >
-                        {t("navbar.tipoCentroSalud")}
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        className={`w-full justify-start text-left h-10 px-4 rounded-lg text-sm transition-all duration-200 active:scale-95 ${
-                          location.pathname === "/contenido/profesion"
-                            ? "bg-accent/50 text-primary"
-                            : "text-primary/80 hover:bg-accent/60 hover:text-primary focus:bg-accent"
-                        }`}
-                        onClick={() => handleNavigation("/contenido/profesion")}
-                      >
-                        {t("navbar.profesion")}
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        className={`w-full justify-start text-left h-10 px-4 rounded-lg text-sm transition-all duration-200 active:scale-95 ${
-                          location.pathname === "/contenido/tipo-servicio"
-                            ? "bg-accent/50 text-primary"
-                            : "text-primary/80 hover:bg-accent/60 hover:text-primary focus:bg-accent"
-                        }`}
-                        onClick={() =>
-                          handleNavigation("/contenido/tipo-servicio")
-                        }
-                      >
-                        {t("navbar.tipoServicio")}
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        className={`w-full justify-start text-left h-10 px-4 rounded-lg text-sm transition-all duration-200 active:scale-95 ${
-                          location.pathname === "/contenido/pais"
-                            ? "bg-accent/50 text-primary"
-                            : "text-primary/80 hover:bg-accent/60 hover:text-primary focus:bg-accent"
-                        }`}
-                        onClick={() => handleNavigation("/contenido/pais")}
-                      >
-                        {t("navbar.pais")}
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        className={`w-full justify-start text-left h-10 px-4 rounded-lg text-sm transition-all duration-200 active:scale-95 ${
-                          location.pathname === "/contenido/tipo-seguro"
-                            ? "bg-accent/50 text-primary"
-                            : "text-primary/80 hover:bg-accent/60 hover:text-primary focus:bg-accent"
-                        }`}
-                        onClick={() =>
-                          handleNavigation("/contenido/tipo-seguro")
-                        }
-                      >
-                        {t("navbar.tipoSeguro")}
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        className={`w-full justify-start text-left h-10 px-4 rounded-lg text-sm transition-all duration-200 active:scale-95 ${
-                          location.pathname === "/contenido/seguros"
-                            ? "bg-accent/50 text-primary"
-                            : "text-primary/80 hover:bg-accent/60 hover:text-primary focus:bg-accent"
-                        }`}
-                        onClick={() => handleNavigation("/contenido/seguros")}
-                      >
-                        {t("navbar.seguros")}
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        className={`w-full justify-start text-left h-10 px-4 rounded-lg text-sm transition-all duration-200 active:scale-95 ${
-                          location.pathname === "/contenido/alergias"
-                            ? "bg-accent/50 text-primary"
-                            : "text-primary/80 hover:bg-accent/60 hover:text-primary focus:bg-accent"
-                        }`}
-                        onClick={() => handleNavigation("/contenido/alergias")}
-                      >
-                        {t("navbar.alergias")}
-                      </Button>
+                      {contenidoItems.map(({ route, label }) => (
+                        <Button
+                          key={route}
+                          variant="ghost"
+                          className={`w-full justify-start text-left h-10 px-4 rounded-lg text-sm transition-all duration-200 active:scale-95 ${
+                            location.pathname === route
+                              ? "bg-accent/50 text-primary"
+                              : "text-primary/80 hover:bg-accent/60 hover:text-primary focus:bg-accent"
+                          }`}
+                          onClick={() => handleNavigation(route)}
+                        >
+                          {label}
+                        </Button>
+                      ))}
                     </CollapsibleContent>
                   </Collapsible>
                 </nav>
               </div>
 
-              {/* Footer - Logout Button */}
+              {/* Footer - Logout */}
               <div className="p-6 border-t border-border">
                 <Button
                   variant="ghost"
                   onClick={handleLogout}
-                  data-variant="destructive"
                   className="
-    w-full justify-start text-left h-12 px-4 rounded-xl transition-all duration-200 active:scale-95
-    text-red-600
-    hover:bg-red-600/10 hover:text-red-600
-    focus:bg-red-600/15 focus:text-red-600
-    [&_svg]:!text-red-600
-    dark:hover:bg-red-600/20 dark:hover:text-red-500
-    dark:focus:bg-red-600/30 dark:focus:text-red-500
-  "
+                    w-full justify-start text-left h-12 px-4 rounded-xl transition-all duration-200 active:scale-95
+                    text-red-600
+                    hover:bg-red-600/10 hover:text-red-600
+                    focus:bg-red-600/15 focus:text-red-600
+                    [&_svg]:!text-red-600
+                    dark:hover:bg-red-600/20 dark:hover:text-red-500
+                    dark:focus:bg-red-600/30 dark:focus:text-red-500
+                  "
                 >
                   <LogOut className="w-4 h-4 mr-2" />
                   {t("userMenu.logout")}

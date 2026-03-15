@@ -8,13 +8,19 @@
     "centros": "Health Centers",
     "reporteCuentas": "Account Report",
     "contenido": "Content",
-    "tipoCentroSalud": "Health Center Type",
     "profesion": "Profession",
     "tipoServicio": "Service Type",
     "pais": "Country",
-    "tipoSeguro": "Insurance Type",
     "seguros": "Insurances",
-    "alergias": "Allergies"
+    "alergias": "Allergies",
+    "especialidades": "Specialties",
+    "segurosMedicos": "Medical Insurances",
+    "tipoSeguro": "Insurance Types",
+    "tipoCentroSalud": "Health Center Types",
+    "paises": "Countries",
+    "provincias": "Provinces",
+    "municipios": "Municipalities",
+    "barrios": "Neighborhoods"
   },
   "userMenu": {
     "admin": "Admin",

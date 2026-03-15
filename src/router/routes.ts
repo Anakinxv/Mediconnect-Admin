@@ -15,13 +15,16 @@ export const ROUTES = {
   SETTINGS_CHANGE_PASSWORD: "/settings/change-password",
   SETTINGS_DELETE_ACCOUNT: "/settings/delete-account",
   // Contenido
-  HEALTH_CENTER_TYPE: "/contenido/tipo-centro-salud",
-  PROFESSION: "/contenido/profesion",
-  SERVICE_TYPE: "/contenido/tipo-servicio",
-  COUNTRY: "/contenido/pais",
+  SPECIALTIES: "/contenido/especialidades",
+  MEDICAL_INSURANCES: "/contenido/seguros-medicos",
   INSURANCE_TYPE: "/contenido/tipo-seguro",
-  INSURANCES: "/contenido/seguros",
+  HEALTH_CENTER_TYPE: "/contenido/tipo-centro-salud",
   ALLERGIES: "/contenido/alergias",
+  COUNTRY: "/contenido/paises",
+  PROVINCE: "/contenido/provincias",
+  MUNICIPALITY: "/contenido/municipios",
+  NEIGHBORHOOD: "/contenido/barrios",
+  // Usuarios
   DOCTOR_DETAILS: "/doctors/:doctorId/details",
   CENTER_DETAILS: "/centers/:centerId/details",
 };
