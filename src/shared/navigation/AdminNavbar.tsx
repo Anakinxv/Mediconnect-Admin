@@ -11,7 +11,7 @@ import {
 import { useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useAppStore } from "@/stores/useAppStore";
-import { ROUTES } from "@/router/routes";
+import { ROUTES } from "@/schema/router/routes";
 
 function AdminNavbar() {
   const location = useLocation();

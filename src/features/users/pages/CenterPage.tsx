@@ -25,7 +25,7 @@ import {
 import CentersTable, { type Center } from "../components/center/CentersTable";
 import CenterFilters from "../components/filters/CenterFilters";
 import { useNavigate } from "react-router-dom";
-import { ROUTES } from "@/router/routes";
+import { ROUTES } from "@/schema/router/routes";
 
 const mockCenters: Center[] = [
   {
