@@ -16,7 +16,7 @@ export default function SpecialitiesFilters({
   filters,
   onFiltersChange,
 }: SpecialitiesFiltersProps) {
-  const { t } = useTranslation("common");
+  const { t } = useTranslation("specialties");
 
   const statusOptions = [
     {

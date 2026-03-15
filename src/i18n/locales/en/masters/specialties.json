@@ -1,0 +1,91 @@
+{
+  "specialities": {
+    "title": "Specialities",
+    "subtitle": "List of medical specialities",
+    "create": "New Speciality",
+    "searchPlaceholder": "Search speciality...",
+
+    "table": {
+      "name": "Name",
+      "description": "Description",
+      "createdAt": "Creation Date",
+      "noData": "No specialities registered"
+    },
+
+    "status": {
+      "active": "Active",
+      "inactive": "Inactive"
+    },
+
+    "filters": {
+      "allStatus": "All statuses",
+      "selectStatus": "Select status"
+    },
+
+    "metrics": {
+      "total": "Total",
+      "totalSubtitle": "Registered specialities",
+      "active": "Active",
+      "activeSubtitle": "Available for doctors",
+      "inactive": "Inactive",
+      "inactiveSubtitle": "Not available"
+    },
+
+    "modal": {
+      "createTitle": "New Speciality",
+      "createDescription": "Fill in the details to register a new speciality.",
+      "editTitle": "Edit Speciality",
+      "editDescription": "Modify the speciality details.",
+      "activateTitle": "Activate Speciality",
+      "activateDescription": "Are you sure you want to activate \"{{name}}\"? It will be available again for doctors.",
+      "deactivateTitle": "Deactivate Speciality",
+      "deactivateDescription": "Are you sure you want to deactivate \"{{name}}\"? Doctors will not be able to associate with this speciality while it is inactive.",
+      "deleteTitle": "Delete Speciality",
+      "deleteDescription": "Are you sure you want to delete \"{{name}}\"? This action cannot be undone."
+    },
+
+    "form": {
+      "namePlaceholder": "e.g. Cardiology",
+      "descriptionPlaceholder": "Briefly describe the speciality..."
+    },
+
+    "validation": {
+      "nameMin": "Name must be at least 2 characters",
+      "nameMax": "Name cannot exceed 100 characters",
+      "descMin": "Description must be at least 5 characters",
+      "descMax": "Description cannot exceed 300 characters"
+    },
+
+    "toast": {
+      "createSuccess": "Speciality created successfully",
+      "editSuccess": "Speciality updated successfully",
+      "activated": "\"{{name}}\" was activated successfully",
+      "deactivated": "\"{{name}}\" was deactivated successfully",
+      "deleteSuccess": "\"{{name}}\" was deleted successfully",
+      "aborted": "Operation cancelled",
+      "statusAborted": "Status change cancelled",
+      "deleteAborted": "Deletion cancelled"
+    },
+
+    "empty": {
+      "noSpecialities": "No specialities",
+      "noSpecialitiesDescription": "No specialities have been registered yet. Create the first one.",
+      "noResults": "No results",
+      "noResultsDescription": "No specialities match the applied filters.",
+      "clearFilters": "Clear filters"
+    }
+  },
+
+  "table": {
+    "status": "Status",
+    "actions": "Actions",
+    "registrationDate": "Registration Date",
+    "edit": "Edit",
+    "delete": "Delete",
+    "activate": "Activate",
+    "deactivate": "Deactivate",
+    "save": "Save Changes",
+    "create": "Create",
+    "cancel": "Cancel"
+  }
+}

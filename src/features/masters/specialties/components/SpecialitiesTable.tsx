@@ -42,7 +42,7 @@ export default function SpecialitiesTable({
   onDelete,
   onToggleStatus,
 }: SpecialitiesTableProps) {
-  const { t } = useTranslation("common");
+  const { t } = useTranslation("specialties");
   const [page, setPage] = useState(1);
 
   const totalPages = Math.ceil(specialities.length / PAGE_SIZE);

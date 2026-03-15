@@ -26,7 +26,7 @@ export default function SpecialitiesActions({
   onDelete,
   onToggleStatus,
 }: SpecialitiesActionsProps) {
-  const { t } = useTranslation("common");
+  const { t } = useTranslation("specialties");
   const isActive = speciality.status === "active";
 
   return (

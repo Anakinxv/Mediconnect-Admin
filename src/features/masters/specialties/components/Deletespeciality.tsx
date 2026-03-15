@@ -14,7 +14,7 @@ export default function DeleteSpeciality({
   onConfirm,
   children,
 }: DeleteSpecialityProps) {
-  const { t } = useTranslation("common");
+  const { t } = useTranslation("specialties");
   const setToast = useGlobalUIStore((s) => s.setToast);
 
   const handleConfirm = () => {

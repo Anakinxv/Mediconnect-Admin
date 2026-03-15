@@ -14,7 +14,7 @@ export default function ToggleStatusSpeciality({
   onConfirm,
   children,
 }: ToggleStatusSpecialityProps) {
-  const { t } = useTranslation("common");
+  const { t } = useTranslation("specialties");
   const setToast = useGlobalUIStore((s) => s.setToast);
 
   const isActive = speciality.status === "active";

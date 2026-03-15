@@ -90,7 +90,7 @@ const mockSpecialities: Speciality[] = [
 ];
 
 function SpecialitiesPage() {
-  const { t } = useTranslation("common");
+  const { t } = useTranslation("specialties");
   const isMobile = useIsMobile();
   const setToast = useGlobalUIStore((s) => s.setToast);
 

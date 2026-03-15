@@ -1,0 +1,91 @@
+{
+  "specialities": {
+    "title": "Especialidades",
+    "subtitle": "Listado de especialidades médicas",
+    "create": "Nueva Especialidad",
+    "searchPlaceholder": "Buscar especialidad...",
+
+    "table": {
+      "name": "Nombre",
+      "description": "Descripción",
+      "createdAt": "Fecha de Creación",
+      "noData": "No hay especialidades registradas"
+    },
+
+    "status": {
+      "active": "Activo",
+      "inactive": "Inactivo"
+    },
+
+    "filters": {
+      "allStatus": "Todos los estados",
+      "selectStatus": "Seleccionar estado"
+    },
+
+    "metrics": {
+      "total": "Total",
+      "totalSubtitle": "Especialidades registradas",
+      "active": "Activas",
+      "activeSubtitle": "Disponibles para médicos",
+      "inactive": "Inactivas",
+      "inactiveSubtitle": "No disponibles"
+    },
+
+    "modal": {
+      "createTitle": "Nueva Especialidad",
+      "createDescription": "Completa los datos para registrar una nueva especialidad.",
+      "editTitle": "Editar Especialidad",
+      "editDescription": "Modifica los datos de la especialidad.",
+      "activateTitle": "Activar Especialidad",
+      "activateDescription": "¿Estás seguro de que deseas activar \"{{name}}\"? Estará disponible nuevamente para los médicos.",
+      "deactivateTitle": "Desactivar Especialidad",
+      "deactivateDescription": "¿Estás seguro de que deseas desactivar \"{{name}}\"? Los médicos no podrán asociarse a esta especialidad mientras esté inactiva.",
+      "deleteTitle": "Eliminar Especialidad",
+      "deleteDescription": "¿Estás seguro de que deseas eliminar \"{{name}}\"? Esta acción no se puede deshacer."
+    },
+
+    "form": {
+      "namePlaceholder": "Ej: Cardiología",
+      "descriptionPlaceholder": "Describe brevemente la especialidad..."
+    },
+
+    "validation": {
+      "nameMin": "El nombre debe tener al menos 2 caracteres",
+      "nameMax": "El nombre no puede superar los 100 caracteres",
+      "descMin": "La descripción debe tener al menos 5 caracteres",
+      "descMax": "La descripción no puede superar los 300 caracteres"
+    },
+
+    "toast": {
+      "createSuccess": "Especialidad creada correctamente",
+      "editSuccess": "Especialidad actualizada correctamente",
+      "activated": "\"{{name}}\" fue activada correctamente",
+      "deactivated": "\"{{name}}\" fue desactivada correctamente",
+      "deleteSuccess": "\"{{name}}\" fue eliminada correctamente",
+      "aborted": "Operación cancelada",
+      "statusAborted": "Cambio de estado cancelado",
+      "deleteAborted": "Eliminación cancelada"
+    },
+
+    "empty": {
+      "noSpecialities": "No hay especialidades",
+      "noSpecialitiesDescription": "Aún no se han registrado especialidades. Crea la primera.",
+      "noResults": "Sin resultados",
+      "noResultsDescription": "No hay especialidades que coincidan con los filtros aplicados.",
+      "clearFilters": "Limpiar filtros"
+    }
+  },
+
+  "table": {
+    "status": "Estado",
+    "actions": "Acciones",
+    "registrationDate": "Fecha de Registro",
+    "edit": "Editar",
+    "delete": "Eliminar",
+    "activate": "Activar",
+    "deactivate": "Desactivar",
+    "save": "Guardar Cambios",
+    "create": "Crear",
+    "cancel": "Cancelar"
+  }
+}

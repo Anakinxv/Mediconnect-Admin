@@ -19,7 +19,7 @@ export default function CreateEditSpeciality({
   onConfirm,
   children,
 }: CreateEditSpecialityProps) {
-  const { t } = useTranslation("common");
+  const { t } = useTranslation("specialties");
   const setToast = useGlobalUIStore((s) => s.setToast);
   const isEdit = !!speciality;
   const submitRef = useRef<HTMLButtonElement>(null);
