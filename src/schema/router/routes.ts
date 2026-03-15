@@ -14,17 +14,17 @@ export const ROUTES = {
   SETTINGS_VERIFY_NEW_EMAIL: "/settings/verify-email",
   SETTINGS_CHANGE_PASSWORD: "/settings/change-password",
   SETTINGS_DELETE_ACCOUNT: "/settings/delete-account",
-  // Contenido
-  SPECIALTIES: "/contenido/especialidades",
-  MEDICAL_INSURANCES: "/contenido/seguros-medicos",
-  INSURANCE_TYPE: "/contenido/tipo-seguro",
-  HEALTH_CENTER_TYPE: "/contenido/tipo-centro-salud",
-  ALLERGIES: "/contenido/alergias",
-  COUNTRY: "/contenido/paises",
-  PROVINCE: "/contenido/provincias",
-  MUNICIPALITY: "/contenido/municipios",
-  NEIGHBORHOOD: "/contenido/barrios",
-  // Usuarios
+  // Content
+  SPECIALTIES: "/content/specialties",
+  MEDICAL_INSURANCES: "/content/medical-insurances",
+  INSURANCE_TYPE: "/content/insurance-type",
+  HEALTH_CENTER_TYPE: "/content/health-center-type",
+  ALLERGIES: "/content/allergies",
+  COUNTRY: "/content/countries",
+  PROVINCE: "/content/provinces",
+  MUNICIPALITY: "/content/municipalities",
+  NEIGHBORHOOD: "/content/neighborhoods",
+  // Users
   DOCTOR_DETAILS: "/doctors/:doctorId/details",
   CENTER_DETAILS: "/centers/:centerId/details",
 };

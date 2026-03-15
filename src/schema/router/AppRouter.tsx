@@ -19,7 +19,7 @@ import VerifyNewEmailPage from "@/features/account/settings/pages/VerifyNewEmail
 import ChangePasswordPage from "@/features/account/settings/pages/ChangePasswordPage";
 import DeleteAccountPage from "@/features/account/settings/pages/DeleteAccountPage";
 import ViewDetailsPage from "@/features/users/pages/ViewDetailsPage";
-
+import SpecialitiesPage from "@/features/masters/specialties/pages/SpecialitiesPage";
 function AppRouter() {
   return (
     <BrowserRouter>
@@ -43,7 +43,6 @@ function AppRouter() {
             <Route path={ROUTES.PATIENTS} element={<PatientsPage />} />
             <Route path={ROUTES.DOCTORS} element={<DoctorsPage />} />
             <Route path={ROUTES.CENTERS} element={<CenterPage />} />
-
             <Route
               path={ROUTES.DOCTOR_DETAILS}
               element={<ViewDetailsPage isDoctor />}
@@ -52,7 +51,8 @@ function AppRouter() {
               path={ROUTES.CENTER_DETAILS}
               element={<ViewDetailsPage isDoctor={false} />}
             />
-
+            <Route path={ROUTES.SPECIALTIES} element={<SpecialitiesPage />} />{" "}
+            {/* <-- Agregado */}
             <Route path={ROUTES.SETTINGS} element={<AccountOverviewPage />} />
             <Route
               path={ROUTES.SETTINGS_VERIFY_IDENTITY}
