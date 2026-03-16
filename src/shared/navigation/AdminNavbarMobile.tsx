@@ -11,7 +11,7 @@ import AdminUserMenu from "./AdminUserMenu";
 import { useAppStore } from "@/stores/useAppStore";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { ROUTES } from "@/schema/router/routes";
+import { ROUTES } from "@/router/routes";
 
 function AdminNavbarMobile() {
   const [open, setOpen] = useState(false);

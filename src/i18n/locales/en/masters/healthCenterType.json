@@ -1,0 +1,74 @@
+{
+  "healthCenterTypes": {
+    "title": "Health Center Types",
+    "subtitle": "List of health center types",
+    "create": "New Health Center Type",
+    "searchPlaceholder": "Search health center type...",
+
+    "table": {
+      "name": "Name",
+      "createdAt": "Creation Date",
+      "noData": "No health center types registered"
+    },
+
+    "status": {
+      "active": "Active",
+      "inactive": "Inactive"
+    },
+
+    "filters": {
+      "allStatus": "All statuses",
+      "selectStatus": "Select status"
+    },
+
+    "metrics": {
+      "total": "Total",
+      "totalSubtitle": "Registered health center types",
+      "active": "Active",
+      "activeSubtitle": "Currently available",
+      "inactive": "Inactive",
+      "inactiveSubtitle": "Not available"
+    },
+
+    "modal": {
+      "createTitle": "New Health Center Type",
+      "createDescription": "Fill in the details to register a new health center type.",
+      "editTitle": "Edit Health Center Type",
+      "editDescription": "Modify the health center type details.",
+      "activateTitle": "Activate Health Center Type",
+      "activateDescription": "Are you sure you want to activate \"{{name}}\"? It will be available again.",
+      "deactivateTitle": "Deactivate Health Center Type",
+      "deactivateDescription": "Are you sure you want to deactivate \"{{name}}\"? It will not be available while inactive.",
+      "deleteTitle": "Delete Health Center Type",
+      "deleteDescription": "Are you sure you want to delete \"{{name}}\"? This action cannot be undone."
+    },
+
+    "form": {
+      "namePlaceholder": "e.g. Hospital, Clinic, Laboratory..."
+    },
+
+    "validation": {
+      "nameMin": "Name must be at least 2 characters",
+      "nameMax": "Name cannot exceed 100 characters"
+    },
+
+    "toast": {
+      "createSuccess": "Health center type created successfully",
+      "editSuccess": "Health center type updated successfully",
+      "activated": "\"{{name}}\" was activated successfully",
+      "deactivated": "\"{{name}}\" was deactivated successfully",
+      "deleteSuccess": "\"{{name}}\" was deleted successfully",
+      "aborted": "Operation cancelled",
+      "statusAborted": "Status change cancelled",
+      "deleteAborted": "Deletion cancelled"
+    },
+
+    "empty": {
+      "noHealthCenterTypes": "No health center types",
+      "noHealthCenterTypesDescription": "No health center types have been registered yet. Create the first one.",
+      "noResults": "No results",
+      "noResultsDescription": "No health center types match the applied filters.",
+      "clearFilters": "Clear filters"
+    }
+  }
+}

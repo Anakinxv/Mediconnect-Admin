@@ -11,13 +11,22 @@ import specialtiesen from "@/i18n/locales/en/masters/specialties.json";
 import specialtieses from "@/i18n/locales/es/masters/specialties.json";
 import insuranceTypesen from "@/i18n/locales/en/masters/insuranceType.json";
 import insuranceTypeses from "@/i18n/locales/es/masters/insuranceType.json";
+import healthCenterTypesen from "@/i18n/locales/en/masters/healthCenterType.json";
+import healthCenterTypeses from "@/i18n/locales/es/masters/HealthCenterTypes.json";
 
 i18n
   .use(LanguageDetector)
   .use(initReactI18next)
   .init({
     fallbackLng: "en",
-    ns: ["common", "auth", "dashboard", "specialties", "insuranceType"],
+    ns: [
+      "common",
+      "auth",
+      "dashboard",
+      "specialties",
+      "insuranceType",
+      "healthCenterType",
+    ],
     defaultNS: "common",
     resources: {
       en: {
@@ -26,6 +35,7 @@ i18n
         dashboard: dashboarden,
         specialties: specialtiesen,
         insuranceType: insuranceTypesen,
+        healthCenterType: healthCenterTypesen,
       },
       es: {
         common: commones,
@@ -33,6 +43,7 @@ i18n
         dashboard: dashboardes,
         specialties: specialtieses,
         insuranceType: insuranceTypeses,
+        healthCenterType: healthCenterTypeses,
       },
     },
   });

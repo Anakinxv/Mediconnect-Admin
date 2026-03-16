@@ -18,7 +18,7 @@ import { UserCheck, UserX, Clock, Filter, Stethoscope } from "lucide-react";
 import DoctorsTable, { type Doctor } from "../components/doctor/DoctorsTable";
 import DoctorFilters from "../components/filters/DoctorFilters";
 import { useNavigate } from "react-router-dom";
-import { ROUTES } from "@/schema/router/routes";
+import { ROUTES } from "@/router/routes";
 
 const mockDoctors: Doctor[] = [
   {

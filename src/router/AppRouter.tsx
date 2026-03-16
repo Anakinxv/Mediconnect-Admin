@@ -21,6 +21,7 @@ import DeleteAccountPage from "@/features/account/settings/pages/DeleteAccountPa
 import ViewDetailsPage from "@/features/users/pages/ViewDetailsPage";
 import SpecialitiesPage from "@/features/masters/specialties/pages/SpecialitiesPage";
 import InsuranceTypesPage from "@/features/masters/insuranceTypes/pages/InsuranceTypesPage";
+import HealthCenterTypesPage from "@/features/masters/healthCenterTypes/pages/HealthCenterTypesPage";
 function AppRouter() {
   return (
     <BrowserRouter>
@@ -51,6 +52,10 @@ function AppRouter() {
             <Route
               path={ROUTES.CENTER_DETAILS}
               element={<ViewDetailsPage isDoctor={false} />}
+            />
+            <Route
+              path={ROUTES.HEALTH_CENTER_TYPE}
+              element={<HealthCenterTypesPage />}
             />
             <Route path={ROUTES.SPECIALTIES} element={<SpecialitiesPage />} />{" "}
             {/* <-- Agregado */}
