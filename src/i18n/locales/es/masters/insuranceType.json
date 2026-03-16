@@ -1,0 +1,76 @@
+{
+  "table": {
+    "status": "Estado",
+    "actions": "Acciones",
+    "save": "Guardar",
+    "create": "Crear",
+    "cancel": "Cancelar",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "deactivate": "Desactivar",
+    "activate": "Activar"
+  },
+  "insuranceTypes": {
+    "title": "Tipos de Seguro",
+    "subtitle": "Listado de tipos de seguro",
+    "create": "Nuevo Tipo de Seguro",
+    "searchPlaceholder": "Buscar tipo de seguro...",
+    "table": {
+      "name": "Nombre",
+      "createdAt": "Fecha de Creación",
+      "noData": "No hay tipos de seguro registrados"
+    },
+    "status": {
+      "active": "Activo",
+      "inactive": "Inactivo"
+    },
+    "filters": {
+      "allStatus": "Todos los estados",
+      "selectStatus": "Seleccionar estado"
+    },
+    "metrics": {
+      "total": "Total",
+      "totalSubtitle": "Tipos de seguro registrados",
+      "active": "Activos",
+      "activeSubtitle": "Disponibles actualmente",
+      "inactive": "Inactivos",
+      "inactiveSubtitle": "No disponibles"
+    },
+    "modal": {
+      "createTitle": "Nuevo Tipo de Seguro",
+      "createDescription": "Completa los datos para registrar un nuevo tipo de seguro.",
+      "editTitle": "Editar Tipo de Seguro",
+      "editDescription": "Modifica los datos del tipo de seguro.",
+      "activateTitle": "Activar Tipo de Seguro",
+      "activateDescription": "¿Estás seguro de que deseas activar \"{{name}}\"? Estará disponible nuevamente.",
+      "deactivateTitle": "Desactivar Tipo de Seguro",
+      "deactivateDescription": "¿Estás seguro de que deseas desactivar \"{{name}}\"? No estará disponible mientras esté inactivo.",
+      "deleteTitle": "Eliminar Tipo de Seguro",
+      "deleteDescription": "¿Estás seguro de que deseas eliminar \"{{name}}\"? Esta acción no se puede deshacer."
+    },
+    "form": {
+      "namePlaceholder": "Ej: ARS Humano"
+    },
+    "validation": {
+      "nameMin": "El nombre debe tener al menos 2 caracteres",
+      "nameMax": "El nombre no puede superar los 100 caracteres"
+    },
+    "toast": {
+      "createSuccess": "Tipo de seguro creado correctamente",
+      "editSuccess": "Tipo de seguro actualizado correctamente",
+      "activated": "\"{{name}}\" fue activado correctamente",
+      "deactivated": "\"{{name}}\" fue desactivado correctamente",
+      "deleteSuccess": "\"{{name}}\" fue eliminado correctamente",
+      "aborted": "Operación cancelada",
+      "statusAborted": "Cambio de estado cancelado",
+      "deleteAborted": "Eliminación cancelada"
+    },
+    "empty": {
+      "noInsuranceTypes": "No hay tipos de seguro",
+      "noInsuranceTypesDescription": "Aún no se han registrado tipos de seguro. Crea el primero.",
+      "noResults": "Sin resultados",
+      "noResultsDescription": "No hay tipos de seguro que coincidan con los filtros aplicados.",
+      "clearFilters": "Limpiar filtros"
+    }
+  }
+}

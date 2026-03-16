@@ -20,6 +20,7 @@ import ChangePasswordPage from "@/features/account/settings/pages/ChangePassword
 import DeleteAccountPage from "@/features/account/settings/pages/DeleteAccountPage";
 import ViewDetailsPage from "@/features/users/pages/ViewDetailsPage";
 import SpecialitiesPage from "@/features/masters/specialties/pages/SpecialitiesPage";
+import InsuranceTypesPage from "@/features/masters/insuranceTypes/pages/InsuranceTypesPage";
 function AppRouter() {
   return (
     <BrowserRouter>
@@ -53,6 +54,10 @@ function AppRouter() {
             />
             <Route path={ROUTES.SPECIALTIES} element={<SpecialitiesPage />} />{" "}
             {/* <-- Agregado */}
+            <Route
+              path={ROUTES.INSURANCE_TYPE}
+              element={<InsuranceTypesPage />}
+            />
             <Route path={ROUTES.SETTINGS} element={<AccountOverviewPage />} />
             <Route
               path={ROUTES.SETTINGS_VERIFY_IDENTITY}
