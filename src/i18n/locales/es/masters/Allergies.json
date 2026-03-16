@@ -1,0 +1,77 @@
+{
+  "table": {
+    "status": "Estado",
+    "actions": "Acciones",
+    "save": "Guardar",
+    "create": "Crear",
+    "cancel": "Cancelar",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "deactivate": "Desactivar",
+    "activate": "Activar"
+  },
+  "allergies": {
+    "title": "Alergias",
+    "subtitle": "Listado de alergias registradas",
+    "create": "Nueva Alergia",
+    "searchPlaceholder": "Buscar alergia...",
+    "table": {
+      "name": "Nombre",
+      "description": "Descripción",
+      "createdAt": "Fecha de Creación",
+      "noData": "No hay alergias registradas"
+    },
+    "status": { "active": "Activo", "inactive": "Inactivo" },
+    "filters": {
+      "allStatus": "Todos los estados",
+      "selectStatus": "Seleccionar estado"
+    },
+    "metrics": {
+      "total": "Total",
+      "totalSubtitle": "Alergias registradas",
+      "active": "Activas",
+      "activeSubtitle": "Disponibles actualmente",
+      "inactive": "Inactivas",
+      "inactiveSubtitle": "No disponibles"
+    },
+    "modal": {
+      "createTitle": "Nueva Alergia",
+      "createDescription": "Completa los datos para registrar una nueva alergia.",
+      "editTitle": "Editar Alergia",
+      "editDescription": "Modifica los datos de la alergia.",
+      "activateTitle": "Activar Alergia",
+      "activateDescription": "¿Estás seguro de que deseas activar \"{{name}}\"?",
+      "deactivateTitle": "Desactivar Alergia",
+      "deactivateDescription": "¿Estás seguro de que deseas desactivar \"{{name}}\"?",
+      "deleteTitle": "Eliminar Alergia",
+      "deleteDescription": "¿Estás seguro de que deseas eliminar \"{{name}}\"? Esta acción no se puede deshacer."
+    },
+    "form": {
+      "namePlaceholder": "Ej: Polen, Látex, Penicilina...",
+      "descriptionPlaceholder": "Describe brevemente la alergia..."
+    },
+    "validation": {
+      "nameMin": "El nombre debe tener al menos 2 caracteres",
+      "nameMax": "El nombre no puede superar los 100 caracteres",
+      "descMin": "La descripción debe tener al menos 5 caracteres",
+      "descMax": "La descripción no puede superar los 300 caracteres"
+    },
+    "toast": {
+      "createSuccess": "Alergia creada correctamente",
+      "editSuccess": "Alergia actualizada correctamente",
+      "activated": "\"{{name}}\" fue activada correctamente",
+      "deactivated": "\"{{name}}\" fue desactivada correctamente",
+      "deleteSuccess": "\"{{name}}\" fue eliminada correctamente",
+      "aborted": "Operación cancelada",
+      "statusAborted": "Cambio de estado cancelado",
+      "deleteAborted": "Eliminación cancelada"
+    },
+    "empty": {
+      "noAllergies": "No hay alergias",
+      "noAllergiesDescription": "Aún no se han registrado alergias. Crea la primera.",
+      "noResults": "Sin resultados",
+      "noResultsDescription": "No hay alergias que coincidan con los filtros aplicados.",
+      "clearFilters": "Limpiar filtros"
+    }
+  }
+}

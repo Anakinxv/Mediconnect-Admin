@@ -22,6 +22,8 @@ import ViewDetailsPage from "@/features/users/pages/ViewDetailsPage";
 import SpecialitiesPage from "@/features/masters/specialties/pages/SpecialitiesPage";
 import InsuranceTypesPage from "@/features/masters/insuranceTypes/pages/InsuranceTypesPage";
 import HealthCenterTypesPage from "@/features/masters/healthCenterTypes/pages/HealthCenterTypesPage";
+import MedicalInsurancesPage from "@/features/masters/insurances/pages/Medicalinsurancespage";
+import AllergiesPage from "@/features/masters/allergies/pages/AllergiesPage";
 function AppRouter() {
   return (
     <BrowserRouter>
@@ -57,12 +59,16 @@ function AppRouter() {
               path={ROUTES.HEALTH_CENTER_TYPE}
               element={<HealthCenterTypesPage />}
             />
+            <Route
+              path={ROUTES.MEDICAL_INSURANCES}
+              element={<MedicalInsurancesPage />}
+            />
             <Route path={ROUTES.SPECIALTIES} element={<SpecialitiesPage />} />{" "}
-            {/* <-- Agregado */}
             <Route
               path={ROUTES.INSURANCE_TYPE}
               element={<InsuranceTypesPage />}
             />
+            <Route path={ROUTES.ALLERGIES} element={<AllergiesPage />} />
             <Route path={ROUTES.SETTINGS} element={<AccountOverviewPage />} />
             <Route
               path={ROUTES.SETTINGS_VERIFY_IDENTITY}

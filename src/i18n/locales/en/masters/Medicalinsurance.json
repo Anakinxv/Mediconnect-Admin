@@ -1,0 +1,98 @@
+{
+  "medicalInsurances": {
+    "title": "Medical Insurances",
+    "subtitle": "List of medical insurers",
+    "create": "New Insurance",
+    "searchPlaceholder": "Search insurance...",
+
+    "table": {
+      "insurance": "Insurance",
+      "insuranceType": "Insurance Type",
+      "createdAt": "Creation Date",
+      "noData": "No medical insurances registered"
+    },
+
+    "status": {
+      "active": "Active",
+      "inactive": "Inactive"
+    },
+
+    "filters": {
+      "allStatus": "All statuses",
+      "selectStatus": "Select status",
+      "allTypes": "All types",
+      "selectType": "Select type"
+    },
+
+    "metrics": {
+      "total": "Total",
+      "totalSubtitle": "Registered insurances",
+      "active": "Active",
+      "activeSubtitle": "Currently available",
+      "inactive": "Inactive",
+      "inactiveSubtitle": "Not available"
+    },
+
+    "modal": {
+      "createTitle": "New Medical Insurance",
+      "createDescription": "Fill in the details to register a new medical insurance.",
+      "editTitle": "Edit Medical Insurance",
+      "editDescription": "Modify the medical insurance details.",
+      "activateTitle": "Activate Medical Insurance",
+      "activateDescription": "Are you sure you want to activate \"{{name}}\"? It will be available again.",
+      "deactivateTitle": "Deactivate Medical Insurance",
+      "deactivateDescription": "Are you sure you want to deactivate \"{{name}}\"? It will not be available while inactive.",
+      "deleteTitle": "Delete Medical Insurance",
+      "deleteDescription": "Are you sure you want to delete \"{{name}}\"? This action cannot be undone."
+    },
+
+    "form": {
+      "nameLabel": "Insurance Name",
+      "namePlaceholder": "e.g. ARS Humano",
+      "insuranceTypeLabel": "Insurance Type",
+      "insuranceTypePlaceholder": "Select insurance type",
+      "imageUrlLabel": "Logo URL",
+      "imageUrlPlaceholder": "https://example.com/logo.png"
+    },
+
+    "validation": {
+      "nameMin": "Name must be at least 2 characters",
+      "nameMax": "Name cannot exceed 100 characters",
+      "insuranceTypeRequired": "You must select an insurance type",
+      "imageUrlInvalid": "The image URL is not valid"
+    },
+
+    "toast": {
+      "createSuccess": "Medical insurance created successfully",
+      "editSuccess": "Medical insurance updated successfully",
+      "activated": "\"{{name}}\" was activated successfully",
+      "deactivated": "\"{{name}}\" was deactivated successfully",
+      "deleteSuccess": "\"{{name}}\" was deleted successfully",
+      "aborted": "Operation cancelled",
+      "statusAborted": "Status change cancelled",
+      "deleteAborted": "Deletion cancelled"
+    },
+
+    "empty": {
+      "noMedicalInsurances": "No medical insurances",
+      "noMedicalInsurancesDescription": "No medical insurances have been registered yet. Create the first one.",
+      "noResults": "No results",
+      "noResultsDescription": "No medical insurances match the applied filters.",
+      "clearFilters": "Clear filters"
+    }
+  },
+
+  "table": {
+    "status": "Status",
+    "actions": "Actions",
+    "registrationDate": "Registration Date",
+    "contact": "Contact",
+    "edit": "Edit",
+    "delete": "Delete",
+    "activate": "Activate",
+    "deactivate": "Deactivate",
+    "save": "Save Changes",
+    "create": "Create",
+    "cancel": "Cancel"
+  }
+}

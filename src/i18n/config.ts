@@ -13,6 +13,10 @@ import insuranceTypesen from "@/i18n/locales/en/masters/insuranceType.json";
 import insuranceTypeses from "@/i18n/locales/es/masters/insuranceType.json";
 import healthCenterTypesen from "@/i18n/locales/en/masters/healthCenterType.json";
 import healthCenterTypeses from "@/i18n/locales/es/masters/HealthCenterTypes.json";
+import medicalInsurancesen from "@/i18n/locales/en/masters/Medicalinsurance.json";
+import medicalInsuranceses from "@/i18n/locales/es/masters/Medicalinsurance.json";
+import allergiesen from "@/i18n/locales/en/masters/Allergies.json";
+import allergieses from "@/i18n/locales/es/masters/Allergies.json";
 
 i18n
   .use(LanguageDetector)
@@ -26,6 +30,8 @@ i18n
       "specialties",
       "insuranceType",
       "healthCenterType",
+      "medicalInsurance",
+      "allergies",
     ],
     defaultNS: "common",
     resources: {
@@ -36,6 +42,8 @@ i18n
         specialties: specialtiesen,
         insuranceType: insuranceTypesen,
         healthCenterType: healthCenterTypesen,
+        medicalInsurance: medicalInsurancesen,
+        allergies: allergiesen,
       },
       es: {
         common: commones,
@@ -44,6 +52,8 @@ i18n
         specialties: specialtieses,
         insuranceType: insuranceTypeses,
         healthCenterType: healthCenterTypeses,
+        medicalInsurance: medicalInsuranceses,
+        allergies: allergieses,
       },
     },
   });
