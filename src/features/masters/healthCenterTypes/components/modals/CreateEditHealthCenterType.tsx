@@ -18,7 +18,7 @@ export default function CreateEditHealthCenterType({
   onConfirm,
   children,
 }: CreateEditHealthCenterTypeProps) {
-  const { t } = useTranslation("common");
+  const { t } = useTranslation("healthCenterType");
   const setToast = useGlobalUIStore((s) => s.setToast);
   const isEdit = !!healthCenterType;
   const submitRef = useRef<HTMLButtonElement>(null);

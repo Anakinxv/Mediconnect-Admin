@@ -65,7 +65,7 @@ const mockHealthCenterTypes: HealthCenterType[] = [
 ];
 
 function HealthCenterTypesPage() {
-  const { t } = useTranslation("common");
+  const { t } = useTranslation("healthCenterType");
   const isMobile = useIsMobile();
 
   const [healthCenterTypes, setHealthCenterTypes] = useState<

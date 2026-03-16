@@ -41,7 +41,7 @@ export default function HealthCenterTypesTable({
   onDelete,
   onToggleStatus,
 }: HealthCenterTypesTableProps) {
-  const { t } = useTranslation("common");
+  const { t } = useTranslation("healthCenterType");
   const [page, setPage] = useState(1);
 
   const totalPages = Math.ceil(healthCenterTypes.length / PAGE_SIZE);
@@ -60,7 +60,7 @@ export default function HealthCenterTypesTable({
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead className="w-[60px]">#</TableHead>
+            <TableHead className="w-[60px]">ID</TableHead>
             <TableHead className="w-[300px]">
               {t("healthCenterTypes.table.name")}
             </TableHead>

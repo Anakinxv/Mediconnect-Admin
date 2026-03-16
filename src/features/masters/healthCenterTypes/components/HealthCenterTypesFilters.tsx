@@ -16,7 +16,7 @@ export default function HealthCenterTypesFilters({
   filters,
   onFiltersChange,
 }: HealthCenterTypesFiltersProps) {
-  const { t } = useTranslation("common");
+  const { t } = useTranslation("healthCenterType");
 
   const statusOptions = [
     { value: "all", label: t("healthCenterTypes.filters.allStatus") },

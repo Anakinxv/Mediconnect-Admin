@@ -1,26 +1,33 @@
 {
+  "table": {
+    "status": "Estado",
+    "actions": "Acciones",
+    "save": "Guardar",
+    "create": "Crear",
+    "cancel": "Cancelar",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "deactivate": "Desactivar",
+    "activate": "Activar"
+  },
   "healthCenterTypes": {
     "title": "Tipos de Centro de Salud",
     "subtitle": "Listado de tipos de centro de salud",
     "create": "Nuevo Tipo de Centro",
     "searchPlaceholder": "Buscar tipo de centro...",
-
     "table": {
       "name": "Nombre",
       "createdAt": "Fecha de Creación",
       "noData": "No hay tipos de centro de salud registrados"
     },
-
     "status": {
       "active": "Activo",
       "inactive": "Inactivo"
     },
-
     "filters": {
       "allStatus": "Todos los estados",
       "selectStatus": "Seleccionar estado"
     },
-
     "metrics": {
       "total": "Total",
       "totalSubtitle": "Tipos de centro registrados",
@@ -29,7 +36,6 @@
       "inactive": "Inactivos",
       "inactiveSubtitle": "No disponibles"
     },
-
     "modal": {
       "createTitle": "Nuevo Tipo de Centro de Salud",
       "createDescription": "Completa los datos para registrar un nuevo tipo de centro de salud.",
@@ -42,16 +48,13 @@
       "deleteTitle": "Eliminar Tipo de Centro de Salud",
       "deleteDescription": "¿Estás seguro de que deseas eliminar \"{{name}}\"? Esta acción no se puede deshacer."
     },
-
     "form": {
       "namePlaceholder": "Ej: Hospital, Clínica, Laboratorio..."
     },
-
     "validation": {
       "nameMin": "El nombre debe tener al menos 2 caracteres",
       "nameMax": "El nombre no puede superar los 100 caracteres"
     },
-
     "toast": {
       "createSuccess": "Tipo de centro de salud creado correctamente",
       "editSuccess": "Tipo de centro de salud actualizado correctamente",
@@ -62,7 +65,6 @@
       "statusAborted": "Cambio de estado cancelado",
       "deleteAborted": "Eliminación cancelada"
     },
-
     "empty": {
       "noHealthCenterTypes": "No hay tipos de centro de salud",
       "noHealthCenterTypesDescription": "Aún no se han registrado tipos de centro de salud. Crea el primero.",

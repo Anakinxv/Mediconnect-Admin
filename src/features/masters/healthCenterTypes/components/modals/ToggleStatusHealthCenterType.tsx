@@ -14,7 +14,7 @@ export default function ToggleStatusHealthCenterType({
   onConfirm,
   children,
 }: ToggleStatusHealthCenterTypeProps) {
-  const { t } = useTranslation("common");
+  const { t } = useTranslation("healthCenterType");
   const setToast = useGlobalUIStore((s) => s.setToast);
   const isActive = healthCenterType.status === "active";
 

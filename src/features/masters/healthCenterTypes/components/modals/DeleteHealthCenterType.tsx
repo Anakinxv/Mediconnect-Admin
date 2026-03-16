@@ -14,7 +14,7 @@ export default function DeleteHealthCenterType({
   onConfirm,
   children,
 }: DeleteHealthCenterTypeProps) {
-  const { t } = useTranslation("common");
+  const { t } = useTranslation("healthCenterType");
   const setToast = useGlobalUIStore((s) => s.setToast);
 
   const handleConfirm = () => {

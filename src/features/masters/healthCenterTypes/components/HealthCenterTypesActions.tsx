@@ -26,7 +26,7 @@ export default function HealthCenterTypesActions({
   onDelete,
   onToggleStatus,
 }: HealthCenterTypesActionsProps) {
-  const { t } = useTranslation("common");
+  const { t } = useTranslation("healthCenterType");
   const isActive = healthCenterType.status === "active";
 
   return (
