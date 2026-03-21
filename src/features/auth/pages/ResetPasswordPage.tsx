@@ -7,6 +7,8 @@ import AuthFooterContainer from "../components/AuthFooterContainer";
 import { useNavigate } from "react-router-dom";
 import { ResetPasswordSchema } from "@/schema/AuthSchema";
 import { useEffect } from "react";
+import { ROUTES } from "@/router/routes";
+
 function ResetPasswordPage() {
   const { t } = useTranslation("auth");
   const navigate = useNavigate();
@@ -14,13 +16,13 @@ function ResetPasswordPage() {
   const setResetPassword = useAppStore((state) => state.setResetPassword);
   const setAccessPage = useAppStore((state) => state.setAccessPage);
   const forgotPasswordEmail = useAppStore(
-    (state) => state.forgotPassword.email
+    (state) => state.forgotPassword.email,
   );
   const otp = useAppStore((state) => state.otp);
 
   useEffect(() => {
     if (!forgotPasswordEmail || !otp) {
-      navigate("/auth/forgot-password", { replace: true });
+      navigate(ROUTES.FORGOT_PASSWORD, { replace: true });
     }
   }, [forgotPasswordEmail, otp, navigate]);
 
@@ -33,9 +35,8 @@ function ResetPasswordPage() {
         password: data.password,
         confirmPassword: data.confirmPassword,
       });
-      setAccessPage(true, ["/auth/password-success"]);
-
-      navigate("/auth/password-success", { replace: true });
+      setAccessPage(true, [ROUTES.PASSWORD_SUCCESS]);
+      navigate(ROUTES.PASSWORD_SUCCESS, { replace: true });
     } else {
       alert(t("resetPassword.errorFields"));
     }
@@ -74,7 +75,7 @@ function ResetPasswordPage() {
             children: t("footer.continue"),
           }}
           backButtonProps={{
-            onClick: () => navigate("/auth/verify-email", { replace: true }),
+            onClick: () => navigate(ROUTES.VERIFY_EMAIL, { replace: true }),
           }}
         />
       </MCFormWrapper>

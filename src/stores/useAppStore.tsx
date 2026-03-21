@@ -14,17 +14,18 @@ export const useAppStore = create<AppStore>()(
     {
       name: "app-storage",
       storage: createJSONStorage(() => sessionStorage),
-
       partialize: (state) => ({
-        // De AuthSlice
-        forgotPassword: state.forgotPassword,
-        otp: state.otp,
-        isAuthenticated: state.isAuthenticated,
-        token: state.token,
-        // De GlobalUISlice
+        // AuthSlice
+        loginCredentials: state.loginCredentials, // LoginSchemaType
+        forgotPassword: state.forgotPassword, // ForgotPasswordSchemaType
+        otp: state.otp, // string
+        resetPassword: state.resetPassword, // ResetPasswordSchemaType
+        isAuthenticated: state.isAuthenticated, // boolean
+        token: state.token, // string | null
+        // GlobalUISlice
         theme: state.theme,
         language: state.language,
       }),
-    }
-  )
+    },
+  ),
 );

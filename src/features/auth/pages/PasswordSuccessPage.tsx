@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 
 import MCButton from "@/shared/components/forms/MCButton";
 import { useAppStore } from "@/stores/useAppStore";
+import { ROUTES } from "@/router/routes";
 
 const SuccessImg =
   "https://res.cloudinary.com/dy2wtanhl/image/upload/v1771694169/successPassword_gcxlbt.png";
@@ -17,17 +18,17 @@ function PasswordSuccessPage() {
 
   useEffect(() => {
     const hasValidAccess =
-      canAccessPage && allowedPages.includes("/auth/password-success");
+      canAccessPage && allowedPages.includes(ROUTES.PASSWORD_SUCCESS);
 
     if (!hasValidAccess) {
-      navigate("/auth/forgot-password", { replace: true });
+      navigate(ROUTES.FORGOT_PASSWORD, { replace: true });
     } else {
       setHasAccess(true);
     }
   }, [canAccessPage, allowedPages, navigate]);
 
   const handleclick = () => {
-    navigate("/login", { replace: true });
+    navigate(ROUTES.LOGIN, { replace: true });
   };
 
   if (!hasAccess) {

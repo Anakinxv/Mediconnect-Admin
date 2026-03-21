@@ -13,6 +13,7 @@ import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { fadeInUp } from "@/lib/animations/commonAnimations";
+import { ROUTES } from "@/router/routes";
 
 function Login() {
   const { t } = useTranslation("auth");
@@ -148,10 +149,10 @@ function Login() {
                 name="password"
                 placeholder={t("login.passwordPlaceholder")}
               />
-              <div className="flex justify-end w-full mb-4" hidden>
+              <div className="flex justify-end w-full mb-4">
                 <a
                   className="text-base text-primary font-semibold hover:underline"
-                  onClick={() => navigate("/auth/forgot-password")}
+                  onClick={() => navigate(ROUTES.FORGOT_PASSWORD)}
                 >
                   {t("login.forgot")}
                 </a>

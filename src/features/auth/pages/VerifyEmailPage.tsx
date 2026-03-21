@@ -8,6 +8,8 @@ import AuthFooterContainer from "../components/AuthFooterContainer";
 import MCButton from "@/shared/components/forms/MCButton";
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
+import { ROUTES } from "@/router/routes";
+
 function VerifyEmailPage() {
   const { t } = useTranslation("auth");
   const navigate = useNavigate();
@@ -17,18 +19,14 @@ function VerifyEmailPage() {
 
   useEffect(() => {
     if (!confirmedEmail) {
-      navigate("/auth/forgot-password", { replace: true });
+      navigate(ROUTES.FORGOT_PASSWORD, { replace: true });
     }
   }, [confirmedEmail, navigate]);
 
   const handleSubmit = (data: { otp: string }) => {
     if (otpData) {
-      console.log("OTP Data:", data);
       setOtp(data.otp);
-
-      return navigate("/auth/reset-password", { replace: true });
-    } else {
-      console.log("No OTP entered.");
+      return navigate(ROUTES.RESET_PASSWORD, { replace: true });
     }
   };
 
@@ -71,7 +69,7 @@ function VerifyEmailPage() {
         <AuthFooterContainer
           backButtonProps={{
             disabled: false,
-            onClick: () => navigate("/auth/forgot-password", { replace: true }),
+            onClick: () => navigate(ROUTES.FORGOT_PASSWORD, { replace: true }),
           }}
         />
       </MCFormWrapper>

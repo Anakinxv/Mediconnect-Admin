@@ -6,6 +6,7 @@ import { useAppStore } from "@/stores/useAppStore";
 import { useTranslation } from "react-i18next";
 import AuthFooterContainer from "../components/AuthFooterContainer";
 import { useNavigate } from "react-router-dom";
+import { ROUTES } from "@/router/routes";
 
 function ForgotPasswordPage() {
   const { t } = useTranslation("auth");
@@ -15,8 +16,11 @@ function ForgotPasswordPage() {
   const setForgotPassword = useAppStore((state) => state.setForgotPassword);
 
   const handlesubmit = (data: { email: string }) => {
-    setForgotPassword({ email: data.email });
-    navigate("/auth/verify-email", { replace: true });
+    setForgotPassword({
+      ...forgotPasswordData,
+      email: data.email,
+    });
+    navigate(ROUTES.VERIFY_EMAIL, { replace: true });
   };
 
   return (
