@@ -3,15 +3,15 @@ import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useAppStore } from "@/stores/useAppStore";
 import { MCModalBase } from "@/shared/components/MCModalBase";
-
+import { useGlobalUIStore } from "@/stores/useGlobalUIStore";
 function AuthHeader() {
   const navigate = useNavigate();
   const { t } = useTranslation("auth");
   const email = useAppStore((state) => state.forgotPassword?.email);
   const otp = useAppStore((state) => state.otp);
 
-  const setLanguage = useAppStore((state) => state.setLanguage);
-  const language = useAppStore((state) => state.language);
+  const setLanguage = useGlobalUIStore((state) => state.setLanguage);
+  const language = useGlobalUIStore((state) => state.language);
 
   const hasProgress = email || otp;
 
@@ -25,10 +25,10 @@ function AuthHeader() {
 
   // Solo el contenido del botón, sin el button tag
   const backButtonContent = (
-    <>
+    <div className="group flex items-center gap-2 text-white transition-all duration-150 hover:opacity-80 active:scale-95">
       <ArrowLeft className="text-white transition-transform duration-200 group-hover:-translate-x-1 group-hover:scale-110" />
       <span className="font-medium text-lg">{t("header.back")}</span>
-    </>
+    </div>
   );
 
   return (

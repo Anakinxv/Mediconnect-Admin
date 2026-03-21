@@ -8,7 +8,7 @@ import {
   CollapsibleTrigger,
 } from "@/shared/ui/collapsible";
 import AdminUserMenu from "./AdminUserMenu";
-import { useAppStore } from "@/stores/useAppStore";
+import { useGlobalUIStore } from "@/stores/useGlobalUIStore";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { ROUTES } from "@/router/routes";
@@ -18,7 +18,7 @@ function AdminNavbarMobile() {
   const [usuariosOpen, setUsuariosOpen] = useState(false);
   const [contenidoOpen, setContenidoOpen] = useState(false);
 
-  const theme = useAppStore((state) => state.theme);
+  const theme = useGlobalUIStore((state) => state.theme);
   const location = useLocation();
   const navigate = useNavigate();
   const { t } = useTranslation("dashboard");

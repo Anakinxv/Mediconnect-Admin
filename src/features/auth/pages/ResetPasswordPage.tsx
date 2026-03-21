@@ -8,13 +8,13 @@ import { useNavigate } from "react-router-dom";
 import { ResetPasswordSchema } from "@/schema/AuthSchema";
 import { useEffect } from "react";
 import { ROUTES } from "@/router/routes";
-
+import { useGlobalUIStore } from "@/stores/useGlobalUIStore";
 function ResetPasswordPage() {
   const { t } = useTranslation("auth");
   const navigate = useNavigate();
   const resetPassword = useAppStore((state) => state.resetPassword);
   const setResetPassword = useAppStore((state) => state.setResetPassword);
-  const setAccessPage = useAppStore((state) => state.setAccessPage);
+  const setAccessPage = useGlobalUIStore((state) => state.setAccessPage);
   const forgotPasswordEmail = useAppStore(
     (state) => state.forgotPassword.email,
   );

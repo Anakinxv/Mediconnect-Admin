@@ -1,7 +1,7 @@
 import React, { useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Sun, Moon, Monitor } from "lucide-react";
-import { useAppStore } from "@/stores/useAppStore";
+import { useGlobalUIStore } from "@/stores/useGlobalUIStore";
 import type { Theme } from "@/stores/useGlobalUISlice";
 export type Direction = "ltr" | "rtl" | "ttb" | "btt";
 
@@ -41,7 +41,7 @@ export const ThemeToggler: React.FC<ThemeTogglerProps> = ({
   className = "",
   size = "md",
 }) => {
-  const { theme, resolvedTheme, setTheme } = useAppStore();
+  const { theme, resolvedTheme, setTheme } = useGlobalUIStore();
   const buttonRef = useRef<HTMLButtonElement>(null);
 
   const getNextTheme = (): Theme => {

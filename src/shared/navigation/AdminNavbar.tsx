@@ -10,13 +10,13 @@ import {
 } from "@/shared/ui/navigation-menu";
 import { useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { useAppStore } from "@/stores/useAppStore";
+import { useGlobalUIStore } from "@/stores/useGlobalUIStore";
 import { ROUTES } from "@/router/routes";
 
 function AdminNavbar() {
   const location = useLocation();
   const { t } = useTranslation("dashboard");
-  const theme = useAppStore((state) => state.theme);
+  const theme = useGlobalUIStore((state) => state.theme);
 
   const usuariosRoutes = [ROUTES.PATIENTS, ROUTES.DOCTORS, ROUTES.CENTERS];
 

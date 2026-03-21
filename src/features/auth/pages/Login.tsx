@@ -14,15 +14,15 @@ import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { fadeInUp } from "@/lib/animations/commonAnimations";
 import { ROUTES } from "@/router/routes";
-
+import { useGlobalUIStore } from "@/stores/useGlobalUIStore";
 function Login() {
   const { t } = useTranslation("auth");
   const isMobile = useIsMobile();
   const loginCredentials = useAppStore((state) => state.loginCredentials);
   const setLoginCredentials = useAppStore((state) => state.setLoginCredentials);
   const navigate = useNavigate();
-  const setLanguage = useAppStore((state) => state.setLanguage);
-  const language = useAppStore((state) => state.language);
+  const setLanguage = useGlobalUIStore((state) => state.setLanguage);
+  const language = useGlobalUIStore((state) => state.language);
   const containerRef = useRef<HTMLElement>(null);
   const logoRef = useRef<HTMLImageElement>(null);
   const headingRef = useRef<HTMLDivElement>(null);

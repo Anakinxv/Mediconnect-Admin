@@ -29,8 +29,8 @@ import {
 import { useNavigate } from "react-router-dom";
 
 import { useTranslation } from "react-i18next";
+import { useGlobalUIStore } from "@/stores/useGlobalUIStore";
 
-import { useAppStore } from "@/stores/useAppStore";
 import type { Theme } from "@/stores/useGlobalUISlice";
 import { useIsMobile } from "@/lib/hooks/useIsMobile";
 import { cn } from "@/lib/utils";
@@ -76,10 +76,10 @@ export function AdminUserMenu() {
   const [subMenuOpen, setSubMenuOpen] = useState<string | null>(null);
   const [isEditProfileOpen, setIsEditProfileOpen] = useState(false); // Nuevo estado
   const { t } = useTranslation("dashboard");
-  const language = useAppStore((state) => state.language);
-  const setLanguage = useAppStore((state) => state.setLanguage);
-  const theme = useAppStore((state) => state.theme);
-  const setTheme = useAppStore((state) => state.setTheme);
+  const language = useGlobalUIStore((state) => state.language);
+  const setLanguage = useGlobalUIStore((state) => state.setLanguage);
+  const theme = useGlobalUIStore((state) => state.theme);
+  const setTheme = useGlobalUIStore((state) => state.setTheme);
   const themeButtonRef = useRef<HTMLDivElement>(null);
   const isMobile = useIsMobile();
   const navigate = useNavigate();

@@ -1,10 +1,10 @@
-import { useAppStore } from "@/stores/useAppStore";
+import { useGlobalUIStore } from "@/stores/useGlobalUIStore";
 import { useEffect } from "react";
 import { Outlet } from "react-router-dom";
 
 function DarkLayout() {
-  const theme = useAppStore((state) => state.theme);
-  const resolvedTheme = useAppStore((state) => state.resolvedTheme);
+  const theme = useGlobalUIStore((state) => state.theme);
+  const resolvedTheme = useGlobalUIStore((state) => state.resolvedTheme);
 
   useEffect(() => {
     const appliedTheme = theme === "system" ? resolvedTheme : theme;

@@ -8,7 +8,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/shared/ui/dropdown-menu";
-import { useAppStore } from "@/stores/useAppStore";
+import { useGlobalUIStore } from "@/stores/useGlobalUIStore";
 
 const languages = [
   { code: "es", label: "Español" },
@@ -36,8 +36,8 @@ function LanguageDropDown({
   borderColor = "border-primary",
   className = "px-3 py-2", // tamaño compacto por defecto
 }: LanguageDropDownProps) {
-  const language = useAppStore((state) => state.language);
-  const setLanguage = useAppStore((state) => state.setLanguage);
+  const language = useGlobalUIStore((state) => state.language);
+  const setLanguage = useGlobalUIStore((state) => state.setLanguage);
   const selectedLang = languages.find((l) => l.code === language);
 
   return (

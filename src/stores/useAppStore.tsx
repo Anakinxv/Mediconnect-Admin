@@ -1,14 +1,12 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import { type AuthSlice, createAuthSlice } from "./useAuthSlice";
-import { type GlobalUISlice, createGlobalUISlice } from "./useGlobalUISlice";
 
-type AppStore = GlobalUISlice & AuthSlice;
+type AppStore = AuthSlice;
 
 export const useAppStore = create<AppStore>()(
   persist(
     (...a) => ({
-      ...createGlobalUISlice(...a),
       ...createAuthSlice(...a),
     }),
     {
@@ -16,16 +14,16 @@ export const useAppStore = create<AppStore>()(
       storage: createJSONStorage(() => sessionStorage),
       partialize: (state) => ({
         // AuthSlice
-        loginCredentials: state.loginCredentials, // LoginSchemaType
-        forgotPassword: state.forgotPassword, // ForgotPasswordSchemaType
-        otp: state.otp, // string
-        resetPassword: state.resetPassword, // ResetPasswordSchemaType
-        isAuthenticated: state.isAuthenticated, // boolean
-        token: state.token, // string | null
-        // GlobalUISlice
-        theme: state.theme,
-        language: state.language,
+        loginCredentials: state.loginCredentials,
+        forgotPassword: state.forgotPassword,
+        otp: state.otp,
+        resetPassword: state.resetPassword,
+        isAuthenticated: state.isAuthenticated,
+        accessToken: state.accessToken,
+        refreshToken: state.refreshToken,
       }),
     },
   ),
 );
+
+export const getAuthState = () => useAppStore.getState();

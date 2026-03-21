@@ -9,16 +9,19 @@ export interface AuthSlice {
   otp: string;
   resetPassword: ResetPasswordSchemaType;
   isAuthenticated: boolean;
-  token: string | null;
+  accessToken: string | null; // antes: token
+  refreshToken: string | null;
 
   setLoginCredentials: (data: LoginSchemaType) => void;
   setForgotPassword: (data: ForgotPasswordSchemaType) => void;
   setOtp: (otp: string) => void;
   setResetPassword: (data: ResetPasswordSchemaType) => void;
   clearForgotPassword: () => void;
-  login: (token: string) => void;
+  login: (accessToken: string, refreshToken: string) => void;
   logout: () => void;
   reset: () => void;
+  setAccessToken: (accessToken: string) => void;
+  setRefreshToken: (refreshToken: string) => void;
 }
 
 export const createAuthSlice: StateCreator<AuthSlice> = (set) => ({
@@ -35,7 +38,8 @@ export const createAuthSlice: StateCreator<AuthSlice> = (set) => ({
     confirmPassword: "",
   },
   isAuthenticated: false,
-  token: null,
+  accessToken: null,
+  refreshToken: null,
 
   setLoginCredentials: (data) => set({ loginCredentials: data }),
   setForgotPassword: (data) => set({ forgotPassword: data }),
@@ -47,14 +51,16 @@ export const createAuthSlice: StateCreator<AuthSlice> = (set) => ({
       otp: "",
       resetPassword: { password: "", confirmPassword: "" },
     }),
-  login: (token) =>
+  login: (accessToken, refreshToken) =>
     set({
-      token,
+      accessToken,
+      refreshToken,
       isAuthenticated: true,
     }),
   logout: () =>
     set({
-      token: null,
+      accessToken: null,
+      refreshToken: null,
       isAuthenticated: false,
       loginCredentials: { email: "", password: "" },
       forgotPassword: { email: "" },
@@ -67,4 +73,6 @@ export const createAuthSlice: StateCreator<AuthSlice> = (set) => ({
       otp: "",
       resetPassword: { password: "", confirmPassword: "" },
     }),
+  setAccessToken: (accessToken) => set({ accessToken }),
+  setRefreshToken: (refreshToken) => set({ refreshToken }),
 });
