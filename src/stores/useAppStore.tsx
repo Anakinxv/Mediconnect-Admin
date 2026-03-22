@@ -14,16 +14,11 @@ export const useAppStore = create<AppStore>()(
       storage: createJSONStorage(() => sessionStorage),
       partialize: (state) => ({
         // AuthSlice
-        loginCredentials: state.loginCredentials,
+
         forgotPassword: state.forgotPassword,
         otp: state.otp,
         resetPassword: state.resetPassword,
-        isAuthenticated: state.isAuthenticated,
-        accessToken: state.accessToken,
-        refreshToken: state.refreshToken,
       }),
     },
   ),
 );
-
-export const getAuthState = () => useAppStore.getState();

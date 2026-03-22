@@ -4,11 +4,16 @@ import "./index.css";
 import "mapbox-gl/dist/mapbox-gl.css";
 import App from "./App.tsx";
 import "@/i18n/config";
-// import MCToast from "@/shared/components/MCToast";
+import MCToast from "./shared/components/MCToast.tsx";
+import { QueryProvider } from "@/config/QueryProvider";
+import MCLoadingSpinner from "@/shared/components/MCLoadingSpinner.tsx";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <App />
-    {/* <MCToast /> */}
+    <QueryProvider>
+      <MCLoadingSpinner />
+      <App />
+      <MCToast />
+    </QueryProvider>
   </StrictMode>,
 );

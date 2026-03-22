@@ -30,16 +30,17 @@ export type GlobalUISlice = {
   setIsLoading: (loading: boolean) => void;
   toast: {
     message: string;
-    type: "success" | "error" | "info";
+    type: "success" | "error" | "info" | "warning";
     open: boolean;
   };
   PasswordVisibility: boolean;
   SetPasswordVisibility: (visibility: boolean) => void;
   setToast: (toast: {
     message: string;
-    type: "success" | "error" | "info";
+    type: "success" | "error" | "info" | "warning";
     open: boolean;
   }) => void;
+  clearToast: () => void;
   canAccessPage: boolean;
   allowedPages: string[];
   setAccessPage: (canAccess: boolean, pages: string[]) => void;
@@ -86,6 +87,7 @@ export const createGlobalUISlice: StateCreator<GlobalUISlice> = (set, get) => ({
     open: false,
   },
   setToast: (toast) => set({ toast }),
+  clearToast: () => set({ toast: { message: "", type: "info", open: false } }),
   canAccessPage: false,
   allowedPages: [],
   setAccessPage: (canAccess, pages) =>

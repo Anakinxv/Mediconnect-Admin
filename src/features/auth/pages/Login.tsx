@@ -15,14 +15,20 @@ import { motion } from "framer-motion";
 import { fadeInUp } from "@/lib/animations/commonAnimations";
 import { ROUTES } from "@/router/routes";
 import { useGlobalUIStore } from "@/stores/useGlobalUIStore";
+import { useLogin } from "../hooks/useLogin";
+
 function Login() {
   const { t } = useTranslation("auth");
   const isMobile = useIsMobile();
   const loginCredentials = useAppStore((state) => state.loginCredentials);
   const setLoginCredentials = useAppStore((state) => state.setLoginCredentials);
   const navigate = useNavigate();
+  const setIsLoading = useGlobalUIStore((state) => state.setIsLoading);
   const setLanguage = useGlobalUIStore((state) => state.setLanguage);
   const language = useGlobalUIStore((state) => state.language);
+
+  const setToast = useGlobalUIStore((state) => state.setToast);
+
   const containerRef = useRef<HTMLElement>(null);
   const logoRef = useRef<HTMLImageElement>(null);
   const headingRef = useRef<HTMLDivElement>(null);
@@ -53,13 +59,57 @@ function Login() {
     { scope: containerRef },
   );
 
+  const { mutate: login, isPending: isLoggingIn } = useLogin();
+
   const handleSubmit = (data: LoginSchemaType) => {
-    if (data.email && data.password) {
-      setLoginCredentials({ email: data.email, password: data.password });
-      navigate("/dashboard"); // <-- Cambia aquí la ruta
-    } else {
-      alert(t("login.errorFields"));
+    if (!data.email || !data.password) {
+      setToast({ message: t("login.errorFields"), type: "error", open: true });
+      return;
     }
+
+    setLoginCredentials({ email: data.email, password: data.password });
+
+    setIsLoading(true);
+
+    login(
+      { email: data.email, password: data.password },
+      {
+        onSuccess: (response) => {
+          setIsLoading(false);
+
+          if (response.usuario.rol !== "Administrador") {
+            setToast({
+              message: t(
+                "login.unauthorized",
+                "No tienes permisos para acceder",
+              ),
+              type: "error",
+              open: true,
+            });
+            useAppStore.getState().clearAuth();
+            return;
+          }
+
+          setToast({
+            message: t("login.success", "Inicio de sesión exitoso"),
+            type: "success",
+            open: true,
+          });
+
+          setTimeout(() => {
+            navigate(ROUTES.DASHBOARD, { replace: true });
+          }, 700);
+        },
+        onError: () => {
+          setIsLoading(false);
+          setToast({
+            message: t("login.error", "Credenciales incorrectas"),
+            type: "error",
+            open: true,
+          });
+        },
+      },
+    );
   };
 
   return (
@@ -157,8 +207,15 @@ function Login() {
                   {t("login.forgot")}
                 </a>
               </div>
-              <MCButton type="submit" className="w-full mt-2" variant="primary">
-                {t("login.submit")}
+              <MCButton
+                type="submit"
+                className="w-full mt-2"
+                variant="primary"
+                disabled={isLoggingIn}
+              >
+                {isLoggingIn
+                  ? t("login.loading", "Cargando...")
+                  : t("login.submit")}
               </MCButton>
             </MCFormWrapper>
           </motion.div>

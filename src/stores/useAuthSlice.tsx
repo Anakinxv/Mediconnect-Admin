@@ -3,20 +3,29 @@ import { type LoginSchemaType } from "@/schema/AuthSchema";
 import { type ForgotPasswordSchemaType } from "@/schema/AuthSchema";
 import { type ResetPasswordSchemaType } from "@/schema/AuthSchema";
 
+interface User {
+  id: number;
+  name: string;
+  email: string;
+  rol: string;
+}
+
 export interface AuthSlice {
+  user: User | null;
   loginCredentials: LoginSchemaType;
   forgotPassword: ForgotPasswordSchemaType;
   otp: string;
   resetPassword: ResetPasswordSchemaType;
-  isAuthenticated: boolean;
-  accessToken: string | null; // antes: token
+  accessToken: string | null;
   refreshToken: string | null;
 
+  setUser: (user: User | null) => void;
   setLoginCredentials: (data: LoginSchemaType) => void;
   setForgotPassword: (data: ForgotPasswordSchemaType) => void;
   setOtp: (otp: string) => void;
   setResetPassword: (data: ResetPasswordSchemaType) => void;
   clearForgotPassword: () => void;
+  clearAuth: () => void;
   login: (accessToken: string, refreshToken: string) => void;
   logout: () => void;
   reset: () => void;
@@ -25,6 +34,7 @@ export interface AuthSlice {
 }
 
 export const createAuthSlice: StateCreator<AuthSlice> = (set) => ({
+  user: null,
   loginCredentials: {
     email: "",
     password: "",
@@ -37,10 +47,11 @@ export const createAuthSlice: StateCreator<AuthSlice> = (set) => ({
     password: "",
     confirmPassword: "",
   },
-  isAuthenticated: false,
+
   accessToken: null,
   refreshToken: null,
 
+  setUser: (user) => set({ user }),
   setLoginCredentials: (data) => set({ loginCredentials: data }),
   setForgotPassword: (data) => set({ forgotPassword: data }),
   setOtp: (otp) => set({ otp }),
@@ -51,17 +62,26 @@ export const createAuthSlice: StateCreator<AuthSlice> = (set) => ({
       otp: "",
       resetPassword: { password: "", confirmPassword: "" },
     }),
+  clearAuth: () =>
+    set({
+      user: null,
+      accessToken: null,
+      refreshToken: null,
+      loginCredentials: { email: "", password: "" },
+      forgotPassword: { email: "" },
+      otp: "",
+      resetPassword: { password: "", confirmPassword: "" },
+    }),
   login: (accessToken, refreshToken) =>
     set({
       accessToken,
       refreshToken,
-      isAuthenticated: true,
     }),
   logout: () =>
     set({
       accessToken: null,
       refreshToken: null,
-      isAuthenticated: false,
+
       loginCredentials: { email: "", password: "" },
       forgotPassword: { email: "" },
       otp: "",

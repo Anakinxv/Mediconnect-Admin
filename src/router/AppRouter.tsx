@@ -24,6 +24,8 @@ import InsuranceTypesPage from "@/features/masters/insuranceTypes/pages/Insuranc
 import HealthCenterTypesPage from "@/features/masters/healthCenterTypes/pages/HealthCenterTypesPage";
 import MedicalInsurancesPage from "@/features/masters/insurances/pages/Medicalinsurancespage";
 import AllergiesPage from "@/features/masters/allergies/pages/AllergiesPage";
+import ProtectedRoute from "./ProtectedRoute";
+
 function AppRouter() {
   return (
     <BrowserRouter>
@@ -41,55 +43,58 @@ function AppRouter() {
             element={<PasswordSuccessPage />}
           />
         </Route>
-        <Route element={<DarkLayout />}>
-          <Route element={<DashboardLayout />}>
-            <Route path={ROUTES.DASHBOARD} element={<AdminDashboardPage />} />
-            <Route path={ROUTES.PATIENTS} element={<PatientsPage />} />
-            <Route path={ROUTES.DOCTORS} element={<DoctorsPage />} />
-            <Route path={ROUTES.CENTERS} element={<CenterPage />} />
-            <Route
-              path={ROUTES.DOCTOR_DETAILS}
-              element={<ViewDetailsPage isDoctor />}
-            />
-            <Route
-              path={ROUTES.CENTER_DETAILS}
-              element={<ViewDetailsPage isDoctor={false} />}
-            />
-            <Route
-              path={ROUTES.HEALTH_CENTER_TYPE}
-              element={<HealthCenterTypesPage />}
-            />
-            <Route
-              path={ROUTES.MEDICAL_INSURANCES}
-              element={<MedicalInsurancesPage />}
-            />
-            <Route path={ROUTES.SPECIALTIES} element={<SpecialitiesPage />} />{" "}
-            <Route
-              path={ROUTES.INSURANCE_TYPE}
-              element={<InsuranceTypesPage />}
-            />
-            <Route path={ROUTES.ALLERGIES} element={<AllergiesPage />} />
-            <Route path={ROUTES.SETTINGS} element={<AccountOverviewPage />} />
-            <Route
-              path={ROUTES.SETTINGS_VERIFY_IDENTITY}
-              element={<VerifyIdentityPage />}
-            />
-            <Route
-              path={ROUTES.SETTINGS_CHANGE_EMAIL}
-              element={<ChangeEmailPage />}
-            />
-            <Route
-              path={ROUTES.SETTINGS_VERIFY_NEW_EMAIL}
-              element={<VerifyNewEmailPage />}
-            />
-            <Route
-              path={ROUTES.SETTINGS_CHANGE_PASSWORD}
-              element={<ChangePasswordPage />}
-            />
-            <Route
-              path={ROUTES.SETTINGS_DELETE_ACCOUNT}
-              element={<DeleteAccountPage />}
-            />
+        {/* PROTECTED TODAS LAS RUTAS DEL DASHBOARD */}
+        <Route element={<ProtectedRoute />}>
+          <Route element={<DarkLayout />}>
+            <Route element={<DashboardLayout />}>
+              <Route path={ROUTES.DASHBOARD} element={<AdminDashboardPage />} />
+              <Route path={ROUTES.PATIENTS} element={<PatientsPage />} />
+              <Route path={ROUTES.DOCTORS} element={<DoctorsPage />} />
+              <Route path={ROUTES.CENTERS} element={<CenterPage />} />
+              <Route
+                path={ROUTES.DOCTOR_DETAILS}
+                element={<ViewDetailsPage isDoctor />}
+              />
+              <Route
+                path={ROUTES.CENTER_DETAILS}
+                element={<ViewDetailsPage isDoctor={false} />}
+              />
+              <Route
+                path={ROUTES.HEALTH_CENTER_TYPE}
+                element={<HealthCenterTypesPage />}
+              />
+              <Route
+                path={ROUTES.MEDICAL_INSURANCES}
+                element={<MedicalInsurancesPage />}
+              />
+              <Route path={ROUTES.SPECIALTIES} element={<SpecialitiesPage />} />
+              <Route
+                path={ROUTES.INSURANCE_TYPE}
+                element={<InsuranceTypesPage />}
+              />
+              <Route path={ROUTES.ALLERGIES} element={<AllergiesPage />} />
+              <Route path={ROUTES.SETTINGS} element={<AccountOverviewPage />} />
+              <Route
+                path={ROUTES.SETTINGS_VERIFY_IDENTITY}
+                element={<VerifyIdentityPage />}
+              />
+              <Route
+                path={ROUTES.SETTINGS_CHANGE_EMAIL}
+                element={<ChangeEmailPage />}
+              />
+              <Route
+                path={ROUTES.SETTINGS_VERIFY_NEW_EMAIL}
+                element={<VerifyNewEmailPage />}
+              />
+              <Route
+                path={ROUTES.SETTINGS_CHANGE_PASSWORD}
+                element={<ChangePasswordPage />}
+              />
+              <Route
+                path={ROUTES.SETTINGS_DELETE_ACCOUNT}
+                element={<DeleteAccountPage />}
+              />
+            </Route>
           </Route>
         </Route>
       </Router>
