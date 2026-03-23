@@ -6,11 +6,12 @@ import MCFormWrapper from "@/shared/components/forms/MCFormWrapper";
 import { useProfileStore } from "@/stores/useProfileStore";
 import { verifyAccountSchema } from "@/schema/account.schema";
 import { useNavigate } from "react-router-dom";
-
 import MCButton from "@/shared/components/forms/MCButton";
 import { ArrowRight } from "lucide-react";
 import { useGlobalUIStore } from "@/stores/useGlobalUIStore";
 import { useIsMobile } from "@/lib/hooks/useIsMobile";
+import { useConfirmaPassword } from "@/features/account/hooks/useConfirmaPassword";
+import { AxiosError } from "axios";
 
 const CONTEXT_ROUTES: Record<string, string> = {
   CHANGE_EMAIL: "/settings/change-email",
@@ -36,27 +37,58 @@ function VerifyIdentityPage() {
     (state) => state.setVerificationContextStatus,
   );
 
+  const { mutateAsync: verifyIdentity, isPending } = useConfirmaPassword();
+
   React.useEffect(() => {
     if (!verificationContext) {
       navigate("/settings");
     }
   }, [verificationContext, navigate]);
 
-  const handleSubmitSuccess = (password: { password: string }) => {
-    setToast({
-      type: "success",
-      message: t(
-        "verifyIdentity.successMessage",
-        "Identity verified without implementing real logic.",
-      ),
-      open: true,
-    });
-    setVerificationStatus("VERIFIED");
-    setVerifyAccountPassword(password);
-    if (verificationContext && CONTEXT_ROUTES[verificationContext]) {
-      navigate(CONTEXT_ROUTES[verificationContext]);
-    } else {
-      navigate("/settings");
+  const handleSubmitSuccess = async (values: { password: string }) => {
+    try {
+      const result = await verifyIdentity({ password: values.password });
+
+      if (!result?.success || !result?.verificado) {
+        setToast({
+          type: "error",
+          message: t(
+            "verifyIdentity.invalidCredentials",
+            "Credenciales inválidas.",
+          ),
+          open: true,
+        });
+        return;
+      }
+
+      setToast({
+        type: "success",
+        message: t(
+          "verifyIdentity.successMessage",
+          "Identidad verificada correctamente.",
+        ),
+        open: true,
+      });
+
+      setVerificationStatus("VERIFIED");
+      setVerifyAccountPassword(values);
+
+      if (verificationContext && CONTEXT_ROUTES[verificationContext]) {
+        navigate(CONTEXT_ROUTES[verificationContext]);
+      } else {
+        navigate("/settings");
+      }
+    } catch (error) {
+      const axiosError = error as AxiosError<{ message?: string }>;
+      const apiMessage =
+        axiosError.response?.data?.message ||
+        t("verifyIdentity.invalidCredentials", "Credenciales inválidas.");
+
+      setToast({
+        type: "error",
+        message: apiMessage,
+        open: true,
+      });
     }
   };
 
@@ -107,11 +139,14 @@ function VerifyIdentityPage() {
             />
             <MCButton
               type="submit"
+              disabled={isPending}
               className={isMobile ? "w-full" : "w-xs"}
               icon={<ArrowRight size={isMobile ? 20 : 24} />}
               iconPosition="right"
             >
-              {t("verifyIdentity.verifyButton", "Verify")}
+              {isPending
+                ? t("verifyIdentity.verifyingButton", "Verifying...")
+                : t("verifyIdentity.verifyButton", "Verify")}
             </MCButton>
           </MCFormWrapper>
         </div>

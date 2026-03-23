@@ -24,7 +24,7 @@ function PasswordSuccessPage() {
     (state) => state.forgotPassword.email,
   );
   const resetPassword = useAppStore((state) => state.resetPassword);
-  const clearAuth = useAppStore((state) => state.clearAuth);
+  const logout = useAppStore((state) => state.logout);
 
   const { mutateAsync: login, isPending: isLoggingIn } = useLogin();
 
@@ -56,7 +56,7 @@ function PasswordSuccessPage() {
       });
 
       if (response.usuario.rol !== "Administrador") {
-        clearAuth();
+        logout();
         setToast({
           message: t("login.unauthorized", "No tienes permisos para acceder"),
           type: "error",

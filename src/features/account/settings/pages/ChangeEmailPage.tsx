@@ -4,58 +4,105 @@ import MCInput from "@/shared/components/forms/MCInput";
 import MCFormWrapper from "@/shared/components/forms/MCFormWrapper";
 import { useProfileStore } from "@/stores/useProfileStore";
 import { useNavigate } from "react-router-dom";
-import { useAppStore } from "@/stores/useAppStore";
 import MCButton from "@/shared/components/forms/MCButton";
 import { ArrowRight } from "lucide-react";
 import { useGlobalUIStore } from "@/stores/useGlobalUIStore";
 import { changeEmailSchema } from "@/schema/account.schema";
 import { useIsMobile } from "@/lib/hooks/useIsMobile";
 import { useTranslation } from "react-i18next";
+import { useChangeEmail } from "@/features/account/hooks/useChangeEmail";
+import { AxiosError } from "axios";
 
 function ChangeEmailPage() {
   const { t } = useTranslation("common");
   const isMobile = useIsMobile();
   const navigate = useNavigate();
 
-  const VerificationContext = useGlobalUIStore(
+  const verificationContext = useGlobalUIStore(
     (state) => state.verificationContext,
   );
-  const VerificationContextStatus = useGlobalUIStore(
+  const verificationContextStatus = useGlobalUIStore(
     (state) => state.verificationContextStatus,
   );
-  const setVerificationContextStatus = useGlobalUIStore(
-    (state) => state.setVerificationContextStatus,
-  );
-  const setVerificationContext = useGlobalUIStore(
-    (state) => state.setVerificationContext,
-  );
+  const setToast = useGlobalUIStore((state) => state.setToast);
+
   const changeEmailData = useProfileStore((state) => state.changeEmailData);
   const setChangeEmailData = useProfileStore(
     (state) => state.setChangeEmailData,
   );
+  const verifyAccountPassword = useProfileStore(
+    (state) => state.verifyAccountPassword,
+  );
+
+  const { mutateAsync: changeEmail, isPending } = useChangeEmail();
 
   useEffect(() => {
     if (
-      VerificationContext !== "CHANGE_EMAIL" ||
-      VerificationContextStatus !== "VERIFIED"
+      verificationContext !== "CHANGE_EMAIL" ||
+      verificationContextStatus !== "VERIFIED"
     ) {
       navigate("/settings");
     }
-  }, [VerificationContext, VerificationContextStatus, navigate]);
+  }, [verificationContext, verificationContextStatus, navigate]);
 
-  // Usa t para el schema
   const newEmailSchema = changeEmailSchema(t).pick({ newEmail: true });
 
-  const handleSubmit = (data: { newEmail: string }) => {
-    setChangeEmailData({
-      ...changeEmailData,
-      newEmail: data.newEmail,
-      otp: changeEmailData?.otp ?? "",
-    });
-    setVerificationContextStatus("VERIFIED");
-    setVerificationContext("CHANGE_EMAIL");
-    // Redirige a la página de verificación de email, no a /settings
-    navigate("/settings/verify-email");
+  const handleSubmit = async (data: { newEmail: string }) => {
+    if (!verifyAccountPassword?.password) {
+      setToast({
+        type: "error",
+        message: t(
+          "changeEmail.passwordRequired",
+          "Debes verificar tu identidad nuevamente.",
+        ),
+        open: true,
+      });
+      navigate("/settings/verify-identity");
+      return;
+    }
+
+    try {
+      const result = await changeEmail({
+        nuevoEmail: data.newEmail,
+        password: verifyAccountPassword.password,
+      });
+
+      if (!result?.success) {
+        setToast({
+          type: "error",
+          message:
+            result?.message ||
+            t("changeEmail.error", "No se pudo cambiar el email."),
+          open: true,
+        });
+        return;
+      }
+
+      setChangeEmailData({
+        ...changeEmailData,
+        newEmail: data.newEmail,
+        otp: changeEmailData?.otp ?? "",
+      });
+
+      setToast({
+        type: "success",
+        message:
+          result.message ||
+          t("changeEmail.success", "Email actualizado exitosamente"),
+        open: true,
+      });
+
+      navigate("/settings");
+    } catch (error) {
+      const axiosError = error as AxiosError<{ message?: string }>;
+      setToast({
+        type: "error",
+        message:
+          axiosError.response?.data?.message ||
+          t("changeEmail.error", "No se pudo cambiar el email."),
+        open: true,
+      });
+    }
   };
 
   return (
@@ -90,11 +137,14 @@ function ChangeEmailPage() {
             />
             <MCButton
               type="submit"
+              disabled={isPending}
               className={isMobile ? "w-full" : "w-xs"}
               icon={<ArrowRight />}
               iconPosition="right"
             >
-              {t("changeEmail.changeButton")}
+              {isPending
+                ? t("changeEmail.changingButton", "Cambiando...")
+                : t("changeEmail.changeButton")}
             </MCButton>
           </MCFormWrapper>
         </div>

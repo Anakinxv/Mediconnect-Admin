@@ -13,12 +13,43 @@ export const useAppStore = create<AppStore>()(
       name: "app-storage",
       storage: createJSONStorage(() => sessionStorage),
       partialize: (state) => ({
-        // AuthSlice
-
         forgotPassword: state.forgotPassword,
         otp: state.otp,
         resetPassword: state.resetPassword,
+        user: state.user,
+        // ❌ refreshToken NO va aquí — tiene su propio storage
       }),
+      // Hidrata el refreshToken desde localStorage al montar
+      onRehydrateStorage: () => (state) => {
+        if (state) {
+          const stored = localStorage.getItem("auth-refresh");
+          if (stored) {
+            try {
+              const { refreshToken } = JSON.parse(stored) as {
+                refreshToken: string;
+              };
+              state.refreshToken = refreshToken;
+            } catch {
+              localStorage.removeItem("auth-refresh");
+            }
+          }
+        }
+      },
     },
   ),
 );
+
+// ── Sincroniza el refreshToken con localStorage cuando cambia ──────────────
+useAppStore.subscribe((state, prev) => {
+  if (state.refreshToken !== prev.refreshToken) {
+    if (state.refreshToken) {
+      localStorage.setItem(
+        "auth-refresh",
+        JSON.stringify({ refreshToken: state.refreshToken }),
+      );
+    } else {
+      // logout → limpia localStorage también
+      localStorage.removeItem("auth-refresh");
+    }
+  }
+});

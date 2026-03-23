@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import MCDashboardContent from "@/shared/layout/MCDashboardContent";
 import MCFormWrapper from "@/shared/components/forms/MCFormWrapper";
 import MCOtpInput from "@/shared/components/forms/MCOtpInput";
