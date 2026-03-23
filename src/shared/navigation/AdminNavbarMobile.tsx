@@ -11,6 +11,7 @@ import AdminUserMenu from "./AdminUserMenu";
 import { useGlobalUIStore } from "@/stores/useGlobalUIStore";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { useLogOut } from "./hooks/useLogOut";
 import { ROUTES } from "@/router/routes";
 
 function AdminNavbarMobile() {
@@ -22,6 +23,7 @@ function AdminNavbarMobile() {
   const location = useLocation();
   const navigate = useNavigate();
   const { t } = useTranslation("dashboard");
+  const { logout } = useLogOut();
 
   const usuariosRoutes = [ROUTES.PATIENTS, ROUTES.DOCTORS, ROUTES.CENTERS];
 
@@ -43,7 +45,7 @@ function AdminNavbarMobile() {
   };
 
   const handleLogout = () => {
-    console.log("Logout clicked");
+    logout();
     setOpen(false);
   };
 

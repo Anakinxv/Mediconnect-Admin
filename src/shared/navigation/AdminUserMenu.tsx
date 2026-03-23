@@ -27,6 +27,7 @@ import {
   X,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useLogOut } from "./hooks/useLogOut";
 
 import { useTranslation } from "react-i18next";
 import { useGlobalUIStore } from "@/stores/useGlobalUIStore";
@@ -83,6 +84,7 @@ export function AdminUserMenu() {
   const themeButtonRef = useRef<HTMLDivElement>(null);
   const isMobile = useIsMobile();
   const navigate = useNavigate();
+  const { logout } = useLogOut();
 
   // Función para manejar cambio de tema
   const handleThemeChange = useCallback(
@@ -461,7 +463,14 @@ export function AdminUserMenu() {
 
           <DropdownMenuSeparator className="bg-primary/15" />
 
-          <DropdownMenuItem variant="destructive">
+          <DropdownMenuItem
+            variant="destructive"
+            onSelect={(e) => {
+              e.preventDefault();
+              logout();
+              setOpen(false);
+            }}
+          >
             <LogOut className="w-4 h-4 mr-2" />
             {t("userMenu.logout")}
             {!isMobile && (
