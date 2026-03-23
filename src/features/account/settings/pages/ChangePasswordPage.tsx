@@ -22,6 +22,9 @@ function ChangePasswordPage() {
   const setChangePasswordData = useProfileStore(
     (state) => state.setChangePasswordData,
   );
+  const verifyAccountPassword = useProfileStore(
+    (state) => state.verifyAccountPassword,
+  );
 
   const verificationContext = useGlobalUIStore(
     (state) => state.verificationContext,
@@ -39,37 +42,30 @@ function ChangePasswordPage() {
       verificationContextStatus !== "VERIFIED"
     ) {
       navigate("/settings");
+      return;
     }
-  }, [verificationContext, verificationContextStatus, navigate]);
+
+    if (!verifyAccountPassword?.password) {
+      navigate("/settings/verify-identity");
+    }
+  }, [
+    verificationContext,
+    verificationContextStatus,
+    verifyAccountPassword,
+    navigate,
+  ]);
 
   const passwordSchema = changePasswordSchema(t);
 
   const handleSubmit = async (data: {
-    confirmNewPassword: string;
     newPassword: string;
+    confirmNewPassword: string;
   }) => {
-    const recoveryToken =
-      localStorage.getItem("recoveryToken") ||
-      localStorage.getItem("X-Recovery-Token") ||
-      "";
-
-    if (!recoveryToken) {
-      setToast({
-        type: "error",
-        message: t(
-          "changePassword.tokenRequired",
-          "No se encontró el token de recuperación.",
-        ),
-        open: true,
-      });
-      return;
-    }
-
     try {
       const result = await changePassword({
+        passwordActual: verifyAccountPassword?.password ?? "",
         nuevaPassword: data.newPassword,
         confirmarPassword: data.confirmNewPassword,
-        recoveryToken,
       });
 
       if (!result?.success) {
@@ -130,19 +126,24 @@ function ChangePasswordPage() {
             className="w-full max-w-md mt-4 flex flex-col items-center gap-4 h-full"
           >
             <MCInput
-              label={t("changePassword.currentPasswordLabel")}
-              name="newPassword"
-              type="password"
-              placeholder={t("changePassword.currentPasswordPlaceholder")}
-              className="w-full"
-            />
-            <MCInput
               label={t("changePassword.newPasswordLabel")}
-              name="confirmNewPassword"
+              name="newPassword"
               type="password"
               placeholder={t("changePassword.newPasswordPlaceholder")}
               className="w-full"
             />
+
+            <MCInput
+              label={t("changePassword.confirmNewPasswordLabel")}
+              name="confirmNewPassword"
+              type="password"
+              placeholder={t(
+                "changePassword.confirmNewPasswordPlaceholder",
+                "Confirm new password",
+              )}
+              className="w-full"
+            />
+
             <MCButton
               type="submit"
               disabled={isPending}

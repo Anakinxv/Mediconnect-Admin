@@ -1,11 +1,10 @@
 import { useMutation } from "@tanstack/react-query";
 import api from "@/config/axios-client";
-import { useAppStore } from "@/stores/useAppStore";
 
 interface ChangePasswordPayload {
+  passwordActual: string;
   nuevaPassword: string;
   confirmarPassword: string;
-  recoveryToken?: string;
 }
 
 interface ChangePasswordResponse {
@@ -15,34 +14,18 @@ interface ChangePasswordResponse {
 
 export const useChangePassword = () => {
   return useMutation({
-    mutationKey: ["change-password"],
+    mutationKey: ["change-password-authenticated"],
     mutationFn: async ({
+      passwordActual,
       nuevaPassword,
       confirmarPassword,
-      recoveryToken,
     }: ChangePasswordPayload) => {
-      const tokenFromStore = useAppStore.getState().otp;
-      const token =
-        recoveryToken ||
-        tokenFromStore ||
-        localStorage.getItem("recoveryToken") ||
-        localStorage.getItem("X-Recovery-Token") ||
-        "";
-
-      if (!token) {
-        throw new Error("Recovery token is required");
-      }
-
-      const { data } = await api.post<ChangePasswordResponse>(
-        "/auth/password/cambiar",
+      const { data } = await api.patch<ChangePasswordResponse>(
+        "/auth/password/cambiar-autenticado",
         {
+          passwordActual,
           nuevaPassword,
           confirmarPassword,
-        },
-        {
-          headers: {
-            "X-Recovery-Token": token,
-          },
         },
       );
 

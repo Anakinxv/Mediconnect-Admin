@@ -37,8 +37,34 @@ export const verifyAccountSchema = (t: TFunction) =>
     password: z.string().min(1, t("verifyIdentity.errors.passwordRequired")),
   });
 
+export const changeAuthenticatedPasswordSchema = (t: TFunction) =>
+  z
+    .object({
+      currentPassword: z
+        .string()
+        .min(1, t("changePassword.errors.currentRequired")),
+      newPassword: z
+        .string()
+        .min(8, t("changePassword.errors.min"))
+        .max(64, t("changePassword.errors.max")),
+      confirmNewPassword: z
+        .string()
+        .min(1, t("changePassword.errors.confirmRequired")),
+    })
+    .refine((data) => data.newPassword === data.confirmNewPassword, {
+      path: ["confirmNewPassword"],
+      message: t("changePassword.errors.match"),
+    })
+    .refine((data) => data.currentPassword !== data.newPassword, {
+      path: ["newPassword"],
+      message: t("changePassword.errors.sameAsCurrent"),
+    });
+
 export type ChangeEmailForm = z.infer<ReturnType<typeof changeEmailSchema>>;
 export type ChangePasswordForm = z.infer<
   ReturnType<typeof changePasswordSchema>
 >;
 export type VerifyAccountForm = z.infer<ReturnType<typeof verifyAccountSchema>>;
+export type ChangeAuthenticatedPasswordForm = z.infer<
+  ReturnType<typeof changeAuthenticatedPasswordSchema>
+>;

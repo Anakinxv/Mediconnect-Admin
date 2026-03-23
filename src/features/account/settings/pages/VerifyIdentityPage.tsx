@@ -65,7 +65,7 @@ function VerifyIdentityPage() {
         type: "success",
         message: t(
           "verifyIdentity.successMessage",
-          "Identidad verificada correctamente.",
+          "Información verificada correctamente.",
         ),
         open: true,
       });
