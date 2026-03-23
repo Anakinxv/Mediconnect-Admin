@@ -1,10 +1,11 @@
+// ToggleStatusSpeciality.tsx
 import { useTranslation } from "react-i18next";
 import { MCModalBase } from "@/shared/components/MCModalBase";
-import { useGlobalUIStore } from "@/stores/useGlobalUIStore";
-import type { Speciality } from "../components/SpecialitiesTable";
+import type { SpecialityInterface } from "../hooks/useSpecialities";
+import { resolveStatus } from "../pages/SpecialitiesPage";
 
 interface ToggleStatusSpecialityProps {
-  speciality: Speciality;
+  speciality: SpecialityInterface;
   onConfirm: () => void;
   children: React.ReactNode;
 }
@@ -15,37 +16,9 @@ export default function ToggleStatusSpeciality({
   children,
 }: ToggleStatusSpecialityProps) {
   const { t } = useTranslation("specialties");
-  const setToast = useGlobalUIStore((s) => s.setToast);
 
-  const isActive = speciality.status === "active";
-
-  const handleConfirm = () => {
-    onConfirm();
-    setToast({
-      message: isActive
-        ? t(
-            "specialities.toast.deactivated",
-            `"${speciality.name}" fue desactivada correctamente`,
-          )
-        : t(
-            "specialities.toast.activated",
-            `"${speciality.name}" fue activada correctamente`,
-          ),
-      type: "success",
-      open: true,
-    });
-  };
-
-  const handleSecondary = () => {
-    setToast({
-      message: t(
-        "specialities.toast.statusAborted",
-        "Cambio de estado cancelado",
-      ),
-      type: "info",
-      open: true,
-    });
-  };
+  const isActive = resolveStatus(speciality) === "active";
+  const displayName = speciality?.nombre ?? "";
 
   return (
     <MCModalBase
@@ -57,20 +30,21 @@ export default function ToggleStatusSpeciality({
       }
       description={
         isActive
-          ? t(
-              "specialities.modal.deactivateDescription",
-              `¿Estás seguro de que deseas desactivar "${speciality.name}"? Los médicos no podrán asociarse a esta especialidad mientras esté inactiva.`,
-            )
-          : t(
-              "specialities.modal.activateDescription",
-              `¿Estás seguro de que deseas activar "${speciality.name}"? Estará disponible nuevamente para los médicos.`,
-            )
+          ? t("specialities.modal.deactivateDescription", {
+              name: displayName,
+              defaultValue:
+                '¿Estás seguro de que deseas desactivar "{{name}}"? Los médicos no podrán asociarse a esta especialidad mientras esté inactiva.',
+            })
+          : t("specialities.modal.activateDescription", {
+              name: displayName,
+              defaultValue:
+                '¿Estás seguro de que deseas activar "{{name}}"? Estará disponible nuevamente para los médicos.',
+            })
       }
       trigger={children}
       variant={isActive ? "warning" : "decide"}
       size="smWide"
-      onConfirm={handleConfirm}
-      onSecondary={handleSecondary}
+      onConfirm={onConfirm}
       confirmText={
         isActive
           ? t("table.deactivate", "Desactivar")

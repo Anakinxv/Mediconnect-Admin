@@ -18,23 +18,46 @@ import {
 } from "@/shared/ui/pagination";
 import MCServicesStatus from "@/shared/components/MCServicesStatus";
 import SpecialitiesActions from "./SpecialitiesActions";
-
-export interface Speciality {
-  id: string;
-  name: string;
-  description: string;
-  createdAt: string;
-  status: "active" | "inactive";
-}
+import type { SpecialityInterface } from "../hooks/useSpecialities";
 
 interface SpecialitiesTableProps {
-  specialities: Speciality[];
-  onEdit?: (speciality: Speciality) => void;
-  onDelete?: (speciality: Speciality) => void;
-  onToggleStatus?: (speciality: Speciality) => void;
+  specialities: SpecialityInterface[];
+  onEdit?: (speciality: SpecialityInterface) => void;
+  onDelete?: (speciality: SpecialityInterface) => void;
+  onToggleStatus?: (speciality: SpecialityInterface) => void;
 }
 
 const PAGE_SIZE = 10;
+
+// ✅ Resuelve el status sin importar si viene como "active", "Activo", etc.
+const resolveStatus = (item: SpecialityInterface): string => {
+  const raw =
+    item.status ||
+    (item as unknown as Record<string, string>).estado ||
+    "inactive";
+  return raw;
+};
+
+// ✅ Formatea ISO o dd/mm/yyyy a "21 feb. 2026"
+const formatDate = (dateStr: string): string => {
+  if (!dateStr) return "-";
+  try {
+    const date = dateStr.includes("T")
+      ? new Date(dateStr)
+      : (() => {
+          const [d, m, y] = dateStr.split("/");
+          return new Date(Number(y), Number(m) - 1, Number(d));
+        })();
+    if (isNaN(date.getTime())) return dateStr;
+    return date.toLocaleDateString("es-DO", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    });
+  } catch {
+    return dateStr;
+  }
+};
 
 export default function SpecialitiesTable({
   specialities,
@@ -81,22 +104,24 @@ export default function SpecialitiesTable({
             paginatedData.map((speciality, index) => (
               <TableRow key={speciality.id}>
                 <TableCell className="text-muted-foreground text-sm">
-                  {startIndex + index + 1}
+                  {speciality.id}
                 </TableCell>
                 <TableCell className="w-[220px]">
-                  <span className="font-medium">{speciality.name}</span>
+                  <span className="font-medium">{speciality.nombre}</span>
                 </TableCell>
                 <TableCell className="w-[300px]">
                   <span className="text-sm text-muted-foreground line-clamp-2">
-                    {speciality.description}
+                    {speciality.descripcion}
                   </span>
                 </TableCell>
                 <TableCell className="w-[160px]">
-                  <span className="font-medium">{speciality.createdAt}</span>
+                  <span className="font-medium">
+                    {formatDate(speciality.creadoEn)}
+                  </span>
                 </TableCell>
                 <TableCell className="w-[130px]">
                   <MCServicesStatus
-                    status={speciality.status}
+                    status={resolveStatus(speciality)}
                     variant="default"
                   />
                 </TableCell>

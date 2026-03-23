@@ -1,15 +1,15 @@
+// CreateEditSpeciality.tsx
 import { useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { MCModalBase } from "@/shared/components/MCModalBase";
 import MCFormWrapper from "@/shared/components/forms/MCFormWrapper";
 import MCInput from "@/shared/components/forms/MCInput";
 import MCTextArea from "@/shared/components/forms/MCTextArea";
-import { useGlobalUIStore } from "@/stores/useGlobalUIStore";
-import type { Speciality } from "./SpecialitiesTable";
+import type { SpecialityInterface } from "../hooks/useSpecialities";
 import { createSpecialityFormSchema } from "@/schema/specialities.schema";
 
 interface CreateEditSpecialityProps {
-  speciality?: Speciality | null;
+  speciality?: SpecialityInterface | null;
   onConfirm: (data: { name: string; description: string }) => void;
   children: React.ReactNode;
 }
@@ -20,38 +20,8 @@ export default function CreateEditSpeciality({
   children,
 }: CreateEditSpecialityProps) {
   const { t } = useTranslation("specialties");
-  const setToast = useGlobalUIStore((s) => s.setToast);
   const isEdit = !!speciality;
   const submitRef = useRef<HTMLButtonElement>(null);
-
-  const handleConfirm = () => {
-    submitRef.current?.click();
-  };
-
-  const handleSecondary = () => {
-    setToast({
-      message: t("specialities.toast.aborted", "Operación cancelada"),
-      type: "info",
-      open: true,
-    });
-  };
-
-  const onSubmit = (values: { name: string; description: string }) => {
-    onConfirm(values);
-    setToast({
-      message: isEdit
-        ? t(
-            "specialities.toast.editSuccess",
-            "Especialidad actualizada correctamente",
-          )
-        : t(
-            "specialities.toast.createSuccess",
-            "Especialidad creada correctamente",
-          ),
-      type: "success",
-      open: true,
-    });
-  };
 
   return (
     <MCModalBase
@@ -75,8 +45,7 @@ export default function CreateEditSpeciality({
       trigger={children}
       variant="decide"
       size="smWide"
-      onConfirm={handleConfirm}
-      onSecondary={handleSecondary}
+      onConfirm={() => submitRef.current?.click()}
       confirmText={
         isEdit ? t("table.save", "Guardar Cambios") : t("table.create", "Crear")
       }
@@ -84,11 +53,11 @@ export default function CreateEditSpeciality({
     >
       <MCFormWrapper
         defaultValues={{
-          name: speciality?.name ?? "",
-          description: speciality?.description ?? "",
+          name: speciality?.nombre ?? "",
+          description: speciality?.descripcion ?? "",
         }}
         schema={createSpecialityFormSchema(t)}
-        onSubmit={onSubmit}
+        onSubmit={onConfirm}
         className="flex flex-col gap-4"
       >
         <MCInput

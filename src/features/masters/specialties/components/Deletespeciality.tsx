@@ -1,10 +1,10 @@
+// DeleteSpeciality.tsx
 import { useTranslation } from "react-i18next";
 import { MCModalBase } from "@/shared/components/MCModalBase";
-import { useGlobalUIStore } from "@/stores/useGlobalUIStore";
-import type { Speciality } from "../components/SpecialitiesTable";
+import type { SpecialityInterface } from "../hooks/useSpecialities";
 
 interface DeleteSpecialityProps {
-  speciality: Speciality;
+  speciality: SpecialityInterface;
   onConfirm: () => void;
   children: React.ReactNode;
 }
@@ -15,41 +15,20 @@ export default function DeleteSpeciality({
   children,
 }: DeleteSpecialityProps) {
   const { t } = useTranslation("specialties");
-  const setToast = useGlobalUIStore((s) => s.setToast);
-
-  const handleConfirm = () => {
-    onConfirm();
-    setToast({
-      message: t(
-        "specialities.toast.deleteSuccess",
-        `"${speciality.name}" fue eliminada correctamente`,
-      ),
-      type: "success",
-      open: true,
-    });
-  };
-
-  const handleSecondary = () => {
-    setToast({
-      message: t("specialities.toast.deleteAborted", "Eliminación cancelada"),
-      type: "info",
-      open: true,
-    });
-  };
 
   return (
     <MCModalBase
       id={`delete-speciality-${speciality.id}`}
-      title={t("specialities.modal.deleteTitle", "Eliminar Especialidad")}
-      description={t(
-        "specialities.modal.deleteDescription",
-        `¿Estás seguro de que deseas eliminar "${speciality.name}"? Esta acción no se puede deshacer.`,
-      )}
+      title={t("specialties.modal.deleteTitle", "Eliminar Especialidad")}
+      description={t("specialties.modal.deleteDescription", {
+        name: speciality.nombre,
+        defaultValue:
+          '¿Estás seguro de que deseas eliminar "{{name}}"? Esta acción no se puede deshacer.',
+      })}
       trigger={children}
       variant="warning"
       size="smWide"
-      onConfirm={handleConfirm}
-      onSecondary={handleSecondary}
+      onConfirm={onConfirm}
       confirmText={t("table.delete", "Eliminar")}
       secondaryText={t("table.cancel", "Cancelar")}
     >

@@ -2,7 +2,7 @@ import { Badge } from "@/shared/ui/badge";
 import { useTranslation } from "react-i18next";
 
 interface MCServicesStatusProps {
-  status: "active" | "inactive";
+  status: "active" | "inactive" | "Activo" | "Inactivo" | string;
   variant?: "default" | "card";
   className?: string;
 }
@@ -14,10 +14,11 @@ function MCServicesStatus({
 }: MCServicesStatusProps) {
   const { t } = useTranslation("doctor");
 
-  const statusMap: Record<
-    MCServicesStatusProps["status"],
-    { label: string; color: string }
-  > = {
+  const isActive = ["active", "activo"].includes((status ?? "").toLowerCase());
+
+  const resolvedStatus = isActive ? "active" : "inactive";
+
+  const statusMap = {
     active: {
       label: t("services.status.active", "Activo"),
       color:
@@ -30,14 +31,11 @@ function MCServicesStatus({
       color:
         variant === "card"
           ? "bg-gray-500/80 text-white dark:bg-gray-700/80 dark:text-gray-300"
-          : "bg-[#9E9E9E]/10 text-[#9E9E9E]  dark:bg-[#616161]/20 dark:text-[#BDBDBD]",
+          : "bg-[#9E9E9E]/10 text-[#9E9E9E] dark:bg-[#616161]/20 dark:text-[#BDBDBD]",
     },
   };
 
-  const { label, color } = statusMap[status] || {
-    label: status,
-    color: "bg-muted text-muted-foreground",
-  };
+  const { label, color } = statusMap[resolvedStatus];
 
   const sizeClass =
     variant === "card"
@@ -48,7 +46,7 @@ function MCServicesStatus({
     <Badge
       className={`rounded-full ${sizeClass} ${color} ${className} ${
         variant === "card"
-          ? " backdrop-blur-xl shadow-2xl transition-all duration-700 ease-[cubic-bezier(0.175,0.885,0.32,2.2)]"
+          ? "backdrop-blur-xl shadow-2xl transition-all duration-700 ease-[cubic-bezier(0.175,0.885,0.32,2.2)]"
           : ""
       }`}
     >

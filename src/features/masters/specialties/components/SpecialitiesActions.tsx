@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
   MoreHorizontal,
   Pencil,
@@ -8,16 +9,17 @@ import {
 import { Button } from "@/shared/ui/button";
 import { Popover, PopoverTrigger, PopoverContent } from "@/shared/ui/popover";
 import { useTranslation } from "react-i18next";
-import type { Speciality } from "./SpecialitiesTable";
+import type { SpecialityInterface } from "../hooks/useSpecialities";
+import { resolveStatus } from "../pages/SpecialitiesPage";
 import CreateEditSpeciality from "./Createeditspeciality";
 import ToggleStatusSpeciality from "./Togglestatusspeciality";
 import DeleteSpeciality from "./Deletespeciality";
 
 interface SpecialitiesActionsProps {
-  speciality: Speciality;
-  onEdit?: (speciality: Speciality) => void;
-  onDelete?: (speciality: Speciality) => void;
-  onToggleStatus?: (speciality: Speciality) => void;
+  speciality: SpecialityInterface;
+  onEdit?: (speciality: SpecialityInterface) => void;
+  onDelete?: (speciality: SpecialityInterface) => void;
+  onToggleStatus?: (speciality: SpecialityInterface) => void;
 }
 
 export default function SpecialitiesActions({
@@ -27,10 +29,14 @@ export default function SpecialitiesActions({
   onToggleStatus,
 }: SpecialitiesActionsProps) {
   const { t } = useTranslation("specialties");
-  const isActive = speciality.status === "active";
+  const [open, setOpen] = useState(false);
+
+  const isActive = resolveStatus(speciality) === "active";
+
+  const close = () => setOpen(false);
 
   return (
-    <Popover>
+    <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button
           variant="ghost"
@@ -45,7 +51,14 @@ export default function SpecialitiesActions({
           {/* Editar */}
           <CreateEditSpeciality
             speciality={speciality}
-            onConfirm={(data) => onEdit?.({ ...speciality, ...data })}
+            onConfirm={(data) => {
+              onEdit?.({
+                ...speciality,
+                nombre: data.name,
+                descripcion: data.description,
+              });
+              close();
+            }}
           >
             <div className="p-2 cursor-pointer rounded-lg hover:bg-accent/70 dark:hover:text-background transition text-sm text-center flex items-center justify-center gap-2">
               <Pencil className="h-4 w-4" />
@@ -56,7 +69,10 @@ export default function SpecialitiesActions({
           {/* Cambiar Estado */}
           <ToggleStatusSpeciality
             speciality={speciality}
-            onConfirm={() => onToggleStatus?.(speciality)}
+            onConfirm={() => {
+              onToggleStatus?.(speciality);
+              close();
+            }}
           >
             <div
               className={`p-2 cursor-pointer rounded-lg transition text-sm text-center flex items-center justify-center gap-2 ${
@@ -79,7 +95,10 @@ export default function SpecialitiesActions({
           {/* Eliminar */}
           <DeleteSpeciality
             speciality={speciality}
-            onConfirm={() => onDelete?.(speciality)}
+            onConfirm={() => {
+              onDelete?.(speciality);
+              close();
+            }}
           >
             <div className="p-2 cursor-pointer rounded-lg hover:bg-destructive/10 text-destructive transition text-sm text-center flex items-center justify-center gap-2">
               <Trash2 className="h-4 w-4" />

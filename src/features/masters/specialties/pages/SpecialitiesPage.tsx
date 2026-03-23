@@ -15,169 +15,221 @@ import {
   EmptyContent,
 } from "@/shared/ui/empty";
 import { Stethoscope, CheckCircle, XCircle, Filter, Plus } from "lucide-react";
-import SpecialitiesTable, {
-  type Speciality,
-} from "../components/SpecialitiesTable";
+import SpecialitiesTable from "../components/SpecialitiesTable";
 import SpecialitiesFilters from "../components/SpecialitiesFilters";
 import CreateEditSpeciality from "../components/Createeditspeciality";
 import { useGlobalUIStore } from "@/stores/useGlobalUIStore";
+import {
+  useGetSpecialities,
+  useCreateSpeciality,
+  useUpdateSpeciality,
+  useDeleteSpeciality,
+  useToggleSpecialityStatus,
+  type SpecialityInterface,
+  type GetSpecialitiesParams,
+} from "../hooks/useSpecialities";
 
-const mockSpecialities: Speciality[] = [
-  {
-    id: "1",
-    name: "Cardiología",
-    description:
-      "Especialidad médica que estudia, diagnostica y trata las enfermedades del corazón y del sistema cardiovascular.",
-    createdAt: "10/01/2025",
-    status: "active",
-  },
-  {
-    id: "2",
-    name: "Dermatología",
-    description:
-      "Rama de la medicina que se ocupa del estudio, diagnóstico y tratamiento de las enfermedades de la piel.",
-    createdAt: "12/01/2025",
-    status: "active",
-  },
-  {
-    id: "3",
-    name: "Neurología",
-    description:
-      "Especialidad médica que estudia la estructura, función y enfermedades del sistema nervioso.",
-    createdAt: "15/01/2025",
-    status: "active",
-  },
-  {
-    id: "4",
-    name: "Pediatría",
-    description:
-      "Especialidad médica que estudia al ser humano durante su infancia y adolescencia.",
-    createdAt: "18/01/2025",
-    status: "active",
-  },
-  {
-    id: "5",
-    name: "Psiquiatría",
-    description:
-      "Especialidad médica que estudia las enfermedades mentales desde un punto de vista médico.",
-    createdAt: "20/01/2025",
-    status: "inactive",
-  },
-  {
-    id: "6",
-    name: "Traumatología",
-    description:
-      "Especialidad médica que estudia las lesiones del sistema musculoesquelético.",
-    createdAt: "22/01/2025",
-    status: "active",
-  },
-  {
-    id: "7",
-    name: "Ginecología",
-    description:
-      "Especialidad médica y quirúrgica que trata las enfermedades del sistema reproductor femenino.",
-    createdAt: "25/01/2025",
-    status: "active",
-  },
-  {
-    id: "8",
-    name: "Oftalmología",
-    description:
-      "Especialidad médica que estudia las enfermedades de los ojos y su tratamiento.",
-    createdAt: "28/01/2025",
-    status: "inactive",
-  },
-];
+export const resolveStatus = (
+  s: SpecialityInterface,
+): "active" | "inactive" => {
+  const raw = (s.status ?? s.estado ?? "").toLowerCase();
+  return raw === "active" || raw === "activo" ? "active" : "inactive";
+};
+
+const parseDate = (dateStr: string) => {
+  if (!dateStr) return new Date(NaN);
+  if (dateStr.includes("T")) return new Date(dateStr);
+  const [day, month, year] = dateStr.split("/");
+  if (!day || !month || !year) return new Date(NaN);
+  return new Date(Number(year), Number(month) - 1, Number(day));
+};
+
+const matchesDateRange = (dateStr: string, range?: [Date, Date]): boolean => {
+  if (!range) return true;
+  const date = parseDate(dateStr);
+  date.setHours(0, 0, 0, 0);
+  const start = new Date(range[0]);
+  start.setHours(0, 0, 0, 0);
+  const end = new Date(range[1]);
+  end.setHours(23, 59, 59, 999);
+  return date >= start && date <= end;
+};
 
 function SpecialitiesPage() {
   const { t } = useTranslation("specialties");
   const isMobile = useIsMobile();
   const setToast = useGlobalUIStore((s) => s.setToast);
 
-  const [specialities, setSpecialities] =
-    useState<Speciality[]>(mockSpecialities);
   const [searchTerm, setSearchTerm] = useState("");
   const [filters, setFilters] = useState({
     status: "all",
     dateRange: undefined as [Date, Date] | undefined,
   });
 
-  const activeFiltersCount = Object.entries(filters).filter(([key, value]) => {
-    if (key === "dateRange") return value !== undefined;
-    return value !== "all";
-  }).length;
+  const activeFiltersCount = useMemo(() => {
+    let count = 0;
+    if (filters.status !== "all") count++;
+    if (filters.dateRange) count++;
+    return count;
+  }, [filters]);
 
-  const clearFilters = () =>
+  const clearFilters = () => {
     setFilters({ status: "all", dateRange: undefined });
-
-  const parseDate = (dateStr: string) => {
-    const [day, month, year] = dateStr.split("/");
-    return new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+    setSearchTerm("");
   };
 
-  const matchesDateRange = (dateStr: string, range?: [Date, Date]): boolean => {
-    if (!range) return true;
-    const date = parseDate(dateStr);
-    date.setHours(0, 0, 0, 0);
-    const start = new Date(range[0]);
-    start.setHours(0, 0, 0, 0);
-    const end = new Date(range[1]);
-    end.setHours(23, 59, 59, 999);
-    return date >= start && date <= end;
-  };
-
-  const filteredSpecialities = useMemo(
-    () =>
-      specialities.filter((s) => {
-        const matchesSearch =
-          s.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          s.description.toLowerCase().includes(searchTerm.toLowerCase());
-        const matchesStatus =
-          filters.status === "all" || s.status === filters.status;
-        const matchesDate = matchesDateRange(s.createdAt, filters.dateRange);
-        return matchesSearch && matchesStatus && matchesDate;
-      }),
-    [searchTerm, filters, specialities],
+  const apiParams = useMemo<GetSpecialitiesParams>(
+    () => ({
+      nombre: searchTerm?.trim() || undefined,
+      estado:
+        filters.status === "active"
+          ? "Activo"
+          : filters.status === "inactive"
+            ? "Inactivo"
+            : undefined,
+      pagina: 1,
+      limite: 100,
+      translate_fields: ["nombre", "descripcion"],
+    }),
+    [searchTerm, filters.status],
   );
 
-  // Handlers
-  const handleCreate = (data: { name: string; description: string }) => {
-    const newSpeciality: Speciality = {
-      id: String(Date.now()),
-      name: data.name,
-      description: data.description,
-      createdAt: new Date().toLocaleDateString("es-DO"),
-      status: "active",
-    };
-    setSpecialities((prev) => [newSpeciality, ...prev]);
-  };
+  const { data: apiSpecialities = [], isLoading } =
+    useGetSpecialities(apiParams);
+  const createMutation = useCreateSpeciality();
+  const updateMutation = useUpdateSpeciality();
+  const deleteMutation = useDeleteSpeciality();
+  const toggleMutation = useToggleSpecialityStatus();
 
-  const handleEdit = (updated: Speciality) => {
-    setSpecialities((prev) =>
-      prev.map((s) => (s.id === updated.id ? updated : s)),
-    );
-  };
+  const safeSpecialities = Array.isArray(apiSpecialities)
+    ? apiSpecialities
+    : [];
 
-  const handleDelete = (target: Speciality) => {
-    setSpecialities((prev) => prev.filter((s) => s.id !== target.id));
-  };
-
-  const handleToggleStatus = (target: Speciality) => {
-    setSpecialities((prev) =>
-      prev.map((s) =>
-        s.id === target.id
-          ? { ...s, status: s.status === "active" ? "inactive" : "active" }
-          : s,
+  // Solo filtro client-side para dateRange (el API no lo soporta)
+  const filteredSpecialities = useMemo(
+    () =>
+      safeSpecialities.filter((s) =>
+        matchesDateRange(s.creadoEn, filters.dateRange),
       ),
+    [safeSpecialities, filters.dateRange],
+  );
+
+  const handleCreate = (data: { name: string; description: string }) => {
+    createMutation.mutate(
+      { nombre: data.name, descripcion: data.description, estado: "Activo" },
+      {
+        onSuccess: () =>
+          setToast({
+            message: t(
+              "specialities.toast.createSuccess",
+              "Especialidad creada correctamente",
+            ),
+            type: "success",
+            open: true,
+          }),
+        onError: () =>
+          setToast({
+            message: t(
+              "specialities.toast.createError",
+              "Error al crear la especialidad",
+            ),
+            type: "error",
+            open: true,
+          }),
+      },
     );
   };
 
-  // Components
+  const handleEdit = (updated: SpecialityInterface) => {
+    updateMutation.mutate(
+      {
+        id: updated.id,
+        nombre: updated.nombre,
+        descripcion: updated.descripcion,
+      },
+      {
+        onSuccess: () =>
+          setToast({
+            message: t(
+              "specialties.toast.editSuccess",
+              "Especialidad actualizada correctamente",
+            ),
+            type: "success",
+            open: true,
+          }),
+        onError: () =>
+          setToast({
+            message: t(
+              "specialties.toast.editError",
+              "Error al actualizar la especialidad",
+            ),
+            type: "error",
+            open: true,
+          }),
+      },
+    );
+  };
+
+  const handleDelete = (target: SpecialityInterface) => {
+    deleteMutation.mutate(target.id, {
+      onSuccess: () =>
+        setToast({
+          message: t(
+            "specialties.toast.deleteSuccess",
+            `"${target.nombre}" fue eliminada correctamente`,
+          ),
+          type: "success",
+          open: true,
+        }),
+      onError: () =>
+        setToast({
+          message: t(
+            "specialties.toast.deleteError",
+            "Error al eliminar la especialidad",
+          ),
+          type: "error",
+          open: true,
+        }),
+    });
+  };
+
+  const handleToggleStatus = (target: SpecialityInterface) => {
+    const isActive = resolveStatus(target) === "active";
+    toggleMutation.mutate(
+      { id: target.id, estado: isActive ? "Inactivo" : "Activo" },
+      {
+        onSuccess: () =>
+          setToast({
+            message: isActive
+              ? t(
+                  "specialties.toast.deactivated",
+                  `"${target.nombre}" fue desactivada correctamente`,
+                )
+              : t(
+                  "specialties.toast.activated",
+                  `"${target.nombre}" fue activada correctamente`,
+                ),
+            type: "success",
+            open: true,
+          }),
+        onError: () =>
+          setToast({
+            message: t(
+              "specialties.toast.statusError",
+              "Error al cambiar el estado",
+            ),
+            type: "error",
+            open: true,
+          }),
+      },
+    );
+  };
+
   const searchComponent = (
     <div className="w-full sm:w-auto sm:min-w-[200px] lg:min-w-[250px]">
       <MCFilterInput
         placeholder={t(
-          "specialities.searchPlaceholder",
+          "specialties.searchPlaceholder",
           "Buscar especialidad...",
         )}
         value={searchTerm}
@@ -191,28 +243,28 @@ function SpecialitiesPage() {
       onClick={async () => {
         await MCGeneratePDF({
           columns: [
-            { title: t("specialities.table.name", "Nombre"), key: "name" },
+            { title: t("specialties.table.name", "Nombre"), key: "nombre" },
             {
-              title: t("specialities.table.description", "Descripción"),
-              key: "description",
+              title: t("specialties.table.description", "Descripción"),
+              key: "descripcion",
             },
-            { title: t("table.status", "Estado"), key: "status" },
+            { title: t("table.status", "Estado"), key: "estadoLabel" },
             {
-              title: t("specialities.table.createdAt", "Fecha de Creación"),
-              key: "createdAt",
+              title: t("specialties.table.createdAt", "Fecha de Creación"),
+              key: "creadoEn",
             },
           ],
           data: filteredSpecialities.map((s) => ({
             ...s,
-            status:
-              s.status === "active"
-                ? t("specialities.status.active", "Activo")
-                : t("specialities.status.inactive", "Inactivo"),
+            estadoLabel:
+              resolveStatus(s) === "active"
+                ? t("specialties.status.active", "Activo")
+                : t("specialties.status.inactive", "Inactivo"),
           })),
           fileName: "especialidades",
-          title: t("specialities.title", "Especialidades"),
+          title: t("specialties.title", "Especialidades"),
           subtitle: t(
-            "specialities.subtitle",
+            "specialties.subtitle",
             "Listado de especialidades médicas",
           ),
         });
@@ -238,7 +290,7 @@ function SpecialitiesPage() {
     <CreateEditSpeciality onConfirm={handleCreate}>
       <MCButton size="sm" className="gap-2">
         <Plus className="h-4 w-4" />
-        {!isMobile && t("specialities.create", "Nueva Especialidad")}
+        {!isMobile && t("specialties.create", "Nueva Especialidad")}
       </MCButton>
     </CreateEditSpeciality>
   );
@@ -257,9 +309,9 @@ function SpecialitiesPage() {
               className={`font-semibold ${isMobile ? "text-lg" : "text-xl"}`}
             >
               {activeFiltersCount > 0
-                ? t("specialities.empty.noResults", "Sin resultados")
+                ? t("specialties.empty.noResults", "Sin resultados")
                 : t(
-                    "specialities.empty.noSpecialities",
+                    "specialties.empty.noSpecialities",
                     "No hay especialidades",
                   )}
             </EmptyTitle>
@@ -269,11 +321,11 @@ function SpecialitiesPage() {
           >
             {activeFiltersCount > 0
               ? t(
-                  "specialities.empty.noResultsDescription",
+                  "specialties.empty.noResultsDescription",
                   "No hay especialidades que coincidan con los filtros aplicados.",
                 )
               : t(
-                  "specialities.empty.noSpecialitiesDescription",
+                  "specialties.empty.noSpecialitiesDescription",
                   "Aún no se han registrado especialidades. Crea la primera.",
                 )}
           </EmptyDescription>
@@ -283,13 +335,13 @@ function SpecialitiesPage() {
         <div className="flex flex-col items-center gap-3">
           {activeFiltersCount > 0 ? (
             <MCButton variant="outline" onClick={clearFilters} size="sm">
-              {t("specialities.empty.clearFilters", "Limpiar filtros")}
+              {t("specialties.empty.clearFilters", "Limpiar filtros")}
             </MCButton>
           ) : (
             <CreateEditSpeciality onConfirm={handleCreate}>
               <MCButton size="sm" className="gap-2">
                 <Plus className="h-4 w-4" />
-                {t("specialities.create", "Nueva Especialidad")}
+                {t("specialties.create", "Nueva Especialidad")}
               </MCButton>
             </CreateEditSpeciality>
           )}
@@ -312,34 +364,36 @@ function SpecialitiesPage() {
 
   const metrics = [
     {
-      title: t("specialities.metrics.total", "Total"),
-      value: specialities.length,
+      title: t("specialties.metrics.total", "Total"),
+      value: safeSpecialities.length,
       icon: <Stethoscope size={30} />,
       subtitle: t(
-        "specialities.metrics.totalSubtitle",
+        "specialties.metrics.totalSubtitle",
         "Especialidades registradas",
       ),
     },
     {
-      title: t("specialities.metrics.active", "Activas"),
-      value: specialities.filter((s) => s.status === "active").length,
+      title: t("specialties.metrics.active", "Activas"),
+      value: safeSpecialities.filter((s) => resolveStatus(s) === "active")
+        .length,
       icon: <CheckCircle size={30} />,
       subtitle: t(
-        "specialities.metrics.activeSubtitle",
+        "specialties.metrics.activeSubtitle",
         "Disponibles para médicos",
       ),
     },
     {
-      title: t("specialities.metrics.inactive", "Inactivas"),
-      value: specialities.filter((s) => s.status === "inactive").length,
+      title: t("specialties.metrics.inactive", "Inactivas"),
+      value: safeSpecialities.filter((s) => resolveStatus(s) === "inactive")
+        .length,
       icon: <XCircle size={30} />,
-      subtitle: t("specialities.metrics.inactiveSubtitle", "No disponibles"),
+      subtitle: t("specialties.metrics.inactiveSubtitle", "No disponibles"),
     },
   ];
 
   return (
     <MCTablesLayouts
-      title={t("specialities.title", "Especialidades")}
+      title={t("specialties.title", "Especialidades")}
       metrics={metrics}
       tableComponent={tableComponent}
       searchComponent={searchComponent}
