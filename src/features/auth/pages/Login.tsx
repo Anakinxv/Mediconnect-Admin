@@ -26,6 +26,10 @@ function Login() {
   const setIsLoading = useGlobalUIStore((state) => state.setIsLoading);
   const setLanguage = useGlobalUIStore((state) => state.setLanguage);
   const language = useGlobalUIStore((state) => state.language);
+  const LoginAsideImg =
+    "https://res.cloudinary.com/dy2wtanhl/image/upload/v1773030468/LoginAside_vaimd0.png";
+  const Logo =
+    "https://res.cloudinary.com/dy2wtanhl/image/upload/v1771637879/MediConnectLanding-green_trpgvu.png";
 
   const setToast = useGlobalUIStore((state) => state.setToast);
 
@@ -235,8 +239,3 @@ function Login() {
 }
 
 export default Login;
-
-const LoginAsideImg =
-  "https://res.cloudinary.com/dy2wtanhl/image/upload/v1773030468/LoginAside_vaimd0.png";
-const Logo =
-  "https://res.cloudinary.com/dy2wtanhl/image/upload/v1771637879/MediConnectLanding-green_trpgvu.png";

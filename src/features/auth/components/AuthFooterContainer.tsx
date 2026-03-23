@@ -30,6 +30,7 @@ const AuthFooterContainer: React.FC<AuthFooterContainerProps> = ({
       </div>
       <MCButton
         type="submit"
+        size="l"
         icon={<ArrowRightIcon />}
         iconPosition="right"
         {...continueButtonProps}

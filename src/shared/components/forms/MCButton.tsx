@@ -40,18 +40,17 @@ function MCButton({
 
   // Tamaños responsive que se ajustan automáticamente
   const sizeStyles: Record<string, string> = {
-    xs: "px-2 py-1 text-[10px] sm:px-2.5 sm:py-1.5 sm:text-xs",
-    s: "px-3 py-2 text-xs sm:px-3.5 sm:py-2.5 sm:text-sm",
-    sm: "px-4 py-2.5 text-sm sm:px-5 sm:py-3 sm:text-base",
-    m: "px-5 py-3 text-sm sm:px-6 sm:py-3.5 md:px-8 md:py-4 md:text-base lg:text-lg",
-    ml: "px-6 py-3.5 text-sm sm:px-7 sm:py-4 md:px-9 md:py-4.5 md:text-base lg:text-base",
-    l: "px-6 py-3.5 text-base sm:px-8 sm:py-4 md:px-10 md:py-5 lg:px-12 lg:py-6 lg:text-lg",
-    xl: "px-8 py-4 text-base sm:px-10 sm:py-5 md:px-12 md:py-6 lg:px-16 lg:py-8 lg:text-xl xl:text-2xl",
+    xs: "px-2.5 py-1.5 text-xs sm:px-2.5 sm:py-1.5 sm:text-xs",
+    s: "px-3.5 py-2.5 text-sm sm:px-3.5 sm:py-2.5 sm:text-sm",
+    sm: "px-5 py-3 text-sm sm:px-5 sm:py-3 sm:text-base",
+    m: "px-6 py-3.5 text-base sm:px-6 sm:py-3.5 md:px-8 md:py-4 md:text-base lg:text-lg",
+    ml: "px-7 py-4 text-base sm:px-7 sm:py-4 md:px-9 md:py-4.5 md:text-base lg:text-base",
+    l: "px-8 py-4.5 text-lg sm:px-8 sm:py-4 md:px-10 md:py-5 lg:px-12 lg:py-6 lg:text-lg",
+    xl: "px-10 py-5 text-xl sm:px-10 sm:py-5 md:px-12 md:py-6 lg:px-16 lg:py-8 lg:text-xl xl:text-2xl",
   };
 
-  // Ajuste dinámico según si es mobile
-  const responsiveSize =
-    isMobile && (size === "l" || size === "xl") ? "m" : size;
+  // En mobile, ya NO reducimos l/xl
+  const responsiveSize = size;
 
   const variants: Record<string, string> = {
     primary: `

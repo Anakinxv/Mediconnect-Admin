@@ -1,5 +1,6 @@
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/shared/ui/input-otp";
 import { useFormContext, Controller } from "react-hook-form";
+import { useIsMobile } from "@/lib/hooks/useIsMobile";
 
 type MCOtpInputProps = {
   id?: string;
@@ -19,6 +20,8 @@ function MCOtpInput({
     formState: { errors },
   } = useFormContext();
 
+  const isMobile = useIsMobile();
+
   return (
     <div className="w-full flex flex-col mb-4">
       <div className="flex flex-col items-center">
@@ -35,15 +38,18 @@ function MCOtpInput({
               maxLength={maxLength}
               disabled={disabled}
             >
-              <InputOTPGroup id={id} className="gap-6">
+              <InputOTPGroup
+                id={id}
+                className={`justify-center ${isMobile ? "gap-3" : "gap-6"}`}
+              >
                 {Array.from({ length: maxLength }).map((_, index) => (
                   <InputOTPSlot
                     key={index}
                     index={index}
-                    className="
-                      h-[60px] w-[60px] 
+                    className={`
+                      ${isMobile ? "h-14 w-14 text-base" : "h-[60px] w-[60px] text-xl"}
                       rounded-md
-                      text-xl font-semibold
+                      font-semibold
                       bg-[var(--theme-surface)] 
                       border border-[var(--theme-border)] 
                       text-[var(--theme-text)] 
@@ -52,7 +58,7 @@ function MCOtpInput({
                       data-[active=true]:border-[var(--theme-primary)]
                       data-[active=true]:ring-2
                       data-[active=true]:ring-[var(--theme-primary)]/20
-                    "
+                    `}
                   />
                 ))}
               </InputOTPGroup>
