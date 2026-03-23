@@ -126,9 +126,30 @@
     "passwordLabel": "Contraseña",
     "passwordPlaceholder": "Ingresa tu contraseña",
     "verifyButton": "Verificar",
-    "successMessage": "Identidad verificada sin implementar lógica real.",
+    "verifyingButton": "Verificando...",
+    "successMessage": "Tu contraseña fue verificada correctamente.",
+    "invalidCredentials": "Credenciales inválidas.",
     "errors": {
       "passwordRequired": "La contraseña es obligatoria"
+    }
+  },
+
+  "changePassword": {
+    "title": "Cambiar contraseña",
+    "description": "Ingresa tu contraseña actual y la nueva contraseña que deseas establecer.",
+    "currentPasswordLabel": "Contraseña actual",
+    "currentPasswordPlaceholder": "Ingresa tu contraseña actual",
+    "newPasswordLabel": "Nueva contraseña",
+    "newPasswordPlaceholder": "Ingresa tu nueva contraseña",
+    "confirmNewPasswordLabel": "Confirmar nueva contraseña",
+    "confirmNewPasswordPlaceholder": "Confirma tu nueva contraseña",
+    "changeButton": "Cambiar contraseña",
+    "changingButton": "Cambiando...",
+    "errors": {
+      "min": "La contraseña debe tener al menos 8 caracteres",
+      "max": "La contraseña no puede superar 64 caracteres",
+      "confirmRequired": "Debes confirmar la contraseña",
+      "match": "Las contraseñas no coinciden"
     }
   },
 
@@ -138,6 +159,7 @@
     "newEmailLabel": "Nuevo correo electrónico",
     "newEmailPlaceholder": "Ingresa tu nuevo correo electrónico",
     "changeButton": "Cambiar correo",
+    "changingButton": "Cambiando...",
     "errors": {
       "required": "El correo es obligatorio",
       "invalid": "Correo inválido"
@@ -154,22 +176,6 @@
     "errors": {
       "otpLength": "El código debe tener 6 dígitos",
       "otpNumeric": "El código debe ser numérico"
-    }
-  },
-
-  "changePassword": {
-    "title": "Cambiar contraseña",
-    "description": "Ingresa tu contraseña actual y la nueva contraseña que deseas establecer.",
-    "currentPasswordLabel": "Contraseña actual",
-    "currentPasswordPlaceholder": "Ingresa tu contraseña actual",
-    "newPasswordLabel": "Nueva contraseña",
-    "newPasswordPlaceholder": "Ingresa tu nueva contraseña",
-    "changeButton": "Cambiar contraseña",
-    "errors": {
-      "min": "La contraseña debe tener al menos 8 caracteres",
-      "max": "La contraseña no puede superar 64 caracteres",
-      "confirmRequired": "Debes confirmar la contraseña",
-      "match": "Las contraseñas no coinciden"
     }
   },
   "deleteAccount": {

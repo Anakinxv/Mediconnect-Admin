@@ -126,18 +126,40 @@
     "passwordLabel": "Password",
     "passwordPlaceholder": "Enter your password",
     "verifyButton": "Verify",
-    "successMessage": "Identity verified without implementing real logic.",
+    "verifyingButton": "Verifying...",
+    "successMessage": "Your password was successfully verified.",
+    "invalidCredentials": "Invalid credentials.",
     "errors": {
       "passwordRequired": "Password is required"
     }
   },
 
+  "changePassword": {
+    "title": "Change password",
+    "description": "Enter your current password and the new password you want to set.",
+    "currentPasswordLabel": "Current password",
+    "currentPasswordPlaceholder": "Enter your current password",
+    "newPasswordLabel": "New password",
+    "newPasswordPlaceholder": "Enter your new password",
+    "confirmNewPasswordLabel": "Confirm new password",
+    "confirmNewPasswordPlaceholder": "Confirm your new password",
+    "changeButton": "Change password",
+    "changingButton": "Changing...",
+    "errors": {
+      "min": "Password must be at least 8 characters",
+      "max": "Password cannot exceed 64 characters",
+      "confirmRequired": "You must confirm the password",
+      "match": "Passwords do not match"
+    }
+  },
+
   "changeEmail": {
     "title": "Change email address",
-    "description": "Enter your new email address. We'll send you a verification code.",
+    "description": "Enter your new email address. We will send you a verification code.",
     "newEmailLabel": "New email address",
     "newEmailPlaceholder": "Enter your new email address",
     "changeButton": "Change email",
+    "changingButton": "Changing...",
     "errors": {
       "required": "Email is required",
       "invalid": "Invalid email"
@@ -154,22 +176,6 @@
     "errors": {
       "otpLength": "Code must be 6 digits",
       "otpNumeric": "Code must be numeric"
-    }
-  },
-
-  "changePassword": {
-    "title": "Change password",
-    "description": "Enter your current password and the new password you want to set.",
-    "currentPasswordLabel": "Current password",
-    "currentPasswordPlaceholder": "Enter your current password",
-    "newPasswordLabel": "New password",
-    "newPasswordPlaceholder": "Enter your new password",
-    "changeButton": "Change password",
-    "errors": {
-      "min": "Password must be at least 8 characters",
-      "max": "Password cannot exceed 64 characters",
-      "confirmRequired": "You must confirm the password",
-      "match": "Passwords do not match"
     }
   },
   "deleteAccount": {

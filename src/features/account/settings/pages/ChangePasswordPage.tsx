@@ -15,6 +15,7 @@ import { useIsMobile } from "@/lib/hooks/useIsMobile";
 function ChangePasswordPage() {
   const { t } = useTranslation("common");
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
 
   const changePasswordData = useProfileStore(
     (state) => state.changePasswordData,
@@ -107,7 +108,7 @@ function ChangePasswordPage() {
   };
 
   return (
-    <MCDashboardContent mainWidth="max-w-2xl">
+    <MCDashboardContent mainWidth={isMobile ? "w-full" : "max-w-2xl"}>
       <div className="flex flex-col gap-6 items-center justify-center w-full mb-8 px-4">
         <div className="w-full flex flex-col gap-2 justify-center items-center">
           <h1 className="text-3xl md:text-5xl font-medium mb-2 text-center">
