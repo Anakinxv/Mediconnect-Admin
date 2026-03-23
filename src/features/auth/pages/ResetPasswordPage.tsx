@@ -7,18 +7,33 @@ import AuthFooterContainer from "../components/AuthFooterContainer";
 import { useNavigate } from "react-router-dom";
 import { ResetPasswordSchema } from "@/schema/AuthSchema";
 import { useEffect } from "react";
+import { useState } from "react";
 import { ROUTES } from "@/router/routes";
 import { useGlobalUIStore } from "@/stores/useGlobalUIStore";
+import { useResetPassword } from "../hooks/useResetPasssowrd";
+
 function ResetPasswordPage() {
   const { t } = useTranslation("auth");
   const navigate = useNavigate();
+
   const resetPassword = useAppStore((state) => state.resetPassword);
   const setResetPassword = useAppStore((state) => state.setResetPassword);
-  const setAccessPage = useGlobalUIStore((state) => state.setAccessPage);
   const forgotPasswordEmail = useAppStore(
     (state) => state.forgotPassword.email,
   );
   const otp = useAppStore((state) => state.otp);
+
+  const setAccessPage = useGlobalUIStore((state) => state.setAccessPage);
+  const setToast = useGlobalUIStore((state) => state.setToast);
+  const setIsLoading = useGlobalUIStore((state) => state.setIsLoading);
+
+  const { mutateAsync: resetPasswordRequest, isPending: isResetting } =
+    useResetPassword();
+
+  const [statusMessage, setStatusMessage] = useState<{
+    type: "success" | "error" | null;
+    text: string;
+  }>({ type: null, text: "" });
 
   useEffect(() => {
     if (!forgotPasswordEmail || !otp) {
@@ -26,19 +41,82 @@ function ResetPasswordPage() {
     }
   }, [forgotPasswordEmail, otp, navigate]);
 
-  const handleSubmit = (data: {
+  const handleSubmit = async (data: {
     password: string;
     confirmPassword: string;
   }) => {
-    if (data.password && data.confirmPassword) {
+    const recoveryToken = sessionStorage.getItem("recoveryToken");
+
+    if (!recoveryToken) {
+      setStatusMessage({
+        type: "error",
+        text: t(
+          "resetPassword.missingToken",
+          "Token de recuperación no encontrado. Verifica el código nuevamente.",
+        ),
+      });
+      setToast({
+        message: t(
+          "resetPassword.missingToken",
+          "Token de recuperación no encontrado. Verifica el código nuevamente.",
+        ),
+        type: "error",
+        open: true,
+      });
+      navigate(ROUTES.VERIFY_EMAIL, { replace: true });
+      return;
+    }
+
+    try {
+      setIsLoading(true);
+
+      await resetPasswordRequest({
+        token: recoveryToken,
+        nuevaPassword: data.password,
+        confirmarPassword: data.confirmPassword,
+      });
+
       setResetPassword({
         password: data.password,
         confirmPassword: data.confirmPassword,
       });
+
+      sessionStorage.removeItem("recoveryToken");
+
       setAccessPage(true, [ROUTES.PASSWORD_SUCCESS]);
+      setStatusMessage({
+        type: "success",
+        text: t(
+          "resetPassword.success",
+          "Contraseña actualizada correctamente.",
+        ),
+      });
+      setToast({
+        message: t(
+          "resetPassword.success",
+          "Contraseña actualizada correctamente.",
+        ),
+        type: "success",
+        open: true,
+      });
+
       navigate(ROUTES.PASSWORD_SUCCESS, { replace: true });
-    } else {
-      alert(t("resetPassword.errorFields"));
+    } catch (error: any) {
+      setStatusMessage({
+        type: "error",
+        text:
+          error?.response?.data?.message ||
+          t("resetPassword.error", "No se pudo actualizar la contraseña."),
+      });
+      setToast({
+        message:
+          error?.response?.data?.message ||
+          t("resetPassword.error", "No se pudo actualizar la contraseña."),
+        type: "error",
+        open: true,
+      });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -47,9 +125,19 @@ function ResetPasswordPage() {
       title={t("resetPassword.title")}
       subtitle={t("resetPassword.subtitle")}
     >
+      {/* Status visual */}
+      {statusMessage.type && (
+        <div
+          className={`mb-4 text-center ${
+            statusMessage.type === "success" ? "text-green-600" : "text-red-600"
+          }`}
+        >
+          {statusMessage.text}
+        </div>
+      )}
       <MCFormWrapper
         schema={ResetPasswordSchema((key) => t(key))}
-        onSubmit={handleSubmit}
+        onSubmit={(data) => void handleSubmit(data)}
         defaultValues={{
           password: resetPassword.password,
           confirmPassword: resetPassword.confirmPassword,
@@ -70,9 +158,11 @@ function ResetPasswordPage() {
             placeholder={t("resetPassword.confirmPasswordPlaceholder")}
           />
         </div>
+
         <AuthFooterContainer
           continueButtonProps={{
             children: t("footer.continue"),
+            disabled: isResetting,
           }}
           backButtonProps={{
             onClick: () => navigate(ROUTES.VERIFY_EMAIL, { replace: true }),
