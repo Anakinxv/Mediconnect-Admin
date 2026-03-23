@@ -15,9 +15,9 @@ import CenterPage from "@/features/users/pages/CenterPage";
 import AccountOverviewPage from "@/features/account/settings/pages/AccountOverviewPage";
 import VerifyIdentityPage from "@/features/account/settings/pages/VerifyIdentityPage";
 import ChangeEmailPage from "@/features/account/settings/pages/ChangeEmailPage";
-import VerifyNewEmailPage from "@/features/account/settings/pages/VerifyNewEmailPage";
+
 import ChangePasswordPage from "@/features/account/settings/pages/ChangePasswordPage";
-import DeleteAccountPage from "@/features/account/settings/pages/DeleteAccountPage";
+
 import ViewDetailsPage from "@/features/users/pages/ViewDetailsPage";
 import SpecialitiesPage from "@/features/masters/specialties/pages/SpecialitiesPage";
 import InsuranceTypesPage from "@/features/masters/insuranceTypes/pages/InsuranceTypesPage";
@@ -82,17 +82,10 @@ function AppRouter() {
                 path={ROUTES.SETTINGS_CHANGE_EMAIL}
                 element={<ChangeEmailPage />}
               />
-              <Route
-                path={ROUTES.SETTINGS_VERIFY_NEW_EMAIL}
-                element={<VerifyNewEmailPage />}
-              />
+
               <Route
                 path={ROUTES.SETTINGS_CHANGE_PASSWORD}
                 element={<ChangePasswordPage />}
-              />
-              <Route
-                path={ROUTES.SETTINGS_DELETE_ACCOUNT}
-                element={<DeleteAccountPage />}
               />
             </Route>
           </Route>

@@ -10,7 +10,13 @@ interface LoginResponse {
     id: number;
     email: string;
     rol: string;
+    fotoPerfil?: string;
   };
+}
+
+interface LoginCredentials {
+  email: string;
+  password: string;
 }
 
 export const useLogin = () => {
@@ -20,8 +26,12 @@ export const useLogin = () => {
 
   return useMutation({
     mutationKey: ["login"],
-    mutationFn: async (Credential: { email: string; password: string }) => {
-      const { data } = await api.post<LoginResponse>("/auth/login", Credential);
+    mutationFn: async (credentials: LoginCredentials) => {
+      const { data } = await api.post<LoginResponse>(
+        "/auth/login",
+        credentials,
+      );
+
       setAccessToken(data.accessToken);
       setRefreshToken(data.refreshToken);
       setUser({
@@ -29,7 +39,9 @@ export const useLogin = () => {
         email: data.usuario.email,
         name: data.usuario.email.split("@")[0],
         rol: data.usuario.rol,
+        profilePicture: data.usuario.fotoPerfil,
       });
+
       return data;
     },
   });

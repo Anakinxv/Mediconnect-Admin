@@ -40,7 +40,8 @@
       "cancel": "Cancel",
       "cropBanner": "Crop banner",
       "cropProfile": "Crop profile photo",
-      "defaultName": "Administrator"
+      "defaultName": "Administrator",
+      "uploading": "Uploading..."
     },
     "changeLanguage": "Change Language",
     "changeTheme": "Change Theme",

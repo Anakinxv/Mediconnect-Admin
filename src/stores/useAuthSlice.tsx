@@ -8,6 +8,7 @@ interface User {
   name: string;
   email: string;
   rol: string;
+  profilePicture?: string;
 }
 
 export interface AuthSlice {
@@ -31,6 +32,7 @@ export interface AuthSlice {
   reset: () => void;
   setAccessToken: (accessToken: string) => void;
   setRefreshToken: (refreshToken: string) => void;
+  setProfilePicture: (url: string) => void; // 👈 nuevo
 }
 
 export const createAuthSlice: StateCreator<AuthSlice> = (set) => ({
@@ -81,7 +83,6 @@ export const createAuthSlice: StateCreator<AuthSlice> = (set) => ({
     set({
       accessToken: null,
       refreshToken: null,
-
       loginCredentials: { email: "", password: "" },
       forgotPassword: { email: "" },
       otp: "",
@@ -95,4 +96,8 @@ export const createAuthSlice: StateCreator<AuthSlice> = (set) => ({
     }),
   setAccessToken: (accessToken) => set({ accessToken }),
   setRefreshToken: (refreshToken) => set({ refreshToken }),
+  setProfilePicture: (url) =>
+    set((state) => ({
+      user: state.user ? { ...state.user, profilePicture: url } : null,
+    })),
 });

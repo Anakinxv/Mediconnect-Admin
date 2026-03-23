@@ -17,53 +17,55 @@ type AccountActionsProps = {
 function AccountActions({ items }: AccountActionsProps) {
   return (
     <div className="space-y-5 w-full mb-4">
-      {items.map((item) => (
-        <button
-          key={item.id}
-          className={cn(
-            "group flex h-auto w-full items-center justify-between rounded-t-2xl px-4 py-4 border-b border-primary/10 transition-colors",
-            "sm:px-6", // Responsive padding
-            item.isDestructive
-              ? "hover:bg-[rgba(220,38,38,0.1)] active:bg-[rgba(220,38,38,0.15)]"
-              : "hover:bg-primary/5 dark:hover:bg-primary/10 active:bg-primary/10",
-          )}
-          onClick={item.onClick}
-        >
-          <div className="flex items-center gap-4">
-            {item.icon && (
+      {items
+        .filter((item) => item.id !== "delete-account")
+        .map((item) => (
+          <button
+            key={item.id}
+            className={cn(
+              "group flex h-auto w-full items-center justify-between rounded-t-2xl px-4 py-4 border-b border-primary/10 transition-colors",
+              "sm:px-6",
+              item.isDestructive
+                ? "hover:bg-[rgba(220,38,38,0.1)] active:bg-[rgba(220,38,38,0.15)]"
+                : "hover:bg-primary/5 dark:hover:bg-primary/10 active:bg-primary/10",
+            )}
+            onClick={item.onClick}
+          >
+            <div className="flex items-center gap-4">
+              {item.icon && (
+                <div
+                  className={cn(
+                    "items-center justify-center rounded-full",
+                    item.isDestructive
+                      ? "bg-[rgba(220,38,38,0.1)] text-[#dc2626]"
+                      : "bg-accent/75 text-primary dark:text-card",
+                  )}
+                >
+                  <div className="p-3 sm:p-4">{item.icon}</div>
+                </div>
+              )}
               <div
                 className={cn(
-                  "items-center justify-center rounded-full",
-                  item.isDestructive
-                    ? "bg-[rgba(220,38,38,0.1)] text-[#dc2626]"
-                    : "bg-accent/75 text-primary dark:text-card",
+                  "text-base font-medium flex flex-col items-start gap-1 text-foreground",
+                  "sm:text-lg",
+                  item.isDestructive && "text-[#dc2626]",
                 )}
               >
-                <div className="p-3 sm:p-4">{item.icon}</div>
+                {item.title}
               </div>
-            )}
-            <div
-              className={cn(
-                "text-base font-medium flex flex-col items-start gap-1 text-foreground",
-                "sm:text-lg", // Responsive text
-                item.isDestructive && "text-[#dc2626]",
-              )}
-            >
-              {item.title}
             </div>
-          </div>
-          {/* Right */}
-          <div className="flex items-center gap-2">
-            <ArrowRight
-              className={cn(
-                "h-5 w-5 transition-transform duration-200 group-hover:translate-x-2",
-                "sm:h-6 sm:w-6", // Responsive icon size
-                item.isDestructive ? "text-[#dc2626]" : "text-primary/50",
-              )}
-            />
-          </div>
-        </button>
-      ))}
+            {/* Right */}
+            <div className="flex items-center gap-2">
+              <ArrowRight
+                className={cn(
+                  "h-5 w-5 transition-transform duration-200 group-hover:translate-x-2",
+                  "sm:h-6 sm:w-6",
+                  item.isDestructive ? "text-[#dc2626]" : "text-primary/50",
+                )}
+              />
+            </div>
+          </button>
+        ))}
     </div>
   );
 }

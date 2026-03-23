@@ -4,13 +4,14 @@ import MCInput from "@/shared/components/forms/MCInput";
 import MCFormWrapper from "@/shared/components/forms/MCFormWrapper";
 import { useProfileStore } from "@/stores/useProfileStore";
 import { useNavigate } from "react-router-dom";
-import { useAppStore } from "@/stores/useAppStore";
 import MCButton from "@/shared/components/forms/MCButton";
 import { ArrowRight } from "lucide-react";
 import { useGlobalUIStore } from "@/stores/useGlobalUIStore";
 import { changePasswordSchema } from "@/schema/account.schema";
 import { useTranslation } from "react-i18next";
-
+import { useChangePassword } from "@/features/account/hooks/useChangePassword";
+import { AxiosError } from "axios";
+import { useIsMobile } from "@/lib/hooks/useIsMobile";
 function ChangePasswordPage() {
   const { t } = useTranslation("common");
   const navigate = useNavigate();
@@ -22,47 +23,101 @@ function ChangePasswordPage() {
     (state) => state.setChangePasswordData,
   );
 
-  const VerificationContext = useGlobalUIStore(
+  const verificationContext = useGlobalUIStore(
     (state) => state.verificationContext,
   );
-  const VerificationContextStatus = useGlobalUIStore(
+  const verificationContextStatus = useGlobalUIStore(
     (state) => state.verificationContextStatus,
   );
+  const setToast = useGlobalUIStore((state) => state.setToast);
 
-  // Redirige si no está en el contexto correcto o no tiene datos pendientes
+  const { mutateAsync: changePassword, isPending } = useChangePassword();
+
   useEffect(() => {
     if (
-      VerificationContext !== "CHANGE_PASSWORD" ||
-      VerificationContextStatus !== "VERIFIED"
+      verificationContext !== "CHANGE_PASSWORD" ||
+      verificationContextStatus !== "VERIFIED"
     ) {
       navigate("/settings");
     }
-  }, [VerificationContext, VerificationContextStatus, navigate]);
+  }, [verificationContext, verificationContextStatus, navigate]);
 
-  // Usa t para el schema
   const passwordSchema = changePasswordSchema(t);
 
-  const handleSubmit = (data: {
+  const handleSubmit = async (data: {
     confirmNewPassword: string;
     newPassword: string;
   }) => {
-    setChangePasswordData({
-      ...changePasswordData,
-      confirmNewPassword: data.confirmNewPassword,
-      newPassword: data.newPassword,
-    });
-    // Aquí deberías llamar a tu API para cambiar la contraseña
-    navigate("/settings");
+    const recoveryToken =
+      localStorage.getItem("recoveryToken") ||
+      localStorage.getItem("X-Recovery-Token") ||
+      "";
+
+    if (!recoveryToken) {
+      setToast({
+        type: "error",
+        message: t(
+          "changePassword.tokenRequired",
+          "No se encontró el token de recuperación.",
+        ),
+        open: true,
+      });
+      return;
+    }
+
+    try {
+      const result = await changePassword({
+        nuevaPassword: data.newPassword,
+        confirmarPassword: data.confirmNewPassword,
+        recoveryToken,
+      });
+
+      if (!result?.success) {
+        setToast({
+          type: "error",
+          message:
+            result?.message ||
+            t("changePassword.error", "No se pudo cambiar la contraseña."),
+          open: true,
+        });
+        return;
+      }
+
+      setChangePasswordData({
+        ...changePasswordData,
+        newPassword: data.newPassword,
+        confirmNewPassword: data.confirmNewPassword,
+      });
+
+      setToast({
+        type: "success",
+        message:
+          result.message ||
+          t("changePassword.success", "Contraseña actualizada correctamente."),
+        open: true,
+      });
+
+      navigate("/settings");
+    } catch (error) {
+      const axiosError = error as AxiosError<{ message?: string }>;
+      setToast({
+        type: "error",
+        message:
+          axiosError.response?.data?.message ||
+          t("changePassword.error", "No se pudo cambiar la contraseña."),
+        open: true,
+      });
+    }
   };
 
   return (
     <MCDashboardContent mainWidth="max-w-2xl">
-      <div className="flex flex-col gap-6 items-center justify-center w-full mb-8">
-        <div className="w-full min-w-xl flex flex-col gap-2 justify-center items-center">
-          <h1 className="text-5xl font-medium mb-2">
+      <div className="flex flex-col gap-6 items-center justify-center w-full mb-8 px-4">
+        <div className="w-full flex flex-col gap-2 justify-center items-center">
+          <h1 className="text-3xl md:text-5xl font-medium mb-2 text-center">
             {t("changePassword.title")}
           </h1>
-          <p className="text-muted-foreground text-base max-w-md text-center">
+          <p className="text-muted-foreground text-sm md:text-base max-w-md text-center">
             {t("changePassword.description")}
           </p>
           <MCFormWrapper
@@ -72,7 +127,7 @@ function ChangePasswordPage() {
               newPassword: changePasswordData?.newPassword || "",
               confirmNewPassword: changePasswordData?.confirmNewPassword || "",
             }}
-            className="w-md mt-4 flex flex-col items-center gap-4 h-full"
+            className="w-full max-w-md mt-4 flex flex-col items-center gap-4 h-full"
           >
             <MCInput
               label={t("changePassword.currentPasswordLabel")}
@@ -90,11 +145,14 @@ function ChangePasswordPage() {
             />
             <MCButton
               type="submit"
-              className="w-xs"
+              disabled={isPending}
+              className="w-full md:w-xs"
               icon={<ArrowRight />}
               iconPosition="right"
             >
-              {t("changePassword.changeButton")}
+              {isPending
+                ? t("changePassword.changingButton", "Cambiando...")
+                : t("changePassword.changeButton")}
             </MCButton>
           </MCFormWrapper>
         </div>

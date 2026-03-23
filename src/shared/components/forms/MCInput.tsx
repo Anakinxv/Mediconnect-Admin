@@ -37,6 +37,7 @@ interface MCInputProps {
   isPrice?: boolean;
   customDisplayValue?: string;
   maxLength?: number;
+  readOnly?: boolean; // <-- agrega esto
 }
 
 function formatCedula(value: string) {
@@ -82,6 +83,7 @@ function MCInput({
   isPrice = false,
   customDisplayValue,
   maxLength,
+  readOnly = false, // <-- agrega esto
 }: MCInputProps) {
   const formContext = standalone ? null : useFormContext();
   const { t } = useTranslation("common");
@@ -485,6 +487,7 @@ function MCInput({
             }
             required={required}
             disabled={disabled}
+            readOnly={readOnly} // <-- agrega esto
             onKeyDown={type === "number" ? handleNumberKeyDown : undefined}
             onInput={type === "number" ? handleNumberInput : undefined}
             {...inputProps}

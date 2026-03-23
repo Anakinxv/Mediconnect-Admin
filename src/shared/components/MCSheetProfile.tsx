@@ -2,7 +2,6 @@ import { Sheet, SheetContent, SheetClose } from "@/shared/ui/sheet";
 import { useIsMobile } from "@/lib/hooks/useIsMobile";
 import { X } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/ui/tabs";
-import MCButton from "./forms/MCButton";
 import MCInput from "./forms/MCInput";
 import { useState, useRef } from "react";
 import MCFormWrapper from "./forms/MCFormWrapper";
@@ -11,6 +10,8 @@ import MCProfileImageUploader from "./MCProfileImageUploader";
 import { Avatar, AvatarImage } from "@/shared/ui/avatar";
 import { MCUserAvatar } from "@/shared/navigation/MCUserAvatar";
 import { useTranslation } from "react-i18next";
+import { useAppStore } from "@/stores/useAppStore";
+import { useUpdateProfilePhoto } from "@/lib/hooks/useUpdateProfilePhoto";
 
 interface MCSheetProfileProps {
   open: boolean;
@@ -19,36 +20,38 @@ interface MCSheetProfileProps {
 
 type CropType = "banner" | "profile";
 
+// Helper: converts a base64 data URL to a File object
+function dataURLtoFile(dataUrl: string, filename: string): File {
+  const [header, data] = dataUrl.split(",");
+  const mime = header.match(/:(.*?);/)?.[1] ?? "image/jpeg";
+  const binary = atob(data);
+  const array = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) array[i] = binary.charCodeAt(i);
+  return new File([array], filename, { type: mime });
+}
+
 function MCSheetProfile({ open, onOpenChange }: MCSheetProfileProps) {
   const { t } = useTranslation("dashboard");
   const te = (key: string) => t(`userMenu.editProfile.${key}`);
   const isMobile = useIsMobile();
 
-  const [formData, setFormData] = useState({
-    profilePicture: "",
-    nombre: "",
-    email: "",
-    telefono: "",
-    rol: "",
-  });
+  const user = useAppStore((s) => s.user);
+  const setProfilePicture = useAppStore((s) => s.setProfilePicture);
 
   const [banner, setBanner] = useState<string>(
     "https://i.pinimg.com/736x/3b/37/46/3b3746e0878804293202d56d1dda1fe1.jpg",
   );
+  console.log(user);
 
-  // Estados para crop modal
   const [cropModalOpen, setCropModalOpen] = useState(false);
   const [cropType, setCropType] = useState<CropType>("profile");
   const [tempImage, setTempImage] = useState<string>("");
 
-  // Refs para inputs file
   const profileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleInputChange = (field: keyof typeof formData, value: string) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
-  };
+  const { mutate: updatePhoto, isPending: isUploadingPhoto } =
+    useUpdateProfilePhoto();
 
-  // FIX 1: Solo lee el archivo y abre el modal — el label ya dispara el input por si solo
   const handleImageChange = (
     e: React.ChangeEvent<HTMLInputElement>,
     type: CropType,
@@ -63,26 +66,36 @@ function MCSheetProfile({ open, onOpenChange }: MCSheetProfileProps) {
       };
       reader.readAsDataURL(file);
     }
-    // Limpia el input para permitir reseleccionar la misma imagen
     e.target.value = "";
   };
 
-  // FIX 2: Usa cropType para saber a qué estado guardar la imagen recortada
   const handleCropComplete = (croppedImage: string) => {
     if (cropType === "profile") {
-      setFormData((prev) => ({ ...prev, profilePicture: croppedImage }));
+      const file = dataURLtoFile(croppedImage, "profile-photo.jpg");
+      updatePhoto(
+        { file },
+        {
+          onSuccess: (data: any) => {
+            const newUrl =
+              data?.fotoPerfil ??
+              data?.usuario?.fotoPerfil ??
+              data?.data?.fotoPerfil ??
+              croppedImage;
+
+            setProfilePicture(newUrl);
+          },
+          onError: () => {
+            // upload failed — no local state to revert, store is unchanged
+          },
+        },
+      );
     } else {
       setBanner(croppedImage);
     }
   };
 
-  const handleSubmit = () => {
-    console.log("Datos guardados:", formData);
-  };
-
   return (
     <>
-      {/* Modal de crop */}
       <MCProfileImageUploader
         isOpen={cropModalOpen}
         onClose={() => setCropModalOpen(false)}
@@ -166,98 +179,75 @@ function MCSheetProfile({ open, onOpenChange }: MCSheetProfileProps) {
                 >
                   <MCFormWrapper
                     schema={profileSchema(t)}
-                    onSubmit={handleSubmit}
+                    onSubmit={() => {}}
                     className="flex flex-col gap-4"
                   >
-                    {/* Foto de perfil */}
                     <div className="flex flex-col gap-4">
                       <h3 className="text-lg font-medium">
                         {te("profilePhoto")}
                       </h3>
                       <div className="flex items-center gap-4">
-                        {/*
-                          FIX 3: Eliminado el onClick del label.
-                          El <label> ya dispara el <input type="file"> que contiene adentro
-                          de forma nativa — agregar onClick causaba que el file picker
-                          se abra dos veces y la segunda cancelación bloqueaba la selección.
-                        */}
-                        <label className="relative w-32 h-32 rounded-full overflow-hidden cursor-pointer group">
+                        <label
+                          className={`relative w-32 h-32 rounded-full overflow-hidden group ${
+                            isUploadingPhoto
+                              ? "cursor-not-allowed opacity-60"
+                              : "cursor-pointer"
+                          }`}
+                        >
                           <Avatar className="w-32 h-32 rounded-full bg-muted border border-primary/10">
-                            {formData.profilePicture ? (
-                              <AvatarImage
-                                src={formData.profilePicture}
-                                alt={formData.nombre || te("defaultName")}
-                                className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
-                              />
-                            ) : (
-                              <div className="w-full h-full flex items-center justify-center bg-muted rounded-full">
-                                <MCUserAvatar
-                                  name={formData.nombre || te("defaultName")}
-                                  square={false}
-                                  size={128}
-                                  className="w-full h-full object-cover"
-                                />
-                              </div>
-                            )}
+                            <AvatarImage
+                              src={user!.profilePicture}
+                              alt={user!.name ?? te("defaultName")}
+                              className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
+                            />
                           </Avatar>
 
-                          {/* Input oculto — el label lo activa automáticamente */}
                           <input
                             ref={profileInputRef}
                             type="file"
                             accept="image/*"
                             className="hidden"
+                            disabled={isUploadingPhoto}
                             onChange={(e) => handleImageChange(e, "profile")}
                           />
 
                           <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity rounded-full">
                             <span className="text-white font-semibold text-sm">
-                              {te("changeImage")}
+                              {isUploadingPhoto
+                                ? te("uploading")
+                                : te("changeImage")}
                             </span>
                           </div>
                         </label>
                       </div>
                     </div>
 
-                    {/* Nombre Completo */}
                     <MCInput
                       name="nombre"
                       label={te("fullName")}
                       type="text"
-                      placeholder={te("namePlaceholder")}
-                      value={formData.nombre}
-                      onChange={(e) =>
-                        handleInputChange("nombre", e.target.value)
-                      }
+                      value={user!.name}
+                      disabled
+                      standalone
                     />
 
-                    {/* Email solo lectura */}
                     <MCInput
                       name="email"
                       label="Email"
                       type="email"
-                      placeholder={te("emailPlaceholder")}
-                      value={formData.email}
+                      value={user?.email ?? ""}
                       disabled
+                      standalone
                     />
 
-                    {/* Botones de acción */}
-                    <div className="flex gap-3 mt-4">
-                      <MCButton
-                        variant="primary"
-                        size="m"
-                        onClick={handleSubmit}
-                      >
-                        {te("saveChanges")}
-                      </MCButton>
-                      <MCButton
-                        variant="secondary"
-                        size="m"
-                        onClick={() => onOpenChange(false)}
-                      >
-                        {te("cancel")}
-                      </MCButton>
-                    </div>
+                    <MCInput
+                      name="rol"
+                      label={te("role")}
+                      type="text"
+                      value={"Admin"}
+                      disabled
+                      standalone
+                    />
                   </MCFormWrapper>
                 </TabsContent>
               </div>

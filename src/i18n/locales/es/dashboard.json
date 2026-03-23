@@ -40,7 +40,9 @@
       "cancel": "Cancelar",
       "cropBanner": "Recortar banner",
       "cropProfile": "Recortar foto de perfil",
-      "defaultName": "Administrador"
+      "defaultName": "Administrador",
+      "role": "Rol",
+      "uploading": "Subiendo..."
     },
     "changeLanguage": "Cambiar Idioma",
     "changeTheme": "Cambiar Tema",
