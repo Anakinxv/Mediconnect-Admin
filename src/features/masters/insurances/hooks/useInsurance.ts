@@ -2,6 +2,13 @@ import api from "@/config/axios-client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useGlobalUIStore } from "@/stores/useGlobalUIStore";
 
+export interface TipoPermitido {
+  id: number;
+  nombre: string;
+  descripcion?: string | null;
+  estado: string;
+}
+
 export interface InsuranceInterface {
   id: number;
   nombre: string;
@@ -9,6 +16,7 @@ export interface InsuranceInterface {
   status?: string;
   estado?: string;
   creadoEn: string;
+  tiposPermitidos?: TipoPermitido[];
 }
 
 export type GetInsurancesParams = {
@@ -24,6 +32,7 @@ type CreateInsurancePayload = {
   nombre: string;
   urlImage?: string;
   estado?: string;
+  tiposPermitidos?: number[]; // ✅ backend key
 };
 
 type UpdateInsurancePayload = {
@@ -31,6 +40,7 @@ type UpdateInsurancePayload = {
   nombre?: string;
   urlImage?: string;
   estado?: string;
+  tiposPermitidos?: number[]; // ✅ backend key
 };
 
 const QUERY_KEY = "insurances";
@@ -42,8 +52,16 @@ const cleanParams = (obj: Record<string, unknown>) =>
 
 const sanitizeImageUrl = (url?: string): string | undefined => {
   if (!url) return undefined;
-  if (url.startsWith("data:")) return undefined;
-  return url;
+  const clean = url.trim();
+  if (!clean) return undefined;
+
+  // Mantener base64 (si backend lo permite)
+  if (clean.startsWith("data:image/")) return clean;
+
+  // URL absoluta o relativa
+  if (/^https?:\/\//i.test(clean) || clean.startsWith("/")) return clean;
+
+  return undefined;
 };
 
 const normalizeInsurances = (input: unknown): InsuranceInterface[] => {
@@ -81,14 +99,18 @@ const useCreateInsurance = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (payload: CreateInsurancePayload) => {
-      const { data } = await api.post(
-        "/seguros",
-        cleanParams({
-          nombre: payload.nombre,
-          urlImage: sanitizeImageUrl(payload.urlImage),
-          estado: payload.estado,
-        }),
-      );
+      const body = cleanParams({
+        nombre: payload.nombre,
+        urlImage: sanitizeImageUrl(payload.urlImage),
+        estado: payload.estado,
+        tiposPermitidos: payload.tiposPermitidos?.length
+          ? payload.tiposPermitidos
+          : undefined,
+      });
+
+      console.log("[API] POST /seguros body =>", body);
+
+      const { data } = await api.post("/seguros", body);
       return (data?.message ?? data) as InsuranceInterface;
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: [QUERY_KEY] }),
@@ -99,14 +121,18 @@ const useUpdateInsurance = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async ({ id, ...payload }: UpdateInsurancePayload) => {
-      const { data } = await api.patch(
-        `/seguros/${id}`,
-        cleanParams({
-          nombre: payload.nombre,
-          urlImage: sanitizeImageUrl(payload.urlImage),
-          estado: payload.estado,
-        }),
-      );
+      const body = cleanParams({
+        nombre: payload.nombre,
+        urlImage: sanitizeImageUrl(payload.urlImage),
+        estado: payload.estado,
+        tiposPermitidos: payload.tiposPermitidos?.length
+          ? payload.tiposPermitidos
+          : undefined,
+      });
+
+      console.log(`[API] PATCH /seguros/${id} body =>`, body);
+
+      const { data } = await api.patch(`/seguros/${id}`, body);
       return (data?.message ?? data) as InsuranceInterface;
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: [QUERY_KEY] }),

@@ -1,21 +1,29 @@
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { MCModalBase } from "@/shared/components/MCModalBase";
 import MCFormWrapper from "@/shared/components/forms/MCFormWrapper";
 import MCInput from "@/shared/components/forms/MCInput";
+import MCSelect from "@/shared/components/forms/MCSelect";
 import MCProfileImageUploader from "@/shared/components/MCProfileImageUploader";
 import { Avatar, AvatarImage, AvatarFallback } from "@/shared/ui/avatar";
 import { createMedicalInsuranceFormSchema } from "@/schema/Medicalinsurances.schema";
 import type { InsuranceInterface } from "../../hooks/useInsurance";
+import { type InsuranceTypeInterface } from "@/features/masters/insuranceTypes/hooks/useInsuranceTypes";
 
 interface CreateEditMedicalInsuranceProps {
   insurance?: InsuranceInterface | null;
-  onConfirm: (data: { nombre: string; urlImage?: string }) => void;
+  insuranceTypes: InsuranceTypeInterface[];
+  onConfirm: (data: {
+    nombre: string;
+    urlImage?: string;
+    tiposPermitidosIds: number[];
+  }) => void;
   children: React.ReactNode;
 }
 
 export default function CreateEditMedicalInsurance({
   insurance,
+  insuranceTypes,
   onConfirm,
   children,
 }: CreateEditMedicalInsuranceProps) {
@@ -28,6 +36,18 @@ export default function CreateEditMedicalInsurance({
   );
   const [cropModalOpen, setCropModalOpen] = useState(false);
   const [tempImage, setTempImage] = useState("");
+
+  // IDs de tipos seleccionados (string[] para MCSelect, convertimos a number[] al submit)
+  const [selectedTypeIds, setSelectedTypeIds] = useState<string[]>(
+    insurance?.tiposPermitidos?.map((t) => String(t.id)) ?? [],
+  );
+
+  useEffect(() => {
+    setImagePreview(insurance?.urlImage ?? "");
+    setSelectedTypeIds(
+      insurance?.tiposPermitidos?.map((t) => String(t.id)) ?? [],
+    );
+  }, [insurance]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -43,13 +63,28 @@ export default function CreateEditMedicalInsurance({
   };
 
   const onSubmit = (values: { name: string }) => {
-    onConfirm({ nombre: values.name, urlImage: imagePreview || undefined });
+    const payload = {
+      nombre: values.name.trim(),
+      urlImage: imagePreview || undefined,
+      tiposPermitidosIds: selectedTypeIds.map(Number),
+    };
+
+    console.log("[CreateEditMedicalInsurance] submit payload =>", payload);
+    onConfirm(payload);
   };
 
   const initials = (insurance?.nombre ?? "S")
     .split(" ")
     .map((n) => n[0])
     .join("");
+
+  // Opciones para el select múltiple — solo tipos Activos
+  const typeOptions = insuranceTypes
+    .filter((tp) => {
+      const raw = (tp.estado ?? tp.status ?? "").toLowerCase();
+      return raw === "activo" || raw === "active";
+    })
+    .map((tp) => ({ value: String(tp.id), label: tp.nombre }));
 
   return (
     <>
@@ -60,7 +95,7 @@ export default function CreateEditMedicalInsurance({
         aspectRatio={1}
         isCircular
         onCropComplete={(cropped) => setImagePreview(cropped)}
-        title={t("medicalInsurances.form.cropTitle", "Recortar logo")}
+        title={t("medicalInsures.form.cropTitle", "Recortar logo")}
       />
 
       <MCModalBase
@@ -71,13 +106,13 @@ export default function CreateEditMedicalInsurance({
         }
         title={
           isEdit
-            ? t("medicalInsurances.modal.editTitle")
-            : t("medicalInsurances.modal.createTitle")
+            ? t("medicalInsures.modal.editTitle")
+            : t("medicalInsures.modal.createTitle")
         }
         description={
           isEdit
-            ? t("medicalInsurances.modal.editDescription")
-            : t("medicalInsurances.modal.createDescription")
+            ? t("medicalInsures.modal.editDescription")
+            : t("medicalInsures.modal.createDescription")
         }
         trigger={children}
         variant="decide"
@@ -87,9 +122,7 @@ export default function CreateEditMedicalInsurance({
         secondaryText={t("table.cancel")}
       >
         <MCFormWrapper
-          defaultValues={{
-            name: insurance?.nombre ?? "",
-          }}
+          defaultValues={{ name: insurance?.nombre ?? "" }}
           schema={createMedicalInsuranceFormSchema(t)}
           onSubmit={onSubmit}
           className="flex flex-col gap-4"
@@ -97,7 +130,7 @@ export default function CreateEditMedicalInsurance({
           {/* Logo uploader */}
           <div className="flex flex-col gap-2">
             <span className="text-base text-primary">
-              {t("medicalInsurances.form.imageUrlLabel")}
+              {t("medicalInsures.form.imageUrlLabel")}
             </span>
             <div className="flex items-center gap-4">
               <label className="relative w-20 h-20 rounded-full overflow-hidden cursor-pointer group shrink-0">
@@ -122,7 +155,7 @@ export default function CreateEditMedicalInsurance({
                 />
                 <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity rounded-full">
                   <span className="text-white font-semibold text-xs text-center px-1">
-                    {t("medicalInsurances.form.changeLogo", "Cambiar")}
+                    {t("medicalInsures.form.changeLogo", "Cambiar")}
                   </span>
                 </div>
               </label>
@@ -132,10 +165,34 @@ export default function CreateEditMedicalInsurance({
           {/* Nombre */}
           <MCInput
             name="name"
-            label={t("medicalInsurances.form.nameLabel")}
-            placeholder={t("medicalInsurances.form.namePlaceholder")}
+            label={t("medicalInsures.form.nameLabel")}
+            placeholder={t("medicalInsures.form.namePlaceholder")}
             required
           />
+
+          {/* Tipos de seguro permitidos */}
+          <div className="flex flex-col gap-2">
+            <MCSelect
+              name="tiposPermitidosIds"
+              label={t(
+                "medicalInsures.form.insuranceTypesLabel",
+                "Tipos de seguro permitidos",
+              )}
+              placeholder={t(
+                "medicalInsures.form.insuranceTypesPlaceholder",
+                "Seleccionar tipos...",
+              )}
+              options={typeOptions}
+              multiple
+              searchable
+              size="medium"
+              value={selectedTypeIds}
+              onChange={(value) => {
+                const vals = Array.isArray(value) ? value : [value];
+                setSelectedTypeIds(vals);
+              }}
+            />
+          </div>
 
           <button ref={submitRef} type="submit" className="hidden" />
         </MCFormWrapper>

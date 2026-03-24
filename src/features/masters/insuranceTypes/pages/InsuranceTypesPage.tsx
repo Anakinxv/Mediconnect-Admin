@@ -15,131 +15,216 @@ import {
   EmptyContent,
 } from "@/shared/ui/empty";
 import { ShieldCheck, CheckCircle, XCircle, Filter, Plus } from "lucide-react";
-import InsuranceTypesTable, {
-  type InsuranceType,
-} from "../components/InsuranceTypesTable";
+import InsuranceTypesTable from "../components/InsuranceTypesTable";
 import InsuranceTypesFilters from "../components/InsuranceTypesFilters";
 import CreateEditInsuranceType from "../components/modals/CreateEditInsuranceType";
+import { useGlobalUIStore } from "@/stores/useGlobalUIStore";
+import {
+  useGetInsuranceTypes,
+  useCreateInsuranceType,
+  useUpdateInsuranceType,
+  useDeleteInsuranceType,
+  useToggleInsuranceTypeStatus,
+  type InsuranceTypeInterface,
+  type GetInsuranceTypesParams,
+} from "../hooks/useInsuranceTypes";
 
-const mockInsuranceTypes: InsuranceType[] = [
-  {
-    id: "1",
-    name: "Seguro Médico Básico",
-    createdAt: "10/01/2025",
-    status: "active",
-  },
-  {
-    id: "2",
-    name: "Seguro Médico Premium",
-    createdAt: "12/01/2025",
-    status: "active",
-  },
-  {
-    id: "3",
-    name: "Seguro Médico Internacional",
-    createdAt: "15/01/2025",
-    status: "inactive",
-  },
-  {
-    id: "4",
-    name: "Seguro Médico Familiar",
-    createdAt: "18/01/2025",
-    status: "active",
-  },
-  {
-    id: "5",
-    name: "Seguro Médico para Estudiantes",
-    createdAt: "20/01/2025",
-    status: "active",
-  },
-];
+export const resolveStatus = (
+  s: InsuranceTypeInterface,
+): "active" | "inactive" => {
+  const raw = (s.status ?? s.estado ?? "").toLowerCase();
+  return raw === "active" || raw === "activo" ? "active" : "inactive";
+};
+
+const parseDate = (dateStr: string) => {
+  if (!dateStr) return new Date(NaN);
+  if (dateStr.includes("T")) return new Date(dateStr);
+  const [day, month, year] = dateStr.split("/");
+  if (!day || !month || !year) return new Date(NaN);
+  return new Date(Number(year), Number(month) - 1, Number(day));
+};
+
+const matchesDateRange = (dateStr: string, range?: [Date, Date]): boolean => {
+  if (!range) return true;
+  const date = parseDate(dateStr);
+  date.setHours(0, 0, 0, 0);
+  const start = new Date(range[0]);
+  start.setHours(0, 0, 0, 0);
+  const end = new Date(range[1]);
+  end.setHours(23, 59, 59, 999);
+  return date >= start && date <= end;
+};
 
 function InsuranceTypesPage() {
   const { t } = useTranslation("insuranceType");
   const isMobile = useIsMobile();
+  const setToast = useGlobalUIStore((s) => s.setToast);
 
-  const [insuranceTypes, setInsuranceTypes] =
-    useState<InsuranceType[]>(mockInsuranceTypes);
   const [searchTerm, setSearchTerm] = useState("");
   const [filters, setFilters] = useState({
     status: "all",
     dateRange: undefined as [Date, Date] | undefined,
   });
 
-  const activeFiltersCount = Object.entries(filters).filter(([key, value]) => {
-    if (key === "dateRange") return value !== undefined;
-    return value !== "all";
-  }).length;
+  const activeFiltersCount = useMemo(() => {
+    let count = 0;
+    if (filters.status !== "all") count++;
+    if (filters.dateRange) count++;
+    return count;
+  }, [filters]);
 
-  const clearFilters = () =>
+  const clearFilters = () => {
     setFilters({ status: "all", dateRange: undefined });
-
-  const parseDate = (dateStr: string) => {
-    const [day, month, year] = dateStr.split("/");
-    return new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+    setSearchTerm("");
   };
 
-  const matchesDateRange = (dateStr: string, range?: [Date, Date]): boolean => {
-    if (!range) return true;
-    const date = parseDate(dateStr);
-    date.setHours(0, 0, 0, 0);
-    const start = new Date(range[0]);
-    start.setHours(0, 0, 0, 0);
-    const end = new Date(range[1]);
-    end.setHours(23, 59, 59, 999);
-    return date >= start && date <= end;
-  };
+  const apiParams = useMemo<GetInsuranceTypesParams>(
+    () => ({
+      busqueda: searchTerm?.trim() || undefined,
+      estado:
+        filters.status === "active"
+          ? "Activo"
+          : filters.status === "inactive"
+            ? "Inactivo"
+            : undefined,
+      pagina: 1,
+      limite: 100,
+      translate_fields: ["nombre", "descripcion"],
+    }),
+    [searchTerm, filters.status],
+  );
+
+  const { data: apiInsuranceTypes = [] } = useGetInsuranceTypes(apiParams);
+  const createMutation = useCreateInsuranceType();
+  const updateMutation = useUpdateInsuranceType();
+  const deleteMutation = useDeleteInsuranceType();
+  const toggleMutation = useToggleInsuranceTypeStatus();
+
+  const safeInsuranceTypes = Array.isArray(apiInsuranceTypes)
+    ? apiInsuranceTypes
+    : [];
 
   const filteredInsuranceTypes = useMemo(
     () =>
-      insuranceTypes.filter((item) => {
-        const matchesSearch = item.name
-          .toLowerCase()
-          .includes(searchTerm.toLowerCase());
-        const matchesStatus =
-          filters.status === "all" || item.status === filters.status;
-        const matchesDate = matchesDateRange(item.createdAt, filters.dateRange);
-        return matchesSearch && matchesStatus && matchesDate;
-      }),
-    [searchTerm, filters, insuranceTypes],
+      safeInsuranceTypes.filter((s) =>
+        matchesDateRange(s.creadoEn, filters.dateRange),
+      ),
+    [safeInsuranceTypes, filters.dateRange],
   );
 
-  // ── Handlers ──────────────────────────────────────────────────────────────
-
-  const handleCreate = (data: { name: string }) => {
-    const newItem: InsuranceType = {
-      id: String(Date.now()),
-      name: data.name,
-      createdAt: new Date().toLocaleDateString("es-DO"),
-      status: "active",
-    };
-    setInsuranceTypes((prev) => [newItem, ...prev]);
-  };
-
-  const handleEdit = (updated: InsuranceType) => {
-    setInsuranceTypes((prev) =>
-      prev.map((item) => (item.id === updated.id ? updated : item)),
+  const handleCreate = (data: { name: string; description?: string }) => {
+    createMutation.mutate(
+      {
+        nombre: data.name,
+        descripcion: data.description?.trim() || "",
+      },
+      {
+        onSuccess: () =>
+          setToast({
+            message: t(
+              "insuranceTypes.toast.createSuccess",
+              "Tipo de seguro creado correctamente",
+            ),
+            type: "success",
+            open: true,
+          }),
+        onError: () =>
+          setToast({
+            message: t(
+              "insuranceTypes.toast.createError",
+              "Error al crear el tipo de seguro",
+            ),
+            type: "error",
+            open: true,
+          }),
+      },
     );
   };
 
-  const handleDelete = (target: InsuranceType) => {
-    setInsuranceTypes((prev) => prev.filter((item) => item.id !== target.id));
-  };
-
-  const handleToggleStatus = (target: InsuranceType) => {
-    setInsuranceTypes((prev) =>
-      prev.map((item) =>
-        item.id === target.id
-          ? {
-              ...item,
-              status: item.status === "active" ? "inactive" : "active",
-            }
-          : item,
-      ),
+  const handleEdit = (updated: InsuranceTypeInterface) => {
+    updateMutation.mutate(
+      {
+        id: updated.id,
+        nombre: updated.nombre,
+        descripcion: updated.descripcion ?? "",
+      },
+      {
+        onSuccess: () =>
+          setToast({
+            message: t(
+              "insuranceTypes.toast.editSuccess",
+              "Tipo de seguro actualizado correctamente",
+            ),
+            type: "success",
+            open: true,
+          }),
+        onError: () =>
+          setToast({
+            message: t(
+              "insuranceTypes.toast.editError",
+              "Error al actualizar el tipo de seguro",
+            ),
+            type: "error",
+            open: true,
+          }),
+      },
     );
   };
 
-  // ── Sub-components ────────────────────────────────────────────────────────
+  const handleDelete = (target: InsuranceTypeInterface) => {
+    deleteMutation.mutate(target.id, {
+      onSuccess: () =>
+        setToast({
+          message: t(
+            "insuranceTypes.toast.deleteSuccess",
+            `"${target.nombre}" fue eliminado correctamente`,
+          ),
+          type: "success",
+          open: true,
+        }),
+      onError: () =>
+        setToast({
+          message: t(
+            "insuranceTypes.toast.deleteError",
+            "Error al eliminar el tipo de seguro",
+          ),
+          type: "error",
+          open: true,
+        }),
+    });
+  };
+
+  const handleToggleStatus = (target: InsuranceTypeInterface) => {
+    const isActive = resolveStatus(target) === "active";
+    toggleMutation.mutate(
+      { id: target.id, estado: isActive ? "Inactivo" : "Activo" },
+      {
+        onSuccess: () =>
+          setToast({
+            message: isActive
+              ? t(
+                  "insuranceTypes.toast.deactivated",
+                  `"${target.nombre}" fue desactivado correctamente`,
+                )
+              : t(
+                  "insuranceTypes.toast.activated",
+                  `"${target.nombre}" fue activado correctamente`,
+                ),
+            type: "success",
+            open: true,
+          }),
+        onError: () =>
+          setToast({
+            message: t(
+              "insuranceTypes.toast.statusError",
+              "Error al cambiar el estado",
+            ),
+            type: "error",
+            open: true,
+          }),
+      },
+    );
+  };
 
   const searchComponent = (
     <div className="w-full sm:w-auto sm:min-w-[200px] lg:min-w-[250px]">
@@ -156,14 +241,18 @@ function InsuranceTypesPage() {
       onClick={async () => {
         await MCGeneratePDF({
           columns: [
-            { title: t("insuranceTypes.table.name"), key: "name" },
-            { title: t("table.status"), key: "status" },
-            { title: t("insuranceTypes.table.createdAt"), key: "createdAt" },
+            { title: t("insuranceTypes.table.name"), key: "nombre" },
+            {
+              title: t("insuranceTypes.table.description", "Descripción"),
+              key: "descripcion",
+            },
+            { title: t("table.status"), key: "estadoLabel" },
+            { title: t("insuranceTypes.table.createdAt"), key: "creadoEn" },
           ],
           data: filteredInsuranceTypes.map((item) => ({
             ...item,
-            status:
-              item.status === "active"
+            estadoLabel:
+              resolveStatus(item) === "active"
                 ? t("insuranceTypes.status.active")
                 : t("insuranceTypes.status.inactive"),
           })),
@@ -261,19 +350,21 @@ function InsuranceTypesPage() {
   const metrics = [
     {
       title: t("insuranceTypes.metrics.total"),
-      value: insuranceTypes.length,
+      value: safeInsuranceTypes.length,
       icon: <ShieldCheck size={30} />,
       subtitle: t("insuranceTypes.metrics.totalSubtitle"),
     },
     {
       title: t("insuranceTypes.metrics.active"),
-      value: insuranceTypes.filter((i) => i.status === "active").length,
+      value: safeInsuranceTypes.filter((i) => resolveStatus(i) === "active")
+        .length,
       icon: <CheckCircle size={30} />,
       subtitle: t("insuranceTypes.metrics.activeSubtitle"),
     },
     {
       title: t("insuranceTypes.metrics.inactive"),
-      value: insuranceTypes.filter((i) => i.status === "inactive").length,
+      value: safeInsuranceTypes.filter((i) => resolveStatus(i) === "inactive")
+        .length,
       icon: <XCircle size={30} />,
       subtitle: t("insuranceTypes.metrics.inactiveSubtitle"),
     },

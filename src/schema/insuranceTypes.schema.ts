@@ -10,6 +10,7 @@ export type InsuranceTypeStatus = z.infer<typeof InsuranceTypeStatusEnum>;
 export const InsuranceTypeSchema = z.object({
   id: z.string(),
   name: z.string(),
+  description: z.string().nullable().optional(),
   createdAt: z.string(),
   status: InsuranceTypeStatusEnum,
 });
@@ -23,6 +24,11 @@ export const CreateInsuranceTypeSchema = z.object({
     .string()
     .min(2, "El nombre debe tener al menos 2 caracteres")
     .max(100, "El nombre no puede superar los 100 caracteres")
+    .trim(),
+  description: z
+    .string()
+    .min(2, "La descripción debe tener al menos 2 caracteres")
+    .max(300, "La descripción no puede superar los 300 caracteres")
     .trim(),
 });
 
@@ -83,5 +89,10 @@ export const createInsuranceTypeFormSchema = (t: (key: string) => string) =>
       .string()
       .min(2, t("insuranceTypes.validation.nameMin"))
       .max(100, t("insuranceTypes.validation.nameMax"))
+      .trim(),
+    description: z
+      .string()
+      .min(2, t("insuranceTypes.validation.descriptionMin"))
+      .max(300, t("insuranceTypes.validation.descriptionMax"))
       .trim(),
   });

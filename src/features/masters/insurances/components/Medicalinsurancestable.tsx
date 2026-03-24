@@ -17,13 +17,16 @@ import {
   PaginationPrevious,
   PaginationNext,
 } from "@/shared/ui/pagination";
+import { Tooltip, TooltipTrigger, TooltipContent } from "@/shared/ui/tooltip";
 import MCServicesStatus from "@/shared/components/MCServicesStatus";
 import MedicalInsurancesActions from "./Medicalinsurancesactions";
 import type { InsuranceInterface } from "../hooks/useInsurance";
+import type { InsuranceTypeInterface } from "../../insuranceTypes/hooks/useInsuranceTypes";
 import { resolveStatus } from "../pages/Medicalinsurancespage";
 
 interface MedicalInsurancesTableProps {
   insurances: InsuranceInterface[];
+  insuranceTypes: InsuranceTypeInterface[];
   onEdit?: (insurance: InsuranceInterface) => void;
   onDelete?: (insurance: InsuranceInterface) => void;
   onToggleStatus?: (insurance: InsuranceInterface) => void;
@@ -53,6 +56,7 @@ const formatDate = (dateStr: string): string => {
 
 export default function MedicalInsurancesTable({
   insurances,
+  insuranceTypes,
   onEdit,
   onDelete,
   onToggleStatus,
@@ -73,71 +77,128 @@ export default function MedicalInsurancesTable({
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead className="w-[50px]">
+            <TableHead className="w-[240px]">
               {t("medicalInsurances.table.insurance")}
             </TableHead>
-            <TableHead className="w-[160px]">
+            <TableHead className="text-center">
+              {t("medicalInsurances.table.allowedTypes", "Tipos permitidos")}
+            </TableHead>
+            <TableHead className="w-[140px]">
               {t("medicalInsurances.table.createdAt")}
             </TableHead>
             <TableHead className="w-[130px]">{t("table.status")}</TableHead>
             <TableHead className="w-[80px]">{t("table.actions")}</TableHead>
           </TableRow>
         </TableHeader>
+
         <TableBody>
           {paginatedData.length > 0 ? (
-            paginatedData.map((item) => (
-              <TableRow key={item.id}>
-                <TableCell className="w-[50px]">
-                  <div className="flex items-center gap-3 rounded-full px-2 py-1">
-                    <div className="relative overflow-hidden rounded-full border border-primary/10 bg-muted flex items-center justify-center shrink-0">
-                      <Avatar className="h-12 w-12 rounded-full overflow-hidden">
-                        <AvatarImage
-                          src={item.urlImage ?? ""}
-                          alt={item.nombre}
-                          className="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
-                          onError={(e) => {
-                            e.currentTarget.style.display = "none";
-                          }}
-                        />
-                        <AvatarFallback className="bg-primary/10 text-primary font-medium text-sm">
-                          {item.nombre
-                            .split(" ")
-                            .map((n) => n[0])
-                            .join("")}
-                        </AvatarFallback>
-                      </Avatar>
+            paginatedData.map((item) => {
+              const typeNames =
+                item.tiposPermitidos
+                  ?.map((tipo) => tipo.nombre)
+                  .filter(Boolean) ?? [];
+              const visibleNames = typeNames.slice(0, 3);
+              const extraCount = Math.max(0, typeNames.length - 3);
+
+              return (
+                <TableRow key={item.id}>
+                  {/* Nombre + imagen */}
+                  <TableCell className="w-[240px]">
+                    <div className="flex items-center gap-3">
+                      <div className="relative overflow-hidden rounded-full border border-primary/10 bg-muted flex items-center justify-center shrink-0">
+                        <Avatar className="h-10 w-10 rounded-full overflow-hidden">
+                          <AvatarImage
+                            src={item.urlImage ?? ""}
+                            alt={item.nombre}
+                            className="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
+                            onError={(e) => {
+                              e.currentTarget.style.display = "none";
+                            }}
+                          />
+                          <AvatarFallback className="bg-primary/10 text-primary font-medium text-xs">
+                            {item.nombre
+                              .split(" ")
+                              .map((n) => n[0])
+                              .join("")}
+                          </AvatarFallback>
+                        </Avatar>
+                      </div>
+                      <span className="font-medium text-sm">{item.nombre}</span>
                     </div>
-                    <span className="font-medium">{item.nombre}</span>
-                  </div>
-                </TableCell>
+                  </TableCell>
 
-                <TableCell className="w-[160px]">
-                  <span className="font-medium">
-                    {formatDate(item.creadoEn)}
-                  </span>
-                </TableCell>
+                  {/* Tipos permitidos */}
+                  <TableCell className="text-center align-middle">
+                    {typeNames.length > 0 ? (
+                      <div className="flex flex-wrap items-center justify-center gap-1.5">
+                        {visibleNames.map((name) => (
+                          <span
+                            key={name}
+                            className="inline-flex items-center rounded-full bg-primary/10 text-primary px-2.5 py-1 text-xs"
+                          >
+                            {name}
+                          </span>
+                        ))}
 
-                <TableCell className="w-[130px]">
-                  <MCServicesStatus
-                    status={resolveStatus(item)}
-                    variant="default"
-                  />
-                </TableCell>
+                        {extraCount > 0 && (
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <button
+                                type="button"
+                                className="inline-flex items-center rounded-full bg-primary/10 text-primary px-2.5 py-1 text-xs underline underline-offset-2"
+                              >
+                                +{extraCount}
+                              </button>
+                            </TooltipTrigger>
+                            <TooltipContent side="top" className="max-w-xs">
+                              {typeNames.join(", ")}
+                            </TooltipContent>
+                          </Tooltip>
+                        )}
+                      </div>
+                    ) : (
+                      <span className="text-xs text-muted-foreground">
+                        {t(
+                          "medicalInsurances.table.noTypes",
+                          "Sin tipos asignados",
+                        )}
+                      </span>
+                    )}
+                  </TableCell>
 
-                <TableCell className="w-[80px]">
-                  <MedicalInsurancesActions
-                    insurance={item}
-                    onEdit={onEdit}
-                    onDelete={onDelete}
-                    onToggleStatus={onToggleStatus}
-                  />
-                </TableCell>
-              </TableRow>
-            ))
+                  {/* Fecha */}
+                  <TableCell className="w-[140px]">
+                    <span className="font-medium text-sm">
+                      {formatDate(item.creadoEn)}
+                    </span>
+                  </TableCell>
+
+                  {/* Estado */}
+                  <TableCell className="w-[130px]">
+                    <MCServicesStatus
+                      status={resolveStatus(item)}
+                      variant="default"
+                    />
+                  </TableCell>
+
+                  {/* Acciones */}
+                  <TableCell className="w-[80px]">
+                    <MedicalInsurancesActions
+                      insurance={item}
+                      insuranceTypes={insuranceTypes}
+                      onEdit={onEdit}
+                      onDelete={onDelete}
+                      onToggleStatus={onToggleStatus}
+                    />
+                  </TableCell>
+                </TableRow>
+              );
+            })
           ) : (
             <TableRow>
               <TableCell
-                colSpan={4} // Cambia a 4 columnas
+                colSpan={5}
                 className="text-center py-8 text-muted-foreground"
               >
                 {t("medicalInsurances.table.noData")}

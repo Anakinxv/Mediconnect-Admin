@@ -28,8 +28,7 @@ import {
   type InsuranceInterface,
   type GetInsurancesParams,
 } from "../hooks/useInsurance";
-
-// ── Helpers ───────────────────────────────────────────────────────────────────
+import { useGetInsuranceTypes } from "../../insuranceTypes/hooks/useInsuranceTypes";
 
 export const resolveStatus = (s: InsuranceInterface): "active" | "inactive" => {
   const raw = (s.status ?? s.estado ?? "").toLowerCase();
@@ -55,8 +54,6 @@ const matchesDateRange = (dateStr: string, range?: [Date, Date]): boolean => {
   return date >= start && date <= end;
 };
 
-// ── Page ──────────────────────────────────────────────────────────────────────
-
 function MedicalInsurancesPage() {
   const { t } = useTranslation("medicalInsurance");
   const isMobile = useIsMobile();
@@ -80,7 +77,6 @@ function MedicalInsurancesPage() {
     setSearchTerm("");
   };
 
-  // ── API params (server-side filtering) ───────────────────────────────────
   const apiParams = useMemo<GetInsurancesParams>(
     () => ({
       estado:
@@ -91,20 +87,26 @@ function MedicalInsurancesPage() {
             : undefined,
       pagina: 1,
       limite: 100,
-      translate_fields: ["nombre"],
     }),
     [filters.status],
   );
 
   const { data: apiInsurances = [], isLoading } = useGetInsurances(apiParams);
+  const { data: apiInsuranceTypes = [] } = useGetInsuranceTypes({
+    pagina: 1,
+    limite: 100,
+  });
+
   const createMutation = useCreateInsurance();
   const updateMutation = useUpdateInsurance();
   const deleteMutation = useDeleteInsurance();
   const toggleMutation = useToggleInsuranceStatus();
 
   const safeInsurances = Array.isArray(apiInsurances) ? apiInsurances : [];
+  const safeInsuranceTypes = Array.isArray(apiInsuranceTypes)
+    ? apiInsuranceTypes
+    : [];
 
-  // Client-side: search by name + dateRange (API no lo soporta)
   const filteredInsurances = useMemo(
     () =>
       safeInsurances.filter((item) => {
@@ -119,9 +121,18 @@ function MedicalInsurancesPage() {
 
   // ── Handlers ─────────────────────────────────────────────────────────────
 
-  const handleCreate = (data: { nombre: string; urlImage?: string }) => {
+  const handleCreate = (data: {
+    nombre: string;
+    urlImage?: string;
+    tiposPermitidosIds: number[];
+  }) => {
     createMutation.mutate(
-      { nombre: data.nombre, urlImage: data.urlImage, estado: "Activo" },
+      {
+        nombre: data.nombre,
+        urlImage: data.urlImage,
+        estado: "Activo",
+        tiposPermitidos: data.tiposPermitidosIds,
+      },
       {
         onSuccess: () =>
           setToast({
@@ -141,7 +152,12 @@ function MedicalInsurancesPage() {
 
   const handleEdit = (updated: InsuranceInterface) => {
     updateMutation.mutate(
-      { id: updated.id, nombre: updated.nombre, urlImage: updated.urlImage },
+      {
+        id: updated.id,
+        nombre: updated.nombre,
+        urlImage: updated.urlImage,
+        tiposPermitidos: updated.tiposPermitidos?.map((tp) => tp.id),
+      },
       {
         onSuccess: () =>
           setToast({
@@ -221,11 +237,20 @@ function MedicalInsurancesPage() {
         await MCGeneratePDF({
           columns: [
             { title: t("medicalInsurances.table.insurance"), key: "nombre" },
+            {
+              title: t(
+                "medicalInsurances.table.allowedTypes",
+                "Tipos permitidos",
+              ),
+              key: "tiposLabel",
+            },
             { title: t("table.status"), key: "estadoLabel" },
             { title: t("medicalInsurances.table.createdAt"), key: "creadoEn" },
           ],
           data: filteredInsurances.map((item) => ({
             ...item,
+            tiposLabel:
+              item.tiposPermitidos?.map((tp) => tp.nombre).join(", ") || "-",
             estadoLabel:
               resolveStatus(item) === "active"
                 ? t("medicalInsurances.status.active")
@@ -254,7 +279,10 @@ function MedicalInsurancesPage() {
   );
 
   const actionPlusComponent = (
-    <CreateEditMedicalInsurance onConfirm={handleCreate}>
+    <CreateEditMedicalInsurance
+      insuranceTypes={safeInsuranceTypes}
+      onConfirm={handleCreate}
+    >
       <MCButton size="sm" className="gap-2">
         <Plus className="h-4 w-4" />
         {!isMobile && t("medicalInsurances.create")}
@@ -281,9 +309,7 @@ function MedicalInsurancesPage() {
             </EmptyTitle>
           </span>
           <EmptyDescription
-            className={`text-muted-foreground text-center max-w-md mx-auto ${
-              isMobile ? "text-sm" : "text-base"
-            }`}
+            className={`text-muted-foreground text-center max-w-md mx-auto ${isMobile ? "text-sm" : "text-base"}`}
           >
             {activeFiltersCount > 0
               ? t("medicalInsurances.empty.noResultsDescription")
@@ -298,7 +324,10 @@ function MedicalInsurancesPage() {
               {t("medicalInsurances.empty.clearFilters")}
             </MCButton>
           ) : (
-            <CreateEditMedicalInsurance onConfirm={handleCreate}>
+            <CreateEditMedicalInsurance
+              insuranceTypes={safeInsuranceTypes}
+              onConfirm={handleCreate}
+            >
               <MCButton size="sm" className="gap-2">
                 <Plus className="h-4 w-4" />
                 {t("medicalInsurances.create")}
@@ -316,6 +345,7 @@ function MedicalInsurancesPage() {
     ) : (
       <MedicalInsurancesTable
         insurances={filteredInsurances}
+        insuranceTypes={safeInsuranceTypes}
         onEdit={handleEdit}
         onDelete={handleDelete}
         onToggleStatus={handleToggleStatus}

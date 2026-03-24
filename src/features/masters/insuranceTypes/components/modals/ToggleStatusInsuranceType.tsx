@@ -1,6 +1,5 @@
 import { useTranslation } from "react-i18next";
 import { MCModalBase } from "@/shared/components/MCModalBase";
-import { useGlobalUIStore } from "@/stores/useGlobalUIStore";
 import type { InsuranceType } from "../InsuranceTypesTable";
 
 interface ToggleStatusInsuranceTypeProps {
@@ -15,27 +14,12 @@ export default function ToggleStatusInsuranceType({
   children,
 }: ToggleStatusInsuranceTypeProps) {
   const { t } = useTranslation("insuranceType");
-  const setToast = useGlobalUIStore((s) => s.setToast);
-  const isActive = insuranceType.status === "active";
-
-  const handleConfirm = () => {
-    onConfirm();
-    setToast({
-      message: isActive
-        ? t("insuranceTypes.toast.deactivated", { name: insuranceType.name })
-        : t("insuranceTypes.toast.activated", { name: insuranceType.name }),
-      type: "success",
-      open: true,
-    });
-  };
-
-  const handleSecondary = () => {
-    setToast({
-      message: t("insuranceTypes.toast.statusAborted"),
-      type: "info",
-      open: true,
-    });
-  };
+  const raw = (
+    insuranceType.status ??
+    insuranceType.estado ??
+    ""
+  ).toLowerCase();
+  const isActive = raw === "active" || raw === "activo";
 
   return (
     <MCModalBase
@@ -48,17 +32,16 @@ export default function ToggleStatusInsuranceType({
       description={
         isActive
           ? t("insuranceTypes.modal.deactivateDescription", {
-              name: insuranceType.name,
+              name: insuranceType.nombre,
             })
           : t("insuranceTypes.modal.activateDescription", {
-              name: insuranceType.name,
+              name: insuranceType.nombre,
             })
       }
       trigger={children}
       variant={isActive ? "warning" : "decide"}
       size="smWide"
-      onConfirm={handleConfirm}
-      onSecondary={handleSecondary}
+      onConfirm={onConfirm}
       confirmText={isActive ? t("table.deactivate") : t("table.activate")}
       secondaryText={t("table.cancel")}
     >

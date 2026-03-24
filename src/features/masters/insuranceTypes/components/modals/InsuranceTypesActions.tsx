@@ -27,7 +27,12 @@ export default function InsuranceTypesActions({
   onToggleStatus,
 }: InsuranceTypesActionsProps) {
   const { t } = useTranslation("insuranceType");
-  const isActive = insuranceType.status === "active";
+  const raw = (
+    insuranceType.status ??
+    insuranceType.estado ??
+    ""
+  ).toLowerCase();
+  const isActive = raw === "active" || raw === "activo";
 
   return (
     <Popover>
@@ -43,10 +48,16 @@ export default function InsuranceTypesActions({
 
       <PopoverContent isTablet placement="left">
         <div className="flex flex-col gap-1 p-2">
-          {/* Edit */}
           <CreateEditInsuranceType
             insuranceType={insuranceType}
-            onConfirm={(data) => onEdit?.({ ...insuranceType, ...data })}
+            onConfirm={(data) =>
+              onEdit?.({
+                ...insuranceType,
+                nombre: data.name,
+                descripcion:
+                  data.description ?? insuranceType.descripcion ?? null,
+              })
+            }
           >
             <div className="p-2 cursor-pointer rounded-lg hover:bg-accent/70 dark:hover:text-background transition text-sm text-center flex items-center justify-center gap-2">
               <Pencil className="h-4 w-4" />
@@ -54,7 +65,6 @@ export default function InsuranceTypesActions({
             </div>
           </CreateEditInsuranceType>
 
-          {/* Toggle Status */}
           <ToggleStatusInsuranceType
             insuranceType={insuranceType}
             onConfirm={() => onToggleStatus?.(insuranceType)}
@@ -75,7 +85,6 @@ export default function InsuranceTypesActions({
             </div>
           </ToggleStatusInsuranceType>
 
-          {/* Delete */}
           <DeleteInsuranceType
             insuranceType={insuranceType}
             onConfirm={() => onDelete?.(insuranceType)}

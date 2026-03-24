@@ -21,7 +21,7 @@ export default function DeleteInsuranceType({
     onConfirm();
     setToast({
       message: t("insuranceTypes.toast.deleteSuccess", {
-        name: insuranceType.name,
+        name: insuranceType.nombre,
       }),
       type: "success",
       open: true,
@@ -41,7 +41,7 @@ export default function DeleteInsuranceType({
       id={`delete-insurance-type-${insuranceType.id}`}
       title={t("insuranceTypes.modal.deleteTitle")}
       description={t("insuranceTypes.modal.deleteDescription", {
-        name: insuranceType.name,
+        name: insuranceType.nombre,
       })}
       trigger={children}
       variant="warning"

@@ -10,6 +10,7 @@ import { Button } from "@/shared/ui/button";
 import { Popover, PopoverTrigger, PopoverContent } from "@/shared/ui/popover";
 import { useTranslation } from "react-i18next";
 import type { InsuranceInterface } from "../hooks/useInsurance";
+import type { InsuranceTypeInterface } from "../../insuranceTypes/hooks/useInsuranceTypes";
 import { resolveStatus } from "../pages/Medicalinsurancespage";
 import CreateEditMedicalInsurance from "./modals/Createeditmedicalinsurance";
 import ToggleStatusMedicalInsurance from "./modals/Togglestatusmedicalinsurance";
@@ -17,6 +18,7 @@ import DeleteMedicalInsurance from "./modals/Deletemedicalinsurance";
 
 interface MedicalInsurancesActionsProps {
   insurance: InsuranceInterface;
+  insuranceTypes: InsuranceTypeInterface[];
   onEdit?: (insurance: InsuranceInterface) => void;
   onDelete?: (insurance: InsuranceInterface) => void;
   onToggleStatus?: (insurance: InsuranceInterface) => void;
@@ -24,6 +26,7 @@ interface MedicalInsurancesActionsProps {
 
 export default function MedicalInsurancesActions({
   insurance,
+  insuranceTypes,
   onEdit,
   onDelete,
   onToggleStatus,
@@ -49,8 +52,21 @@ export default function MedicalInsurancesActions({
           {/* Editar */}
           <CreateEditMedicalInsurance
             insurance={insurance}
+            insuranceTypes={insuranceTypes}
             onConfirm={(data) => {
-              onEdit?.({ ...insurance, ...data });
+              onEdit?.({
+                ...insurance,
+                nombre: data.nombre,
+                urlImage: data.urlImage,
+                tiposPermitidos: data.tiposPermitidosIds.map((id) => {
+                  const found = insuranceTypes.find((tp) => tp.id === id);
+                  return {
+                    id,
+                    nombre: found?.nombre ?? String(id),
+                    estado: found?.estado ?? "Activo",
+                  };
+                }),
+              });
               close();
             }}
           >

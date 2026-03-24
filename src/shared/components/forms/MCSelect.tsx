@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Select,
   SelectContent,
@@ -28,6 +28,7 @@ interface MCSelectProps {
   statusMessage?: string;
   variant?: "edit";
   searchable?: boolean;
+  value?: string | string[];
   onChange?: (value: string | string[]) => void;
   labelPosition?: LabelPosition;
 }
@@ -46,6 +47,7 @@ function MCSelect({
   statusMessage,
   variant,
   searchable = false,
+  value,
   onChange,
   labelPosition = "left",
 }: MCSelectProps) {
@@ -58,9 +60,18 @@ function MCSelect({
     formState: { errors },
   } = useFormContext();
 
-  const [selectedValues, setSelectedValues] = useState<string[]>([]);
+  const [selectedValues, setSelectedValues] = useState<string[]>(
+    Array.isArray(value) ? value : value ? [value] : [],
+  );
   const [searchQuery, setSearchQuery] = useState("");
   const currentValue = watch(name);
+
+  // Sincroniza selectedValues cuando el padre cambia el prop value (necesario en edición)
+  useEffect(() => {
+    if (multiple) {
+      setSelectedValues(Array.isArray(value) ? value : value ? [value] : []);
+    }
+  }, [value, multiple]);
 
   // Use translation for default placeholder
   const defaultPlaceholder = placeholder || t("ui.select.placeholder");
@@ -98,20 +109,20 @@ function MCSelect({
     return "";
   };
 
-  const handleSelectChange = (value: string) => {
+  const handleSelectChange = (val: string) => {
     if (multiple) {
-      const newValues = selectedValues.includes(value)
-        ? selectedValues.filter((v) => v !== value)
-        : [...selectedValues, value];
+      const newValues = selectedValues.includes(val)
+        ? selectedValues.filter((v) => v !== val)
+        : [...selectedValues, val];
 
       setSelectedValues(newValues);
       setValue(name, newValues);
       onChange?.(newValues);
     } else {
-      setValue(name, value);
-      onChange?.(value);
+      setValue(name, val);
+      onChange?.(val);
     }
-    setSearchQuery(""); // Limpiar búsqueda después de seleccionar
+    setSearchQuery("");
   };
 
   const removeValue = (valueToRemove: string) => {
@@ -197,7 +208,7 @@ function MCSelect({
             side="bottom"
             align="end"
             className="bg-background"
-            avoidCollisions={false} // <-- fuerza el dropdown hacia abajo siempre
+            avoidCollisions={false}
           >
             {/* Search Input */}
             {searchable && (
@@ -252,17 +263,17 @@ function MCSelect({
       {/* Multiple Selection Tags */}
       {multiple && selectedValues.length > 0 && (
         <div className="flex flex-wrap gap-2 mt-2">
-          {selectedValues.map((value) => {
-            const option = options.find((opt) => opt.value === value);
+          {selectedValues.map((val) => {
+            const option = options.find((opt) => opt.value === val);
             return (
               <span
-                key={value}
+                key={val}
                 className="inline-flex items-center gap-1 px-3 py-1 bg-primary/10 text-primary rounded-full text-sm"
               >
                 {option?.label}
                 <button
                   type="button"
-                  onClick={() => removeValue(value)}
+                  onClick={() => removeValue(val)}
                   className="hover:bg-primary/20 rounded-full p-0.5"
                 >
                   <X size={14} />

@@ -3,13 +3,14 @@ import { useTranslation } from "react-i18next";
 import { MCModalBase } from "@/shared/components/MCModalBase";
 import MCFormWrapper from "@/shared/components/forms/MCFormWrapper";
 import MCInput from "@/shared/components/forms/MCInput";
+import MCTextArea from "@/shared/components/forms/MCTextArea";
 import { useGlobalUIStore } from "@/stores/useGlobalUIStore";
 import { createInsuranceTypeFormSchema } from "@/schema/insuranceTypes.schema";
 import type { InsuranceType } from "../InsuranceTypesTable";
 
 interface CreateEditInsuranceTypeProps {
   insuranceType?: InsuranceType | null;
-  onConfirm: (data: { name: string }) => void;
+  onConfirm: (data: { name: string; description: string }) => void;
   children: React.ReactNode;
 }
 
@@ -35,14 +36,10 @@ export default function CreateEditInsuranceType({
     });
   };
 
-  const onSubmit = (values: { name: string }) => {
-    onConfirm(values);
-    setToast({
-      message: isEdit
-        ? t("insuranceTypes.toast.editSuccess")
-        : t("insuranceTypes.toast.createSuccess"),
-      type: "success",
-      open: true,
+  const onSubmit = (values: { name: string; description: string }) => {
+    onConfirm({
+      name: values.name.trim(),
+      description: values.description.trim(),
     });
   };
 
@@ -72,7 +69,10 @@ export default function CreateEditInsuranceType({
       secondaryText={t("table.cancel")}
     >
       <MCFormWrapper
-        defaultValues={{ name: insuranceType?.name ?? "" }}
+        defaultValues={{
+          name: insuranceType?.nombre ?? "",
+          description: insuranceType?.descripcion ?? "",
+        }}
         schema={createInsuranceTypeFormSchema(t)}
         onSubmit={onSubmit}
         className="flex flex-col gap-4"
@@ -81,6 +81,19 @@ export default function CreateEditInsuranceType({
           name="name"
           label={t("insuranceTypes.table.name")}
           placeholder={t("insuranceTypes.form.namePlaceholder")}
+          required
+        />
+        <MCTextArea
+          name="description"
+          label={t("insuranceTypes.table.description", "Descripción")}
+          placeholder={t(
+            "insuranceTypes.form.descriptionPlaceholder",
+            "Descripción",
+          )}
+          charLimit={300}
+          showCharCount
+          rows={3}
+          maxRows={8}
           required
         />
         <button ref={submitRef} type="submit" className="hidden" />

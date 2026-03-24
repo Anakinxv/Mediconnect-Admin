@@ -81,11 +81,10 @@ export default function SpecialitiesTable({
       <Table>
         <TableHeader>
           <TableRow>
-            {/* <TableHead className="w-[60px]">ID</TableHead> */}
             <TableHead className="w-[220px]">
               {t("specialities.table.name", "Nombre")}
             </TableHead>
-            <TableHead className="w-[300px]">
+            <TableHead className="w-[300px] text-left">
               {t("specialties.table.description", "Descripción")}
             </TableHead>
             <TableHead className="w-[160px]">
@@ -101,15 +100,12 @@ export default function SpecialitiesTable({
         </TableHeader>
         <TableBody>
           {paginatedData.length > 0 ? (
-            paginatedData.map((speciality, index) => (
+            paginatedData.map((speciality) => (
               <TableRow key={speciality.id}>
-                {/* <TableCell className="text-muted-foreground text-sm">
-                  {speciality.id}
-                </TableCell> */}
                 <TableCell className="w-[220px]">
                   <span className="font-medium">{speciality.nombre}</span>
                 </TableCell>
-                <TableCell className="w-[300px]">
+                <TableCell className="w-[300px] text-left">
                   <span className="text-sm text-muted-foreground line-clamp-2">
                     {speciality.descripcion}
                   </span>
@@ -138,8 +134,8 @@ export default function SpecialitiesTable({
           ) : (
             <TableRow>
               <TableCell
-                colSpan={5} // Cambia a 5 columnas
-                className="text-center py-8 text-muted-foreground"
+                colSpan={5}
+                className="text-left py-8 text-muted-foreground"
               >
                 {t(
                   "specialties.table.noData",

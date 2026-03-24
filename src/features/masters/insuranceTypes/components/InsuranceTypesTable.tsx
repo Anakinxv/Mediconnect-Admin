@@ -18,13 +18,9 @@ import {
 } from "@/shared/ui/pagination";
 import MCServicesStatus from "@/shared/components/MCServicesStatus";
 import InsuranceTypesActions from "./modals/InsuranceTypesActions";
+import type { InsuranceTypeInterface } from "../hooks/useInsuranceTypes";
 
-export interface InsuranceType {
-  id: string;
-  name: string;
-  createdAt: string;
-  status: "active" | "inactive";
-}
+export type InsuranceType = InsuranceTypeInterface;
 
 interface InsuranceTypesTableProps {
   insuranceTypes: InsuranceType[];
@@ -34,6 +30,31 @@ interface InsuranceTypesTableProps {
 }
 
 const PAGE_SIZE = 10;
+
+const resolveStatus = (item: InsuranceType): string => {
+  const raw = (item.status ?? item.estado ?? "Inactivo").toLowerCase();
+  return raw === "active" || raw === "activo" ? "active" : "inactive";
+};
+
+const formatDate = (dateStr: string): string => {
+  if (!dateStr) return "-";
+  try {
+    const date = dateStr.includes("T")
+      ? new Date(dateStr)
+      : (() => {
+          const [d, m, y] = dateStr.split("/");
+          return new Date(Number(y), Number(m) - 1, Number(d));
+        })();
+    if (isNaN(date.getTime())) return dateStr;
+    return date.toLocaleDateString("es-DO", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    });
+  } catch {
+    return dateStr;
+  }
+};
 
 export default function InsuranceTypesTable({
   insuranceTypes,
@@ -60,9 +81,11 @@ export default function InsuranceTypesTable({
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead className="w-[60px]">ID</TableHead>
-            <TableHead className="w-[300px]">
+            <TableHead className="w-[260px]">
               {t("insuranceTypes.table.name")}
+            </TableHead>
+            <TableHead className="w-[320px] text-left">
+              {t("insuranceTypes.table.description", "Descripción")}
             </TableHead>
             <TableHead className="w-[160px]">
               {t("insuranceTypes.table.createdAt")}
@@ -73,19 +96,26 @@ export default function InsuranceTypesTable({
         </TableHeader>
         <TableBody>
           {paginatedData.length > 0 ? (
-            paginatedData.map((item, index) => (
+            paginatedData.map((item) => (
               <TableRow key={item.id}>
-                <TableCell className="text-muted-foreground text-sm">
-                  {startIndex + index + 1}
+                <TableCell className="w-[260px]">
+                  <span className="font-medium">{item.nombre}</span>
                 </TableCell>
-                <TableCell className="w-[300px]">
-                  <span className="font-medium">{item.name}</span>
+                <TableCell className="w-[320px] text-left">
+                  <span className="text-sm text-muted-foreground line-clamp-2">
+                    {item.descripcion?.trim() || "-"}
+                  </span>
                 </TableCell>
                 <TableCell className="w-[160px]">
-                  <span className="font-medium">{item.createdAt}</span>
+                  <span className="font-medium">
+                    {formatDate(item.creadoEn)}
+                  </span>
                 </TableCell>
                 <TableCell className="w-[130px]">
-                  <MCServicesStatus status={item.status} variant="default" />
+                  <MCServicesStatus
+                    status={resolveStatus(item)}
+                    variant="default"
+                  />
                 </TableCell>
                 <TableCell className="w-[80px]">
                   <InsuranceTypesActions
