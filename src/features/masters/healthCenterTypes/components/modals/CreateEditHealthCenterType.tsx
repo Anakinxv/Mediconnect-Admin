@@ -30,28 +30,20 @@ export default function CreateEditHealthCenterType({
       }
       title={
         isEdit
-          ? t("healthCenterTypes.modal.editTitle", "Editar Tipo de Centro")
-          : t("healthCenterTypes.modal.createTitle", "Nuevo Tipo de Centro")
+          ? t("healthCenterTypes.modal.editTitle")
+          : t("healthCenterTypes.modal.createTitle")
       }
       description={
         isEdit
-          ? t(
-              "healthCenterTypes.modal.editDescription",
-              "Modifica los datos del tipo de centro.",
-            )
-          : t(
-              "healthCenterTypes.modal.createDescription",
-              "Completa los datos para registrar un nuevo tipo de centro.",
-            )
+          ? t("healthCenterTypes.modal.editDescription")
+          : t("healthCenterTypes.modal.createDescription")
       }
       trigger={children}
       variant="decide"
       size="smWide"
       onConfirm={() => submitRef.current?.click()}
-      confirmText={
-        isEdit ? t("table.save", "Guardar Cambios") : t("table.create", "Crear")
-      }
-      secondaryText={t("table.cancel", "Cancelar")}
+      confirmText={isEdit ? t("table.save") : t("table.create")}
+      secondaryText={t("table.cancel")}
     >
       <MCFormWrapper
         defaultValues={{ name: healthCenterType?.nombre ?? "" }}
@@ -61,11 +53,8 @@ export default function CreateEditHealthCenterType({
       >
         <MCInput
           name="name"
-          label={t("healthCenterTypes.table.name", "Nombre")}
-          placeholder={t(
-            "healthCenterTypes.form.namePlaceholder",
-            "Ej: Hospital",
-          )}
+          label={t("healthCenterTypes.table.name")}
+          placeholder={t("healthCenterTypes.form.namePlaceholder")}
           required
         />
         <button ref={submitRef} type="submit" className="hidden" />

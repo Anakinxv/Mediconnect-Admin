@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useIsMobile } from "@/lib/hooks/useIsMobile";
 import MCTablesLayouts from "@/shared/components/MCTablesLayouts";
@@ -59,6 +59,7 @@ function InsuranceTypesPage() {
   const { t } = useTranslation("insuranceType");
   const isMobile = useIsMobile();
   const setToast = useGlobalUIStore((s) => s.setToast);
+  const setIsLoading = useGlobalUIStore((s) => s.setIsLoading);
 
   const [searchTerm, setSearchTerm] = useState("");
   const [filters, setFilters] = useState({
@@ -94,7 +95,17 @@ function InsuranceTypesPage() {
     [searchTerm, filters.status],
   );
 
-  const { data: apiInsuranceTypes = [] } = useGetInsuranceTypes(apiParams);
+  const {
+    data: apiInsuranceTypes = [],
+    isLoading,
+    isFetching,
+  } = useGetInsuranceTypes(apiParams);
+
+  useEffect(() => {
+    setIsLoading(isLoading || isFetching);
+    return () => setIsLoading(false);
+  }, [isLoading, isFetching, setIsLoading]);
+
   const createMutation = useCreateInsuranceType();
   const updateMutation = useUpdateInsuranceType();
   const deleteMutation = useDeleteInsuranceType();
@@ -113,12 +124,14 @@ function InsuranceTypesPage() {
   );
 
   const handleCreate = (data: { name: string; description?: string }) => {
+    setIsLoading(true);
     createMutation.mutate(
       {
         nombre: data.name,
         descripcion: data.description?.trim() || "",
       },
       {
+        onSettled: () => setIsLoading(false),
         onSuccess: () =>
           setToast({
             message: t(
@@ -142,6 +155,7 @@ function InsuranceTypesPage() {
   };
 
   const handleEdit = (updated: InsuranceTypeInterface) => {
+    setIsLoading(true);
     updateMutation.mutate(
       {
         id: updated.id,
@@ -149,6 +163,7 @@ function InsuranceTypesPage() {
         descripcion: updated.descripcion ?? "",
       },
       {
+        onSettled: () => setIsLoading(false),
         onSuccess: () =>
           setToast({
             message: t(
@@ -172,7 +187,9 @@ function InsuranceTypesPage() {
   };
 
   const handleDelete = (target: InsuranceTypeInterface) => {
+    setIsLoading(true);
     deleteMutation.mutate(target.id, {
+      onSettled: () => setIsLoading(false),
       onSuccess: () =>
         setToast({
           message: t(
@@ -195,10 +212,12 @@ function InsuranceTypesPage() {
   };
 
   const handleToggleStatus = (target: InsuranceTypeInterface) => {
+    setIsLoading(true);
     const isActive = resolveStatus(target) === "active";
     toggleMutation.mutate(
       { id: target.id, estado: isActive ? "Inactivo" : "Activo" },
       {
+        onSettled: () => setIsLoading(false),
         onSuccess: () =>
           setToast({
             message: isActive

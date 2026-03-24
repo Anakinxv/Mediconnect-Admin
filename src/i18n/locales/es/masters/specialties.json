@@ -1,15 +1,8 @@
 {
   "specialities": {
-    "title": "Especialidades",
-    "subtitle": "Listado de especialidades médicas",
-    "create": "Nueva Especialidad",
-    "searchPlaceholder": "Buscar especialidad...",
-
     "table": {
       "name": "Nombre",
-      "description": "Descripción",
-      "createdAt": "Fecha de Creación",
-      "noData": "No hay especialidades registradas"
+      "description": "Descripción"
     },
 
     "status": {
@@ -20,15 +13,6 @@
     "filters": {
       "allStatus": "Todos los estados",
       "selectStatus": "Seleccionar estado"
-    },
-
-    "metrics": {
-      "total": "Total",
-      "totalSubtitle": "Especialidades registradas",
-      "active": "Activas",
-      "activeSubtitle": "Disponibles para médicos",
-      "inactive": "Inactivas",
-      "inactiveSubtitle": "No disponibles"
     },
 
     "modal": {
@@ -49,19 +33,52 @@
       "descriptionPlaceholder": "Describe brevemente la especialidad..."
     },
 
-    "validation": {
-      "nameMin": "El nombre debe tener al menos 2 caracteres",
-      "nameMax": "El nombre no puede superar los 100 caracteres",
-      "descMin": "La descripción debe tener al menos 5 caracteres",
-      "descMax": "La descripción no puede superar los 300 caracteres"
+    "toast": {
+      "createSuccess": "Especialidad creada correctamente",
+      "createError": "Error al crear la especialidad"
+    }
+  },
+
+  "specialties": {
+    "title": "Especialidades",
+    "subtitle": "Listado de especialidades médicas",
+    "create": "Nueva Especialidad",
+    "searchPlaceholder": "Buscar especialidad...",
+
+    "table": {
+      "name": "Nombre",
+      "description": "Descripción",
+      "createdAt": "Fecha de Creación",
+      "noData": "No hay especialidades registradas"
+    },
+
+    "status": {
+      "active": "Activo",
+      "inactive": "Inactivo"
+    },
+
+    "metrics": {
+      "total": "Total",
+      "totalSubtitle": "Especialidades registradas",
+      "active": "Activas",
+      "activeSubtitle": "Disponibles para médicos",
+      "inactive": "Inactivas",
+      "inactiveSubtitle": "No disponibles"
+    },
+
+    "modal": {
+      "deleteTitle": "Eliminar Especialidad",
+      "deleteDescription": "¿Estás seguro de que deseas eliminar \"{{name}}\"? Esta acción no se puede deshacer."
     },
 
     "toast": {
-      "createSuccess": "Especialidad creada correctamente",
       "editSuccess": "Especialidad actualizada correctamente",
+      "editError": "Error al actualizar la especialidad",
       "activated": "\"{{name}}\" fue activada correctamente",
       "deactivated": "\"{{name}}\" fue desactivada correctamente",
+      "statusError": "Error al cambiar el estado",
       "deleteSuccess": "\"{{name}}\" fue eliminada correctamente",
+      "deleteError": "Error al eliminar la especialidad",
       "aborted": "Operación cancelada",
       "statusAborted": "Cambio de estado cancelado",
       "deleteAborted": "Eliminación cancelada"
@@ -73,6 +90,13 @@
       "noResults": "Sin resultados",
       "noResultsDescription": "No hay especialidades que coincidan con los filtros aplicados.",
       "clearFilters": "Limpiar filtros"
+    },
+
+    "validation": {
+      "nameMin": "El nombre debe tener al menos 2 caracteres",
+      "nameMax": "El nombre no puede superar los 100 caracteres",
+      "descMin": "La descripción debe tener al menos 5 caracteres",
+      "descMax": "La descripción no puede superar los 300 caracteres"
     }
   },
 

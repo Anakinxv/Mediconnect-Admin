@@ -127,7 +127,6 @@ export default function CreateEditMedicalInsurance({
           onSubmit={onSubmit}
           className="flex flex-col gap-4"
         >
-          {/* Logo uploader */}
           <div className="flex flex-col gap-2">
             <span className="text-base text-primary">
               {t("medicalInsures.form.imageUrlLabel")}
@@ -162,7 +161,6 @@ export default function CreateEditMedicalInsurance({
             </div>
           </div>
 
-          {/* Nombre */}
           <MCInput
             name="name"
             label={t("medicalInsures.form.nameLabel")}
@@ -170,7 +168,6 @@ export default function CreateEditMedicalInsurance({
             required
           />
 
-          {/* Tipos de seguro permitidos */}
           <div className="flex flex-col gap-2">
             <MCSelect
               name="tiposPermitidosIds"

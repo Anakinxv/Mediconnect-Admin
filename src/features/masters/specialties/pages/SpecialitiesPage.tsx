@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useIsMobile } from "@/lib/hooks/useIsMobile";
 import MCTablesLayouts from "@/shared/components/MCTablesLayouts";
@@ -59,6 +59,7 @@ function SpecialitiesPage() {
   const { t } = useTranslation("specialties");
   const isMobile = useIsMobile();
   const setToast = useGlobalUIStore((s) => s.setToast);
+  const setIsLoading = useGlobalUIStore((s) => s.setIsLoading);
 
   const [searchTerm, setSearchTerm] = useState("");
   const [filters, setFilters] = useState({
@@ -94,8 +95,18 @@ function SpecialitiesPage() {
     [searchTerm, filters.status],
   );
 
-  const { data: apiSpecialities = [], isLoading } =
-    useGetSpecialities(apiParams);
+  // --- Loading for fetch specialities ---
+  const {
+    data: apiSpecialities = [],
+    isLoading,
+    isFetching,
+  } = useGetSpecialities(apiParams);
+
+  useEffect(() => {
+    setIsLoading(isLoading || isFetching);
+    return () => setIsLoading(false);
+  }, [isLoading, isFetching, setIsLoading]);
+
   const createMutation = useCreateSpeciality();
   const updateMutation = useUpdateSpeciality();
   const deleteMutation = useDeleteSpeciality();
@@ -114,10 +125,13 @@ function SpecialitiesPage() {
     [safeSpecialities, filters.dateRange],
   );
 
+  // Wrap mutation handlers to show/hide loading
   const handleCreate = (data: { name: string; description: string }) => {
+    setIsLoading(true);
     createMutation.mutate(
       { nombre: data.name, descripcion: data.description, estado: "Activo" },
       {
+        onSettled: () => setIsLoading(false),
         onSuccess: () =>
           setToast({
             message: t(
@@ -141,6 +155,7 @@ function SpecialitiesPage() {
   };
 
   const handleEdit = (updated: SpecialityInterface) => {
+    setIsLoading(true);
     updateMutation.mutate(
       {
         id: updated.id,
@@ -148,6 +163,7 @@ function SpecialitiesPage() {
         descripcion: updated.descripcion,
       },
       {
+        onSettled: () => setIsLoading(false),
         onSuccess: () =>
           setToast({
             message: t(
@@ -171,7 +187,9 @@ function SpecialitiesPage() {
   };
 
   const handleDelete = (target: SpecialityInterface) => {
+    setIsLoading(true);
     deleteMutation.mutate(target.id, {
+      onSettled: () => setIsLoading(false),
       onSuccess: () =>
         setToast({
           message: t(
@@ -194,10 +212,12 @@ function SpecialitiesPage() {
   };
 
   const handleToggleStatus = (target: SpecialityInterface) => {
+    setIsLoading(true);
     const isActive = resolveStatus(target) === "active";
     toggleMutation.mutate(
       { id: target.id, estado: isActive ? "Inactivo" : "Activo" },
       {
+        onSettled: () => setIsLoading(false),
         onSuccess: () =>
           setToast({
             message: isActive

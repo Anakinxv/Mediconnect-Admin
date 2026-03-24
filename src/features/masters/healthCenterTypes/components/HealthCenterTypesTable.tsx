@@ -75,7 +75,6 @@ export default function HealthCenterTypesTable({
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead className="w-[60px]">ID</TableHead>
             <TableHead className="w-[300px]">
               {t("healthCenterTypes.table.name", "Nombre")}
             </TableHead>
@@ -94,9 +93,6 @@ export default function HealthCenterTypesTable({
           {paginatedData.length > 0 ? (
             paginatedData.map((item, index) => (
               <TableRow key={item.id}>
-                <TableCell className="text-muted-foreground text-sm">
-                  {startIndex + index + 1}
-                </TableCell>
                 <TableCell className="w-[300px]">
                   <span className="font-medium">{item.nombre}</span>
                 </TableCell>
@@ -124,7 +120,7 @@ export default function HealthCenterTypesTable({
           ) : (
             <TableRow>
               <TableCell
-                colSpan={5}
+                colSpan={4}
                 className="text-center py-8 text-muted-foreground"
               >
                 {t(

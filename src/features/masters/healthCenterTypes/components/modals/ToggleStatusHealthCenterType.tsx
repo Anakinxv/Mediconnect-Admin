@@ -23,35 +23,24 @@ export default function ToggleStatusHealthCenterType({
       id={`toggle-status-health-center-type-${healthCenterType.id}`}
       title={
         isActive
-          ? t(
-              "healthCenterTypes.modal.deactivateTitle",
-              "Desactivar Tipo de Centro",
-            )
-          : t("healthCenterTypes.modal.activateTitle", "Activar Tipo de Centro")
+          ? t("healthCenterTypes.modal.deactivateTitle")
+          : t("healthCenterTypes.modal.activateTitle")
       }
       description={
         isActive
           ? t("healthCenterTypes.modal.deactivateDescription", {
               name: displayName,
-              defaultValue:
-                '¿Estás seguro de que deseas desactivar "{{name}}"? Los centros de salud no podrán asociarse a este tipo mientras esté inactivo.',
             })
           : t("healthCenterTypes.modal.activateDescription", {
               name: displayName,
-              defaultValue:
-                '¿Estás seguro de que deseas activar "{{name}}"? Estará disponible nuevamente para los centros de salud.',
             })
       }
       trigger={children}
       variant={isActive ? "warning" : "decide"}
       size="smWide"
       onConfirm={onConfirm}
-      confirmText={
-        isActive
-          ? t("table.deactivate", "Desactivar")
-          : t("table.activate", "Activar")
-      }
-      secondaryText={t("table.cancel", "Cancelar")}
+      confirmText={isActive ? t("table.deactivate") : t("table.activate")}
+      secondaryText={t("table.cancel")}
     >
       <></>
     </MCModalBase>

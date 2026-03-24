@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useIsMobile } from "@/lib/hooks/useIsMobile";
 import MCTablesLayouts from "@/shared/components/MCTablesLayouts";
@@ -54,10 +54,11 @@ const matchesDateRange = (dateStr: string, range?: [Date, Date]): boolean => {
   return date >= start && date <= end;
 };
 
-function MedicalInsurancesPage() {
+function MedicalInsuresPage() {
   const { t } = useTranslation("medicalInsurance");
   const isMobile = useIsMobile();
   const setToast = useGlobalUIStore((s) => s.setToast);
+  const setIsLoading = useGlobalUIStore((s) => s.setIsLoading);
 
   const [searchTerm, setSearchTerm] = useState("");
   const [filters, setFilters] = useState({
@@ -92,31 +93,36 @@ function MedicalInsurancesPage() {
   );
 
   const { data: apiInsurances = [], isLoading } = useGetInsurances(apiParams);
-  const { data: apiInsuranceTypes = [] } = useGetInsuranceTypes({
-    pagina: 1,
-    limite: 100,
-  });
+  const { data: apiInsuranceTypes = [], isLoading: isLoadingTypes } =
+    useGetInsuranceTypes({
+      pagina: 1,
+      limite: 100,
+    });
+
+  useEffect(() => {
+    setIsLoading(isLoading || isLoadingTypes);
+  }, [isLoading, isLoadingTypes, setIsLoading]);
 
   const createMutation = useCreateInsurance();
   const updateMutation = useUpdateInsurance();
   const deleteMutation = useDeleteInsurance();
   const toggleMutation = useToggleInsuranceStatus();
 
-  const safeInsurances = Array.isArray(apiInsurances) ? apiInsurances : [];
+  const safeInsures = Array.isArray(apiInsurances) ? apiInsurances : [];
   const safeInsuranceTypes = Array.isArray(apiInsuranceTypes)
     ? apiInsuranceTypes
     : [];
 
-  const filteredInsurances = useMemo(
+  const filteredInsures = useMemo(
     () =>
-      safeInsurances.filter((item) => {
+      safeInsures.filter((item) => {
         const matchesSearch = item.nombre
           .toLowerCase()
           .includes(searchTerm.toLowerCase());
         const matchesDate = matchesDateRange(item.creadoEn, filters.dateRange);
         return matchesSearch && matchesDate;
       }),
-    [safeInsurances, searchTerm, filters.dateRange],
+    [safeInsures, searchTerm, filters.dateRange],
   );
 
   // ── Handlers ─────────────────────────────────────────────────────────────
@@ -126,6 +132,7 @@ function MedicalInsurancesPage() {
     urlImage?: string;
     tiposPermitidosIds: number[];
   }) => {
+    setIsLoading(true);
     createMutation.mutate(
       {
         nombre: data.nombre,
@@ -136,21 +143,23 @@ function MedicalInsurancesPage() {
       {
         onSuccess: () =>
           setToast({
-            message: t("medicalInsurances.toast.createSuccess"),
+            message: t("medicalInsures.toast.createSuccess"),
             type: "success",
             open: true,
           }),
         onError: () =>
           setToast({
-            message: t("medicalInsurances.toast.createError"),
+            message: t("medicalInsures.toast.createError"),
             type: "error",
             open: true,
           }),
+        onSettled: () => setIsLoading(false),
       },
     );
   };
 
   const handleEdit = (updated: InsuranceInterface) => {
+    setIsLoading(true);
     updateMutation.mutate(
       {
         id: updated.id,
@@ -161,25 +170,27 @@ function MedicalInsurancesPage() {
       {
         onSuccess: () =>
           setToast({
-            message: t("medicalInsurances.toast.editSuccess"),
+            message: t("medicalInsures.toast.editSuccess"),
             type: "success",
             open: true,
           }),
         onError: () =>
           setToast({
-            message: t("medicalInsurances.toast.editError"),
+            message: t("medicalInsures.toast.editError"),
             type: "error",
             open: true,
           }),
+        onSettled: () => setIsLoading(false),
       },
     );
   };
 
   const handleDelete = (target: InsuranceInterface) => {
+    setIsLoading(true);
     deleteMutation.mutate(target.id, {
       onSuccess: () =>
         setToast({
-          message: t("medicalInsurances.toast.deleteSuccess", {
+          message: t("medicalInsures.toast.deleteSuccess", {
             name: target.nombre,
           }),
           type: "success",
@@ -187,34 +198,37 @@ function MedicalInsurancesPage() {
         }),
       onError: () =>
         setToast({
-          message: t("medicalInsurances.toast.deleteError"),
+          message: t("medicalInsures.toast.deleteError"),
           type: "error",
           open: true,
         }),
+      onSettled: () => setIsLoading(false),
     });
   };
 
   const handleToggleStatus = (target: InsuranceInterface) => {
     const isActive = resolveStatus(target) === "active";
+    setIsLoading(true);
     toggleMutation.mutate(
       { id: target.id, estado: isActive ? "Inactivo" : "Activo" },
       {
         onSuccess: () =>
           setToast({
             message: isActive
-              ? t("medicalInsurances.toast.deactivated", {
+              ? t("medicalInsures.toast.deactivated", {
                   name: target.nombre,
                 })
-              : t("medicalInsurances.toast.activated", { name: target.nombre }),
+              : t("medicalInsures.toast.activated", { name: target.nombre }),
             type: "success",
             open: true,
           }),
         onError: () =>
           setToast({
-            message: t("medicalInsurances.toast.statusError"),
+            message: t("medicalInsures.toast.statusError"),
             type: "error",
             open: true,
           }),
+        onSettled: () => setIsLoading(false),
       },
     );
   };
@@ -224,7 +238,7 @@ function MedicalInsurancesPage() {
   const searchComponent = (
     <div className="w-full sm:w-auto sm:min-w-[200px] lg:min-w-[250px]">
       <MCFilterInput
-        placeholder={t("medicalInsurances.searchPlaceholder")}
+        placeholder={t("medicalInsures.searchPlaceholder")}
         value={searchTerm}
         onChange={setSearchTerm}
       />
@@ -236,29 +250,26 @@ function MedicalInsurancesPage() {
       onClick={async () => {
         await MCGeneratePDF({
           columns: [
-            { title: t("medicalInsurances.table.insurance"), key: "nombre" },
+            { title: t("medicalInsures.table.insurance"), key: "nombre" },
             {
-              title: t(
-                "medicalInsurances.table.allowedTypes",
-                "Tipos permitidos",
-              ),
+              title: t("medicalInsures.table.allowedTypes", "Tipos permitidos"),
               key: "tiposLabel",
             },
             { title: t("table.status"), key: "estadoLabel" },
-            { title: t("medicalInsurances.table.createdAt"), key: "creadoEn" },
+            { title: t("medicalInsures.table.createdAt"), key: "creadoEn" },
           ],
-          data: filteredInsurances.map((item) => ({
+          data: filteredInsures.map((item: InsuranceInterface) => ({
             ...item,
             tiposLabel:
               item.tiposPermitidos?.map((tp) => tp.nombre).join(", ") || "-",
             estadoLabel:
               resolveStatus(item) === "active"
-                ? t("medicalInsurances.status.active")
-                : t("medicalInsurances.status.inactive"),
+                ? t("medicalInsures.status.active")
+                : t("medicalInsures.status.inactive"),
           })),
           fileName: "seguros-medicos",
-          title: t("medicalInsurances.title"),
-          subtitle: t("medicalInsurances.subtitle"),
+          title: t("medicalInsures.title"),
+          subtitle: t("medicalInsures.subtitle"),
         });
       }}
     />
@@ -285,7 +296,7 @@ function MedicalInsurancesPage() {
     >
       <MCButton size="sm" className="gap-2">
         <Plus className="h-4 w-4" />
-        {!isMobile && t("medicalInsurances.create")}
+        {!isMobile && t("medicalInsures.create")}
       </MCButton>
     </CreateEditMedicalInsurance>
   );
@@ -304,16 +315,16 @@ function MedicalInsurancesPage() {
               className={`font-semibold ${isMobile ? "text-lg" : "text-xl"}`}
             >
               {activeFiltersCount > 0
-                ? t("medicalInsurances.empty.noResults")
-                : t("medicalInsurances.empty.noMedicalInsurances")}
+                ? t("medicalInsures.empty.noResults")
+                : t("medicalInsures.empty.noMedicalInsures")}
             </EmptyTitle>
           </span>
           <EmptyDescription
             className={`text-muted-foreground text-center max-w-md mx-auto ${isMobile ? "text-sm" : "text-base"}`}
           >
             {activeFiltersCount > 0
-              ? t("medicalInsurances.empty.noResultsDescription")
-              : t("medicalInsurances.empty.noMedicalInsurancesDescription")}
+              ? t("medicalInsures.empty.noResultsDescription")
+              : t("medicalInsures.empty.noMedicalInsuresDescription")}
           </EmptyDescription>
         </div>
       </EmptyHeader>
@@ -321,7 +332,7 @@ function MedicalInsurancesPage() {
         <div className="flex flex-col items-center gap-3">
           {activeFiltersCount > 0 ? (
             <MCButton variant="outline" onClick={clearFilters} size="sm">
-              {t("medicalInsurances.empty.clearFilters")}
+              {t("medicalInsures.empty.clearFilters")}
             </MCButton>
           ) : (
             <CreateEditMedicalInsurance
@@ -330,7 +341,7 @@ function MedicalInsurancesPage() {
             >
               <MCButton size="sm" className="gap-2">
                 <Plus className="h-4 w-4" />
-                {t("medicalInsurances.create")}
+                {t("medicalInsures.create")}
               </MCButton>
             </CreateEditMedicalInsurance>
           )}
@@ -340,11 +351,11 @@ function MedicalInsurancesPage() {
   );
 
   const tableComponent =
-    filteredInsurances.length === 0 && !isLoading ? (
+    filteredInsures.length === 0 && !isLoading ? (
       emptyState
     ) : (
       <MedicalInsurancesTable
-        insurances={filteredInsurances}
+        insurances={filteredInsures}
         insuranceTypes={safeInsuranceTypes}
         onEdit={handleEdit}
         onDelete={handleDelete}
@@ -354,29 +365,32 @@ function MedicalInsurancesPage() {
 
   const metrics = [
     {
-      title: t("medicalInsurances.metrics.total"),
-      value: safeInsurances.length,
+      title: t("medicalInsures.metrics.total"),
+      value: safeInsures.length,
       icon: <ShieldPlus size={30} />,
-      subtitle: t("medicalInsurances.metrics.totalSubtitle"),
+      subtitle: t("medicalInsures.metrics.totalSubtitle"),
     },
     {
-      title: t("medicalInsurances.metrics.active"),
-      value: safeInsurances.filter((i) => resolveStatus(i) === "active").length,
+      title: t("medicalInsures.metrics.active"),
+      value: safeInsures.filter(
+        (i: InsuranceInterface) => resolveStatus(i) === "active",
+      ).length,
       icon: <CheckCircle size={30} />,
-      subtitle: t("medicalInsurances.metrics.activeSubtitle"),
+      subtitle: t("medicalInsures.metrics.activeSubtitle"),
     },
     {
-      title: t("medicalInsurances.metrics.inactive"),
-      value: safeInsurances.filter((i) => resolveStatus(i) === "inactive")
-        .length,
+      title: t("medicalInsures.metrics.inactive"),
+      value: safeInsures.filter(
+        (i: InsuranceInterface) => resolveStatus(i) === "inactive",
+      ).length,
       icon: <XCircle size={30} />,
-      subtitle: t("medicalInsurances.metrics.inactiveSubtitle"),
+      subtitle: t("medicalInsures.metrics.inactiveSubtitle"),
     },
   ];
 
   return (
     <MCTablesLayouts
-      title={t("medicalInsurances.title")}
+      title={t("medicalInsures.title")}
       metrics={metrics}
       tableComponent={tableComponent}
       searchComponent={searchComponent}
@@ -387,4 +401,4 @@ function MedicalInsurancesPage() {
   );
 }
 
-export default MedicalInsurancesPage;
+export default MedicalInsuresPage;

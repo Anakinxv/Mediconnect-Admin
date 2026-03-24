@@ -1,15 +1,8 @@
 {
   "specialities": {
-    "title": "Specialities",
-    "subtitle": "List of medical specialities",
-    "create": "New Speciality",
-    "searchPlaceholder": "Search speciality...",
-
     "table": {
       "name": "Name",
-      "description": "Description",
-      "createdAt": "Creation Date",
-      "noData": "No specialities registered"
+      "description": "Description"
     },
 
     "status": {
@@ -20,15 +13,6 @@
     "filters": {
       "allStatus": "All statuses",
       "selectStatus": "Select status"
-    },
-
-    "metrics": {
-      "total": "Total",
-      "totalSubtitle": "Registered specialities",
-      "active": "Active",
-      "activeSubtitle": "Available for doctors",
-      "inactive": "Inactive",
-      "inactiveSubtitle": "Not available"
     },
 
     "modal": {
@@ -49,19 +33,52 @@
       "descriptionPlaceholder": "Briefly describe the speciality..."
     },
 
-    "validation": {
-      "nameMin": "Name must be at least 2 characters",
-      "nameMax": "Name cannot exceed 100 characters",
-      "descMin": "Description must be at least 5 characters",
-      "descMax": "Description cannot exceed 300 characters"
+    "toast": {
+      "createSuccess": "Speciality created successfully",
+      "createError": "Failed to create speciality"
+    }
+  },
+
+  "specialties": {
+    "title": "Specialities",
+    "subtitle": "List of medical specialities",
+    "create": "New Speciality",
+    "searchPlaceholder": "Search speciality...",
+
+    "table": {
+      "name": "Name",
+      "description": "Description",
+      "createdAt": "Creation Date",
+      "noData": "No specialities registered"
+    },
+
+    "status": {
+      "active": "Active",
+      "inactive": "Inactive"
+    },
+
+    "metrics": {
+      "total": "Total",
+      "totalSubtitle": "Registered specialities",
+      "active": "Active",
+      "activeSubtitle": "Available for doctors",
+      "inactive": "Inactive",
+      "inactiveSubtitle": "Not available"
+    },
+
+    "modal": {
+      "deleteTitle": "Delete Speciality",
+      "deleteDescription": "Are you sure you want to delete \"{{name}}\"? This action cannot be undone."
     },
 
     "toast": {
-      "createSuccess": "Speciality created successfully",
       "editSuccess": "Speciality updated successfully",
+      "editError": "Failed to update speciality",
       "activated": "\"{{name}}\" was activated successfully",
       "deactivated": "\"{{name}}\" was deactivated successfully",
+      "statusError": "Failed to change status",
       "deleteSuccess": "\"{{name}}\" was deleted successfully",
+      "deleteError": "Failed to delete speciality",
       "aborted": "Operation cancelled",
       "statusAborted": "Status change cancelled",
       "deleteAborted": "Deletion cancelled"
@@ -73,6 +90,13 @@
       "noResults": "No results",
       "noResultsDescription": "No specialities match the applied filters.",
       "clearFilters": "Clear filters"
+    },
+
+    "validation": {
+      "nameMin": "Name must be at least 2 characters",
+      "nameMax": "Name cannot exceed 100 characters",
+      "descMin": "Description must be at least 5 characters",
+      "descMax": "Description cannot exceed 300 characters"
     }
   },
 

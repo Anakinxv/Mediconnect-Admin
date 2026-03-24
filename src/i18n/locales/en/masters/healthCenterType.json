@@ -57,10 +57,14 @@
     },
     "toast": {
       "createSuccess": "Health center type created successfully",
+      "createError": "Failed to create health center type",
       "editSuccess": "Health center type updated successfully",
+      "editError": "Failed to update health center type",
       "activated": "\"{{name}}\" was activated successfully",
       "deactivated": "\"{{name}}\" was deactivated successfully",
+      "statusError": "Failed to change status",
       "deleteSuccess": "\"{{name}}\" was deleted successfully",
+      "deleteError": "Failed to delete health center type",
       "aborted": "Operation cancelled",
       "statusAborted": "Status change cancelled",
       "deleteAborted": "Deletion cancelled"

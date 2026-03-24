@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useIsMobile } from "@/lib/hooks/useIsMobile";
 import MCTablesLayouts from "@/shared/components/MCTablesLayouts";
@@ -59,6 +59,7 @@ function HealthCenterTypesPage() {
   const { t } = useTranslation("healthCenterType");
   const isMobile = useIsMobile();
   const setToast = useGlobalUIStore((s) => s.setToast);
+  const setIsLoading = useGlobalUIStore((s) => s.setIsLoading);
 
   const [searchTerm, setSearchTerm] = useState("");
   const [filters, setFilters] = useState({
@@ -94,8 +95,17 @@ function HealthCenterTypesPage() {
     [searchTerm, filters.status],
   );
 
-  const { data: apiHealthCenterTypes = [], isLoading } =
-    useGetHealthCenterTypes(apiParams);
+  const {
+    data: apiHealthCenterTypes = [],
+    isLoading,
+    isFetching,
+  } = useGetHealthCenterTypes(apiParams);
+
+  useEffect(() => {
+    setIsLoading(isLoading || isFetching);
+    return () => setIsLoading(false);
+  }, [isLoading, isFetching, setIsLoading]);
+
   const createMutation = useCreateHealthCenterType();
   const updateMutation = useUpdateHealthCenterType();
   const deleteMutation = useDeleteHealthCenterType();
@@ -117,24 +127,20 @@ function HealthCenterTypesPage() {
   // ── Handlers ──────────────────────────────────────────────────────────────
 
   const handleCreate = (data: { name: string }) => {
+    setIsLoading(true);
     createMutation.mutate(
       { nombre: data.name, estado: "Activo" },
       {
+        onSettled: () => setIsLoading(false),
         onSuccess: () =>
           setToast({
-            message: t(
-              "healthCenterTypes.toast.createSuccess",
-              "Tipo de centro creado correctamente",
-            ),
+            message: t("healthCenterTypes.toast.createSuccess"),
             type: "success",
             open: true,
           }),
         onError: () =>
           setToast({
-            message: t(
-              "healthCenterTypes.toast.createError",
-              "Error al crear el tipo de centro",
-            ),
+            message: t("healthCenterTypes.toast.createError"),
             type: "error",
             open: true,
           }),
@@ -143,24 +149,20 @@ function HealthCenterTypesPage() {
   };
 
   const handleEdit = (updated: HealthCenterTypeInterface) => {
+    setIsLoading(true);
     updateMutation.mutate(
       { id: updated.id, nombre: updated.nombre },
       {
+        onSettled: () => setIsLoading(false),
         onSuccess: () =>
           setToast({
-            message: t(
-              "healthCenterTypes.toast.editSuccess",
-              "Tipo de centro actualizado correctamente",
-            ),
+            message: t("healthCenterTypes.toast.editSuccess"),
             type: "success",
             open: true,
           }),
         onError: () =>
           setToast({
-            message: t(
-              "healthCenterTypes.toast.editError",
-              "Error al actualizar el tipo de centro",
-            ),
+            message: t("healthCenterTypes.toast.editError"),
             type: "error",
             open: true,
           }),
@@ -169,22 +171,20 @@ function HealthCenterTypesPage() {
   };
 
   const handleDelete = (target: HealthCenterTypeInterface) => {
+    setIsLoading(true);
     deleteMutation.mutate(target.id, {
+      onSettled: () => setIsLoading(false),
       onSuccess: () =>
         setToast({
-          message: t(
-            "healthCenterTypes.toast.deleteSuccess",
-            `"${target.nombre}" fue eliminado correctamente`,
-          ),
+          message: t("healthCenterTypes.toast.deleteSuccess", {
+            name: target.nombre,
+          }),
           type: "success",
           open: true,
         }),
       onError: () =>
         setToast({
-          message: t(
-            "healthCenterTypes.toast.deleteError",
-            "Error al eliminar el tipo de centro",
-          ),
+          message: t("healthCenterTypes.toast.deleteError"),
           type: "error",
           open: true,
         }),
@@ -192,30 +192,27 @@ function HealthCenterTypesPage() {
   };
 
   const handleToggleStatus = (target: HealthCenterTypeInterface) => {
+    setIsLoading(true);
     const isActive = resolveStatus(target) === "active";
     toggleMutation.mutate(
       { id: target.id, estado: isActive ? "Inactivo" : "Activo" },
       {
+        onSettled: () => setIsLoading(false),
         onSuccess: () =>
           setToast({
             message: isActive
-              ? t(
-                  "healthCenterTypes.toast.deactivated",
-                  `"${target.nombre}" fue desactivado correctamente`,
-                )
-              : t(
-                  "healthCenterTypes.toast.activated",
-                  `"${target.nombre}" fue activado correctamente`,
-                ),
+              ? t("healthCenterTypes.toast.deactivated", {
+                  name: target.nombre,
+                })
+              : t("healthCenterTypes.toast.activated", {
+                  name: target.nombre,
+                }),
             type: "success",
             open: true,
           }),
         onError: () =>
           setToast({
-            message: t(
-              "healthCenterTypes.toast.statusError",
-              "Error al cambiar el estado",
-            ),
+            message: t("healthCenterTypes.toast.statusError"),
             type: "error",
             open: true,
           }),

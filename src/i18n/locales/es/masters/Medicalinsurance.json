@@ -1,5 +1,5 @@
 {
-  "medicalInsurances": {
+  "medicalInsures": {
     "title": "Seguros Médicos",
     "subtitle": "Listado de aseguradoras médicas",
     "create": "Nuevo Seguro",
@@ -9,19 +9,13 @@
       "insurance": "Seguro",
       "insuranceType": "Tipo de Seguro",
       "createdAt": "Fecha de Creación",
-      "noData": "No hay seguros médicos registrados"
+      "noData": "No hay seguros médicos registrados",
+      "allowedTypes": "Tipos permitidos"
     },
 
     "status": {
       "active": "Activo",
       "inactive": "Inactivo"
-    },
-
-    "filters": {
-      "allStatus": "Todos los estados",
-      "selectStatus": "Seleccionar estado",
-      "allTypes": "Todos los tipos",
-      "selectType": "Seleccionar tipo"
     },
 
     "metrics": {
@@ -37,13 +31,7 @@
       "createTitle": "Nuevo Seguro Médico",
       "createDescription": "Completa los datos para registrar un nuevo seguro médico.",
       "editTitle": "Editar Seguro Médico",
-      "editDescription": "Modifica los datos del seguro médico.",
-      "activateTitle": "Activar Seguro Médico",
-      "activateDescription": "¿Estás seguro de que deseas activar \"{{name}}\"? Estará disponible nuevamente.",
-      "deactivateTitle": "Desactivar Seguro Médico",
-      "deactivateDescription": "¿Estás seguro de que deseas desactivar \"{{name}}\"? No estará disponible mientras esté inactivo.",
-      "deleteTitle": "Eliminar Seguro Médico",
-      "deleteDescription": "¿Estás seguro de que deseas eliminar \"{{name}}\"? Esta acción no se puede deshacer."
+      "editDescription": "Modifica los datos del seguro médico."
     },
 
     "form": {
@@ -51,34 +39,66 @@
       "namePlaceholder": "Ej: ARS Humano",
       "insuranceTypeLabel": "Tipo de Seguro",
       "insuranceTypePlaceholder": "Seleccionar tipo de seguro",
-      "imageUrlLabel": "URL del Logo",
-      "imageUrlPlaceholder": "https://ejemplo.com/logo.png"
-    },
-
-    "validation": {
-      "nameMin": "El nombre debe tener al menos 2 caracteres",
-      "nameMax": "El nombre no puede superar los 100 caracteres",
-      "insuranceTypeRequired": "Debes seleccionar un tipo de seguro",
-      "imageUrlInvalid": "La URL de la imagen no es válida"
+      "imageUrlLabel": "Logo",
+      "imageUrlPlaceholder": "https://ejemplo.com/logo.png",
+      "insuranceTypesLabel": "Tipos de seguro permitidos",
+      "insuranceTypesPlaceholder": "Seleccionar tipos de seguro...",
+      "cropTitle": "Recortar logo",
+      "changeLogo": "Cambiar"
     },
 
     "toast": {
       "createSuccess": "Seguro médico creado correctamente",
+      "createError": "Error al crear el seguro médico",
       "editSuccess": "Seguro médico actualizado correctamente",
+      "editError": "Error al actualizar el seguro médico",
       "activated": "\"{{name}}\" fue activado correctamente",
       "deactivated": "\"{{name}}\" fue desactivado correctamente",
+      "statusError": "Error al cambiar el estado",
       "deleteSuccess": "\"{{name}}\" fue eliminado correctamente",
+      "deleteError": "Error al eliminar el seguro médico",
       "aborted": "Operación cancelada",
       "statusAborted": "Cambio de estado cancelado",
       "deleteAborted": "Eliminación cancelada"
     },
 
     "empty": {
-      "noMedicalInsurances": "No hay seguros médicos",
-      "noMedicalInsurancesDescription": "Aún no se han registrado seguros médicos. Crea el primero.",
+      "noMedicalInsures": "No hay seguros médicos",
+      "noMedicalInsuresDescription": "Aún no se han registrado seguros médicos. Crea el primero.",
       "noResults": "Sin resultados",
       "noResultsDescription": "No hay seguros médicos que coincidan con los filtros aplicados.",
       "clearFilters": "Limpiar filtros"
+    }
+  },
+
+  "medicalInsurances": {
+    "table": {
+      "insurance": "Seguro",
+      "allowedTypes": "Tipos permitidos",
+      "createdAt": "Fecha de Creación",
+      "noTypes": "Sin tipos asignados",
+      "noData": "No hay seguros médicos registrados"
+    },
+
+    "status": {
+      "active": "Activo",
+      "inactive": "Inactivo"
+    },
+
+    "filters": {
+      "allStatus": "Todos los estados",
+      "selectStatus": "Seleccionar estado",
+      "allTypes": "Todos los tipos",
+      "selectType": "Seleccionar tipo"
+    },
+
+    "modal": {
+      "activateTitle": "Activar Seguro Médico",
+      "activateDescription": "¿Estás seguro de que deseas activar \"{{name}}\"? Estará disponible nuevamente.",
+      "deactivateTitle": "Desactivar Seguro Médico",
+      "deactivateDescription": "¿Estás seguro de que deseas desactivar \"{{name}}\"? No estará disponible mientras esté inactivo.",
+      "deleteTitle": "Eliminar Seguro Médico",
+      "deleteDescription": "¿Estás seguro de que deseas eliminar \"{{name}}\"? Esta acción no se puede deshacer."
     }
   },
 

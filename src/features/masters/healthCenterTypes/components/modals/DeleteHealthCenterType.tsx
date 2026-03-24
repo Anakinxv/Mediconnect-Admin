@@ -18,21 +18,16 @@ export default function DeleteHealthCenterType({
   return (
     <MCModalBase
       id={`delete-health-center-type-${healthCenterType.id}`}
-      title={t(
-        "healthCenterTypes.modal.deleteTitle",
-        "Eliminar Tipo de Centro",
-      )}
+      title={t("healthCenterTypes.modal.deleteTitle")}
       description={t("healthCenterTypes.modal.deleteDescription", {
         name: healthCenterType.nombre,
-        defaultValue:
-          '¿Estás seguro de que deseas eliminar "{{name}}"? Esta acción no se puede deshacer.',
       })}
       trigger={children}
       variant="warning"
       size="smWide"
       onConfirm={onConfirm}
-      confirmText={t("table.delete", "Eliminar")}
-      secondaryText={t("table.cancel", "Cancelar")}
+      confirmText={t("table.delete")}
+      secondaryText={t("table.cancel")}
     >
       <></>
     </MCModalBase>

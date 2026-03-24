@@ -57,10 +57,14 @@
     },
     "toast": {
       "createSuccess": "Tipo de centro de salud creado correctamente",
+      "createError": "Error al crear el tipo de centro de salud",
       "editSuccess": "Tipo de centro de salud actualizado correctamente",
+      "editError": "Error al actualizar el tipo de centro de salud",
       "activated": "\"{{name}}\" fue activado correctamente",
       "deactivated": "\"{{name}}\" fue desactivado correctamente",
+      "statusError": "Error al cambiar el estado",
       "deleteSuccess": "\"{{name}}\" fue eliminado correctamente",
+      "deleteError": "Error al eliminar el tipo de centro de salud",
       "aborted": "Operación cancelada",
       "statusAborted": "Cambio de estado cancelado",
       "deleteAborted": "Eliminación cancelada"

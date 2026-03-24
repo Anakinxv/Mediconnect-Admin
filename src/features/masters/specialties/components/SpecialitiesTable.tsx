@@ -19,6 +19,12 @@ import {
 import MCServicesStatus from "@/shared/components/MCServicesStatus";
 import SpecialitiesActions from "./SpecialitiesActions";
 import type { SpecialityInterface } from "../hooks/useSpecialities";
+import {
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+  TooltipProvider,
+} from "@/shared/ui/tooltip";
 
 interface SpecialitiesTableProps {
   specialities: SpecialityInterface[];
@@ -29,7 +35,6 @@ interface SpecialitiesTableProps {
 
 const PAGE_SIZE = 10;
 
-// ✅ Resuelve el status sin importar si viene como "active", "Activo", etc.
 const resolveStatus = (item: SpecialityInterface): string => {
   const raw =
     item.status ||
@@ -38,7 +43,6 @@ const resolveStatus = (item: SpecialityInterface): string => {
   return raw;
 };
 
-// ✅ Formatea ISO o dd/mm/yyyy a "21 feb. 2026"
 const formatDate = (dateStr: string): string => {
   if (!dateStr) return "-";
   try {
@@ -58,6 +62,36 @@ const formatDate = (dateStr: string): string => {
     return dateStr;
   }
 };
+
+function TruncatedCell({
+  text,
+  maxLength = 50,
+}: {
+  text: string;
+  maxLength?: number;
+}) {
+  const isTruncated = text?.length > maxLength;
+  const display = isTruncated ? text.slice(0, maxLength) + "…" : text;
+
+  if (!isTruncated) {
+    return <span className="text-sm text-muted-foreground">{display}</span>;
+  }
+
+  return (
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <span className="text-sm text-muted-foreground cursor-default">
+            {display}
+          </span>
+        </TooltipTrigger>
+        <TooltipContent className="max-w-xs whitespace-normal">
+          {text}
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
+  );
+}
 
 export default function SpecialitiesTable({
   specialities,
@@ -106,9 +140,10 @@ export default function SpecialitiesTable({
                   <span className="font-medium">{speciality.nombre}</span>
                 </TableCell>
                 <TableCell className="w-[300px] text-left">
-                  <span className="text-sm text-muted-foreground line-clamp-2">
-                    {speciality.descripcion}
-                  </span>
+                  <TruncatedCell
+                    text={speciality.descripcion}
+                    maxLength={100}
+                  />
                 </TableCell>
                 <TableCell className="w-[160px]">
                   <span className="font-medium">
