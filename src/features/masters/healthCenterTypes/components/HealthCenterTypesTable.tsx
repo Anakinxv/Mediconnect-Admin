@@ -18,22 +18,37 @@ import {
 } from "@/shared/ui/pagination";
 import MCServicesStatus from "@/shared/components/MCServicesStatus";
 import HealthCenterTypesActions from "./HealthCenterTypesActions";
-
-export interface HealthCenterType {
-  id: string;
-  name: string;
-  createdAt: string;
-  status: "active" | "inactive";
-}
+import type { HealthCenterTypeInterface } from "../hooks/useHealthCenterTypes";
+import { resolveStatus } from "../pages/HealthCenterTypesPage";
 
 interface HealthCenterTypesTableProps {
-  healthCenterTypes: HealthCenterType[];
-  onEdit?: (healthCenterType: HealthCenterType) => void;
-  onDelete?: (healthCenterType: HealthCenterType) => void;
-  onToggleStatus?: (healthCenterType: HealthCenterType) => void;
+  healthCenterTypes: HealthCenterTypeInterface[];
+  onEdit?: (item: HealthCenterTypeInterface) => void;
+  onDelete?: (item: HealthCenterTypeInterface) => void;
+  onToggleStatus?: (item: HealthCenterTypeInterface) => void;
 }
 
 const PAGE_SIZE = 10;
+
+const formatDate = (dateStr: string): string => {
+  if (!dateStr) return "-";
+  try {
+    const date = dateStr.includes("T")
+      ? new Date(dateStr)
+      : (() => {
+          const [d, m, y] = dateStr.split("/");
+          return new Date(Number(y), Number(m) - 1, Number(d));
+        })();
+    if (isNaN(date.getTime())) return dateStr;
+    return date.toLocaleDateString("es-DO", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    });
+  } catch {
+    return dateStr;
+  }
+};
 
 export default function HealthCenterTypesTable({
   healthCenterTypes,
@@ -62,13 +77,17 @@ export default function HealthCenterTypesTable({
           <TableRow>
             <TableHead className="w-[60px]">ID</TableHead>
             <TableHead className="w-[300px]">
-              {t("healthCenterTypes.table.name")}
+              {t("healthCenterTypes.table.name", "Nombre")}
             </TableHead>
             <TableHead className="w-[160px]">
-              {t("healthCenterTypes.table.createdAt")}
+              {t("healthCenterTypes.table.createdAt", "Fecha de Creación")}
             </TableHead>
-            <TableHead className="w-[130px]">{t("table.status")}</TableHead>
-            <TableHead className="w-[80px]">{t("table.actions")}</TableHead>
+            <TableHead className="w-[130px]">
+              {t("table.status", "Estado")}
+            </TableHead>
+            <TableHead className="w-[80px]">
+              {t("table.actions", "Acciones")}
+            </TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -79,13 +98,18 @@ export default function HealthCenterTypesTable({
                   {startIndex + index + 1}
                 </TableCell>
                 <TableCell className="w-[300px]">
-                  <span className="font-medium">{item.name}</span>
+                  <span className="font-medium">{item.nombre}</span>
                 </TableCell>
                 <TableCell className="w-[160px]">
-                  <span className="font-medium">{item.createdAt}</span>
+                  <span className="font-medium">
+                    {formatDate(item.creadoEn)}
+                  </span>
                 </TableCell>
                 <TableCell className="w-[130px]">
-                  <MCServicesStatus status={item.status} variant="default" />
+                  <MCServicesStatus
+                    status={resolveStatus(item)}
+                    variant="default"
+                  />
                 </TableCell>
                 <TableCell className="w-[80px]">
                   <HealthCenterTypesActions
@@ -103,7 +127,10 @@ export default function HealthCenterTypesTable({
                 colSpan={5}
                 className="text-center py-8 text-muted-foreground"
               >
-                {t("healthCenterTypes.table.noData")}
+                {t(
+                  "healthCenterTypes.table.noData",
+                  "No hay tipos de centros registrados",
+                )}
               </TableCell>
             </TableRow>
           )}

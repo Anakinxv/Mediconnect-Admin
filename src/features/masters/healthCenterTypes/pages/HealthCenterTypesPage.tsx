@@ -15,140 +15,211 @@ import {
   EmptyContent,
 } from "@/shared/ui/empty";
 import { Hospital, CheckCircle, XCircle, Filter, Plus } from "lucide-react";
-import HealthCenterTypesTable, {
-  type HealthCenterType,
-} from "../components/HealthCenterTypesTable";
+import HealthCenterTypesTable from "../components/HealthCenterTypesTable";
 import HealthCenterTypesFilters from "../components/HealthCenterTypesFilters";
 import CreateEditHealthCenterType from "../components/modals/CreateEditHealthCenterType";
+import { useGlobalUIStore } from "@/stores/useGlobalUIStore";
+import {
+  useGetHealthCenterTypes,
+  useCreateHealthCenterType,
+  useUpdateHealthCenterType,
+  useDeleteHealthCenterType,
+  useToggleHealthCenterTypeStatus,
+  type HealthCenterTypeInterface,
+  type GetHealthCenterTypesParams,
+} from "../hooks/useHealthCenterTypes";
 
-const mockHealthCenterTypes: HealthCenterType[] = [
-  { id: "1", name: "Hospital", createdAt: "10/01/2025", status: "active" },
-  { id: "2", name: "Clínica", createdAt: "12/01/2025", status: "active" },
-  {
-    id: "3",
-    name: "Centro de Diagnóstico",
-    createdAt: "15/01/2025",
-    status: "active",
-  },
-  {
-    id: "4",
-    name: "Laboratorio Clínico",
-    createdAt: "18/01/2025",
-    status: "active",
-  },
-  { id: "5", name: "Farmacia", createdAt: "20/01/2025", status: "active" },
-  {
-    id: "6",
-    name: "Centro Especializado",
-    createdAt: "22/01/2025",
-    status: "active",
-  },
-  {
-    id: "7",
-    name: "Consultorio Médico",
-    createdAt: "25/01/2025",
-    status: "active",
-  },
-  {
-    id: "8",
-    name: "Centro de Rehabilitación",
-    createdAt: "28/01/2025",
-    status: "inactive",
-  },
-  { id: "9", name: "Policlínica", createdAt: "30/01/2025", status: "active" },
-  {
-    id: "10",
-    name: "Unidad de Emergencias",
-    createdAt: "02/02/2025",
-    status: "inactive",
-  },
-];
+export const resolveStatus = (
+  item: HealthCenterTypeInterface,
+): "active" | "inactive" => {
+  const raw = (item.status ?? item.estado ?? "").toLowerCase();
+  return raw === "active" || raw === "activo" ? "active" : "inactive";
+};
+
+const parseDate = (dateStr: string) => {
+  if (!dateStr) return new Date(NaN);
+  if (dateStr.includes("T")) return new Date(dateStr);
+  const [day, month, year] = dateStr.split("/");
+  if (!day || !month || !year) return new Date(NaN);
+  return new Date(Number(year), Number(month) - 1, Number(day));
+};
+
+const matchesDateRange = (dateStr: string, range?: [Date, Date]): boolean => {
+  if (!range) return true;
+  const date = parseDate(dateStr);
+  date.setHours(0, 0, 0, 0);
+  const start = new Date(range[0]);
+  start.setHours(0, 0, 0, 0);
+  const end = new Date(range[1]);
+  end.setHours(23, 59, 59, 999);
+  return date >= start && date <= end;
+};
 
 function HealthCenterTypesPage() {
   const { t } = useTranslation("healthCenterType");
   const isMobile = useIsMobile();
+  const setToast = useGlobalUIStore((s) => s.setToast);
 
-  const [healthCenterTypes, setHealthCenterTypes] = useState<
-    HealthCenterType[]
-  >(mockHealthCenterTypes);
   const [searchTerm, setSearchTerm] = useState("");
   const [filters, setFilters] = useState({
     status: "all",
     dateRange: undefined as [Date, Date] | undefined,
   });
 
-  const activeFiltersCount = Object.entries(filters).filter(([key, value]) => {
-    if (key === "dateRange") return value !== undefined;
-    return value !== "all";
-  }).length;
+  const activeFiltersCount = useMemo(() => {
+    let count = 0;
+    if (filters.status !== "all") count++;
+    if (filters.dateRange) count++;
+    return count;
+  }, [filters]);
 
-  const clearFilters = () =>
+  const clearFilters = () => {
     setFilters({ status: "all", dateRange: undefined });
-
-  const parseDate = (dateStr: string) => {
-    const [day, month, year] = dateStr.split("/");
-    return new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+    setSearchTerm("");
   };
 
-  const matchesDateRange = (dateStr: string, range?: [Date, Date]): boolean => {
-    if (!range) return true;
-    const date = parseDate(dateStr);
-    date.setHours(0, 0, 0, 0);
-    const start = new Date(range[0]);
-    start.setHours(0, 0, 0, 0);
-    const end = new Date(range[1]);
-    end.setHours(23, 59, 59, 999);
-    return date >= start && date <= end;
-  };
+  const apiParams = useMemo<GetHealthCenterTypesParams>(
+    () => ({
+      nombre: searchTerm?.trim() || undefined,
+      estado:
+        filters.status === "active"
+          ? "Activo"
+          : filters.status === "inactive"
+            ? "Inactivo"
+            : undefined,
+      pagina: 1,
+      limite: 100,
+      translate_fields: ["nombre"],
+    }),
+    [searchTerm, filters.status],
+  );
 
+  const { data: apiHealthCenterTypes = [], isLoading } =
+    useGetHealthCenterTypes(apiParams);
+  const createMutation = useCreateHealthCenterType();
+  const updateMutation = useUpdateHealthCenterType();
+  const deleteMutation = useDeleteHealthCenterType();
+  const toggleMutation = useToggleHealthCenterTypeStatus();
+
+  const safeHealthCenterTypes = Array.isArray(apiHealthCenterTypes)
+    ? apiHealthCenterTypes
+    : [];
+
+  // Solo filtro client-side para dateRange (el API no lo soporta)
   const filteredHealthCenterTypes = useMemo(
     () =>
-      healthCenterTypes.filter((item) => {
-        const matchesSearch = item.name
-          .toLowerCase()
-          .includes(searchTerm.toLowerCase());
-        const matchesStatus =
-          filters.status === "all" || item.status === filters.status;
-        const matchesDate = matchesDateRange(item.createdAt, filters.dateRange);
-        return matchesSearch && matchesStatus && matchesDate;
-      }),
-    [searchTerm, filters, healthCenterTypes],
+      safeHealthCenterTypes.filter((item) =>
+        matchesDateRange(item.creadoEn, filters.dateRange),
+      ),
+    [safeHealthCenterTypes, filters.dateRange],
   );
 
   // ── Handlers ──────────────────────────────────────────────────────────────
 
   const handleCreate = (data: { name: string }) => {
-    const newItem: HealthCenterType = {
-      id: String(Date.now()),
-      name: data.name,
-      createdAt: new Date().toLocaleDateString("es-DO"),
-      status: "active",
-    };
-    setHealthCenterTypes((prev) => [newItem, ...prev]);
-  };
-
-  const handleEdit = (updated: HealthCenterType) => {
-    setHealthCenterTypes((prev) =>
-      prev.map((item) => (item.id === updated.id ? updated : item)),
+    createMutation.mutate(
+      { nombre: data.name, estado: "Activo" },
+      {
+        onSuccess: () =>
+          setToast({
+            message: t(
+              "healthCenterTypes.toast.createSuccess",
+              "Tipo de centro creado correctamente",
+            ),
+            type: "success",
+            open: true,
+          }),
+        onError: () =>
+          setToast({
+            message: t(
+              "healthCenterTypes.toast.createError",
+              "Error al crear el tipo de centro",
+            ),
+            type: "error",
+            open: true,
+          }),
+      },
     );
   };
 
-  const handleDelete = (target: HealthCenterType) => {
-    setHealthCenterTypes((prev) =>
-      prev.filter((item) => item.id !== target.id),
+  const handleEdit = (updated: HealthCenterTypeInterface) => {
+    updateMutation.mutate(
+      { id: updated.id, nombre: updated.nombre },
+      {
+        onSuccess: () =>
+          setToast({
+            message: t(
+              "healthCenterTypes.toast.editSuccess",
+              "Tipo de centro actualizado correctamente",
+            ),
+            type: "success",
+            open: true,
+          }),
+        onError: () =>
+          setToast({
+            message: t(
+              "healthCenterTypes.toast.editError",
+              "Error al actualizar el tipo de centro",
+            ),
+            type: "error",
+            open: true,
+          }),
+      },
     );
   };
 
-  const handleToggleStatus = (target: HealthCenterType) => {
-    setHealthCenterTypes((prev) =>
-      prev.map((item) =>
-        item.id === target.id
-          ? {
-              ...item,
-              status: item.status === "active" ? "inactive" : "active",
-            }
-          : item,
-      ),
+  const handleDelete = (target: HealthCenterTypeInterface) => {
+    deleteMutation.mutate(target.id, {
+      onSuccess: () =>
+        setToast({
+          message: t(
+            "healthCenterTypes.toast.deleteSuccess",
+            `"${target.nombre}" fue eliminado correctamente`,
+          ),
+          type: "success",
+          open: true,
+        }),
+      onError: () =>
+        setToast({
+          message: t(
+            "healthCenterTypes.toast.deleteError",
+            "Error al eliminar el tipo de centro",
+          ),
+          type: "error",
+          open: true,
+        }),
+    });
+  };
+
+  const handleToggleStatus = (target: HealthCenterTypeInterface) => {
+    const isActive = resolveStatus(target) === "active";
+    toggleMutation.mutate(
+      { id: target.id, estado: isActive ? "Inactivo" : "Activo" },
+      {
+        onSuccess: () =>
+          setToast({
+            message: isActive
+              ? t(
+                  "healthCenterTypes.toast.deactivated",
+                  `"${target.nombre}" fue desactivado correctamente`,
+                )
+              : t(
+                  "healthCenterTypes.toast.activated",
+                  `"${target.nombre}" fue activado correctamente`,
+                ),
+            type: "success",
+            open: true,
+          }),
+        onError: () =>
+          setToast({
+            message: t(
+              "healthCenterTypes.toast.statusError",
+              "Error al cambiar el estado",
+            ),
+            type: "error",
+            open: true,
+          }),
+      },
     );
   };
 
@@ -157,7 +228,10 @@ function HealthCenterTypesPage() {
   const searchComponent = (
     <div className="w-full sm:w-auto sm:min-w-[200px] lg:min-w-[250px]">
       <MCFilterInput
-        placeholder={t("healthCenterTypes.searchPlaceholder")}
+        placeholder={t(
+          "healthCenterTypes.searchPlaceholder",
+          "Buscar tipo de centro...",
+        )}
         value={searchTerm}
         onChange={setSearchTerm}
       />
@@ -169,20 +243,32 @@ function HealthCenterTypesPage() {
       onClick={async () => {
         await MCGeneratePDF({
           columns: [
-            { title: t("healthCenterTypes.table.name"), key: "name" },
-            { title: t("table.status"), key: "status" },
-            { title: t("healthCenterTypes.table.createdAt"), key: "createdAt" },
+            {
+              title: t("healthCenterTypes.table.name", "Nombre"),
+              key: "nombre",
+            },
+            { title: t("table.status", "Estado"), key: "estadoLabel" },
+            {
+              title: t(
+                "healthCenterTypes.table.createdAt",
+                "Fecha de Creación",
+              ),
+              key: "creadoEn",
+            },
           ],
           data: filteredHealthCenterTypes.map((item) => ({
             ...item,
-            status:
-              item.status === "active"
-                ? t("healthCenterTypes.status.active")
-                : t("healthCenterTypes.status.inactive"),
+            estadoLabel:
+              resolveStatus(item) === "active"
+                ? t("healthCenterTypes.status.active", "Activo")
+                : t("healthCenterTypes.status.inactive", "Inactivo"),
           })),
           fileName: "tipos-de-centro-de-salud",
-          title: t("healthCenterTypes.title"),
-          subtitle: t("healthCenterTypes.subtitle"),
+          title: t("healthCenterTypes.title", "Tipos de Centros de Salud"),
+          subtitle: t(
+            "healthCenterTypes.subtitle",
+            "Listado de tipos de centros de salud",
+          ),
         });
       }}
     />
@@ -206,7 +292,7 @@ function HealthCenterTypesPage() {
     <CreateEditHealthCenterType onConfirm={handleCreate}>
       <MCButton size="sm" className="gap-2">
         <Plus className="h-4 w-4" />
-        {!isMobile && t("healthCenterTypes.create")}
+        {!isMobile && t("healthCenterTypes.create", "Nuevo Tipo")}
       </MCButton>
     </CreateEditHealthCenterType>
   );
@@ -225,8 +311,11 @@ function HealthCenterTypesPage() {
               className={`font-semibold ${isMobile ? "text-lg" : "text-xl"}`}
             >
               {activeFiltersCount > 0
-                ? t("healthCenterTypes.empty.noResults")
-                : t("healthCenterTypes.empty.noHealthCenterTypes")}
+                ? t("healthCenterTypes.empty.noResults", "Sin resultados")
+                : t(
+                    "healthCenterTypes.empty.noHealthCenterTypes",
+                    "No hay tipos de centros",
+                  )}
             </EmptyTitle>
           </span>
           <EmptyDescription
@@ -235,8 +324,14 @@ function HealthCenterTypesPage() {
             }`}
           >
             {activeFiltersCount > 0
-              ? t("healthCenterTypes.empty.noResultsDescription")
-              : t("healthCenterTypes.empty.noHealthCenterTypesDescription")}
+              ? t(
+                  "healthCenterTypes.empty.noResultsDescription",
+                  "No hay tipos que coincidan con los filtros aplicados.",
+                )
+              : t(
+                  "healthCenterTypes.empty.noHealthCenterTypesDescription",
+                  "Aún no se han registrado tipos de centros. Crea el primero.",
+                )}
           </EmptyDescription>
         </div>
       </EmptyHeader>
@@ -244,13 +339,13 @@ function HealthCenterTypesPage() {
         <div className="flex flex-col items-center gap-3">
           {activeFiltersCount > 0 ? (
             <MCButton variant="outline" onClick={clearFilters} size="sm">
-              {t("healthCenterTypes.empty.clearFilters")}
+              {t("healthCenterTypes.empty.clearFilters", "Limpiar filtros")}
             </MCButton>
           ) : (
             <CreateEditHealthCenterType onConfirm={handleCreate}>
               <MCButton size="sm" className="gap-2">
                 <Plus className="h-4 w-4" />
-                {t("healthCenterTypes.create")}
+                {t("healthCenterTypes.create", "Nuevo Tipo")}
               </MCButton>
             </CreateEditHealthCenterType>
           )}
@@ -273,28 +368,41 @@ function HealthCenterTypesPage() {
 
   const metrics = [
     {
-      title: t("healthCenterTypes.metrics.total"),
-      value: healthCenterTypes.length,
+      title: t("healthCenterTypes.metrics.total", "Total"),
+      value: safeHealthCenterTypes.length,
       icon: <Hospital size={30} />,
-      subtitle: t("healthCenterTypes.metrics.totalSubtitle"),
+      subtitle: t(
+        "healthCenterTypes.metrics.totalSubtitle",
+        "Tipos registrados",
+      ),
     },
     {
-      title: t("healthCenterTypes.metrics.active"),
-      value: healthCenterTypes.filter((i) => i.status === "active").length,
+      title: t("healthCenterTypes.metrics.active", "Activos"),
+      value: safeHealthCenterTypes.filter(
+        (item) => resolveStatus(item) === "active",
+      ).length,
       icon: <CheckCircle size={30} />,
-      subtitle: t("healthCenterTypes.metrics.activeSubtitle"),
+      subtitle: t(
+        "healthCenterTypes.metrics.activeSubtitle",
+        "Disponibles para centros",
+      ),
     },
     {
-      title: t("healthCenterTypes.metrics.inactive"),
-      value: healthCenterTypes.filter((i) => i.status === "inactive").length,
+      title: t("healthCenterTypes.metrics.inactive", "Inactivos"),
+      value: safeHealthCenterTypes.filter(
+        (item) => resolveStatus(item) === "inactive",
+      ).length,
       icon: <XCircle size={30} />,
-      subtitle: t("healthCenterTypes.metrics.inactiveSubtitle"),
+      subtitle: t(
+        "healthCenterTypes.metrics.inactiveSubtitle",
+        "No disponibles",
+      ),
     },
   ];
 
   return (
     <MCTablesLayouts
-      title={t("healthCenterTypes.title")}
+      title={t("healthCenterTypes.title", "Tipos de Centros de Salud")}
       metrics={metrics}
       tableComponent={tableComponent}
       searchComponent={searchComponent}

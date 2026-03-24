@@ -19,26 +19,38 @@ export default function HealthCenterTypesFilters({
   const { t } = useTranslation("healthCenterType");
 
   const statusOptions = [
-    { value: "all", label: t("healthCenterTypes.filters.allStatus") },
-    { value: "active", label: t("healthCenterTypes.status.active") },
-    { value: "inactive", label: t("healthCenterTypes.status.inactive") },
+    {
+      value: "all",
+      label: t("healthCenterTypes.filters.allStatus", "Todos los estados"),
+    },
+    {
+      value: "active",
+      label: t("healthCenterTypes.status.active", "Activo"),
+    },
+    {
+      value: "inactive",
+      label: t("healthCenterTypes.status.inactive", "Inactivo"),
+    },
   ];
 
   return (
     <div className="flex flex-col gap-4">
       <MCFilterSelect
         name="status"
-        label={t("table.status")}
+        label={t("table.status", "Estado")}
         value={filters.status}
         onChange={(value) =>
           onFiltersChange({ status: Array.isArray(value) ? value[0] : value })
         }
         options={statusOptions}
-        placeholder={t("healthCenterTypes.filters.selectStatus")}
+        placeholder={t(
+          "healthCenterTypes.filters.selectStatus",
+          "Seleccionar estado",
+        )}
         size="small"
       />
       <MCFilterDates
-        label={t("healthCenterTypes.table.createdAt")}
+        label={t("healthCenterTypes.table.createdAt", "Fecha de Creación")}
         value={filters.dateRange}
         onChange={(dateRange) => onFiltersChange({ dateRange })}
         size="small"

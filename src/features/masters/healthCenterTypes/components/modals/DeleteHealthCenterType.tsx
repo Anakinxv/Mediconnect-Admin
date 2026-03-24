@@ -1,10 +1,9 @@
 import { useTranslation } from "react-i18next";
 import { MCModalBase } from "@/shared/components/MCModalBase";
-import { useGlobalUIStore } from "@/stores/useGlobalUIStore";
-import type { HealthCenterType } from "../HealthCenterTypesTable";
+import type { HealthCenterTypeInterface } from "../../hooks/useHealthCenterTypes";
 
 interface DeleteHealthCenterTypeProps {
-  healthCenterType: HealthCenterType;
+  healthCenterType: HealthCenterTypeInterface;
   onConfirm: () => void;
   children: React.ReactNode;
 }
@@ -15,41 +14,25 @@ export default function DeleteHealthCenterType({
   children,
 }: DeleteHealthCenterTypeProps) {
   const { t } = useTranslation("healthCenterType");
-  const setToast = useGlobalUIStore((s) => s.setToast);
-
-  const handleConfirm = () => {
-    onConfirm();
-    setToast({
-      message: t("healthCenterTypes.toast.deleteSuccess", {
-        name: healthCenterType.name,
-      }),
-      type: "success",
-      open: true,
-    });
-  };
-
-  const handleSecondary = () => {
-    setToast({
-      message: t("healthCenterTypes.toast.deleteAborted"),
-      type: "info",
-      open: true,
-    });
-  };
 
   return (
     <MCModalBase
       id={`delete-health-center-type-${healthCenterType.id}`}
-      title={t("healthCenterTypes.modal.deleteTitle")}
+      title={t(
+        "healthCenterTypes.modal.deleteTitle",
+        "Eliminar Tipo de Centro",
+      )}
       description={t("healthCenterTypes.modal.deleteDescription", {
-        name: healthCenterType.name,
+        name: healthCenterType.nombre,
+        defaultValue:
+          '¿Estás seguro de que deseas eliminar "{{name}}"? Esta acción no se puede deshacer.',
       })}
       trigger={children}
       variant="warning"
       size="smWide"
-      onConfirm={handleConfirm}
-      onSecondary={handleSecondary}
-      confirmText={t("table.delete")}
-      secondaryText={t("table.cancel")}
+      onConfirm={onConfirm}
+      confirmText={t("table.delete", "Eliminar")}
+      secondaryText={t("table.cancel", "Cancelar")}
     >
       <></>
     </MCModalBase>

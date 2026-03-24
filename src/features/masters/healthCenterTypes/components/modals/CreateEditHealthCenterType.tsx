@@ -3,12 +3,11 @@ import { useTranslation } from "react-i18next";
 import { MCModalBase } from "@/shared/components/MCModalBase";
 import MCFormWrapper from "@/shared/components/forms/MCFormWrapper";
 import MCInput from "@/shared/components/forms/MCInput";
-import { useGlobalUIStore } from "@/stores/useGlobalUIStore";
 import { createHealthCenterTypeFormSchema } from "@/schema/healthCenterTypes.schema";
-import type { HealthCenterType } from "../HealthCenterTypesTable";
+import type { HealthCenterTypeInterface } from "../../hooks/useHealthCenterTypes";
 
 interface CreateEditHealthCenterTypeProps {
-  healthCenterType?: HealthCenterType | null;
+  healthCenterType?: HealthCenterTypeInterface | null;
   onConfirm: (data: { name: string }) => void;
   children: React.ReactNode;
 }
@@ -19,30 +18,8 @@ export default function CreateEditHealthCenterType({
   children,
 }: CreateEditHealthCenterTypeProps) {
   const { t } = useTranslation("healthCenterType");
-  const setToast = useGlobalUIStore((s) => s.setToast);
   const isEdit = !!healthCenterType;
   const submitRef = useRef<HTMLButtonElement>(null);
-
-  const handleConfirm = () => submitRef.current?.click();
-
-  const handleSecondary = () => {
-    setToast({
-      message: t("healthCenterTypes.toast.aborted"),
-      type: "info",
-      open: true,
-    });
-  };
-
-  const onSubmit = (values: { name: string }) => {
-    onConfirm(values);
-    setToast({
-      message: isEdit
-        ? t("healthCenterTypes.toast.editSuccess")
-        : t("healthCenterTypes.toast.createSuccess"),
-      type: "success",
-      open: true,
-    });
-  };
 
   return (
     <MCModalBase
@@ -53,32 +30,42 @@ export default function CreateEditHealthCenterType({
       }
       title={
         isEdit
-          ? t("healthCenterTypes.modal.editTitle")
-          : t("healthCenterTypes.modal.createTitle")
+          ? t("healthCenterTypes.modal.editTitle", "Editar Tipo de Centro")
+          : t("healthCenterTypes.modal.createTitle", "Nuevo Tipo de Centro")
       }
       description={
         isEdit
-          ? t("healthCenterTypes.modal.editDescription")
-          : t("healthCenterTypes.modal.createDescription")
+          ? t(
+              "healthCenterTypes.modal.editDescription",
+              "Modifica los datos del tipo de centro.",
+            )
+          : t(
+              "healthCenterTypes.modal.createDescription",
+              "Completa los datos para registrar un nuevo tipo de centro.",
+            )
       }
       trigger={children}
       variant="decide"
       size="smWide"
-      onConfirm={handleConfirm}
-      onSecondary={handleSecondary}
-      confirmText={isEdit ? t("table.save") : t("table.create")}
-      secondaryText={t("table.cancel")}
+      onConfirm={() => submitRef.current?.click()}
+      confirmText={
+        isEdit ? t("table.save", "Guardar Cambios") : t("table.create", "Crear")
+      }
+      secondaryText={t("table.cancel", "Cancelar")}
     >
       <MCFormWrapper
-        defaultValues={{ name: healthCenterType?.name ?? "" }}
+        defaultValues={{ name: healthCenterType?.nombre ?? "" }}
         schema={createHealthCenterTypeFormSchema(t)}
-        onSubmit={onSubmit}
+        onSubmit={onConfirm}
         className="flex flex-col gap-4"
       >
         <MCInput
           name="name"
-          label={t("healthCenterTypes.table.name")}
-          placeholder={t("healthCenterTypes.form.namePlaceholder")}
+          label={t("healthCenterTypes.table.name", "Nombre")}
+          placeholder={t(
+            "healthCenterTypes.form.namePlaceholder",
+            "Ej: Hospital",
+          )}
           required
         />
         <button ref={submitRef} type="submit" className="hidden" />
