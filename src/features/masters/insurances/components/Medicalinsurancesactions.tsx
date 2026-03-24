@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
   MoreHorizontal,
   Pencil,
@@ -8,32 +9,32 @@ import {
 import { Button } from "@/shared/ui/button";
 import { Popover, PopoverTrigger, PopoverContent } from "@/shared/ui/popover";
 import { useTranslation } from "react-i18next";
-import type { MedicalInsurance } from "../components/Medicalinsurancestable";
-import type { InsuranceTypeOption } from "../components/Medicalinsurancesfilters";
-import CreateEditMedicalInsurance from "../components/modals/Createeditmedicalinsurance";
-import ToggleStatusMedicalInsurance from "../components/modals/Togglestatusmedicalinsurance";
-import DeleteMedicalInsurance from "../components/modals/Deletemedicalinsurance";
+import type { InsuranceInterface } from "../hooks/useInsurance";
+import { resolveStatus } from "../pages/Medicalinsurancespage";
+import CreateEditMedicalInsurance from "./modals/Createeditmedicalinsurance";
+import ToggleStatusMedicalInsurance from "./modals/Togglestatusmedicalinsurance";
+import DeleteMedicalInsurance from "./modals/Deletemedicalinsurance";
 
 interface MedicalInsurancesActionsProps {
-  medicalInsurance: MedicalInsurance;
-  insuranceTypeOptions: InsuranceTypeOption[];
-  onEdit?: (medicalInsurance: MedicalInsurance) => void;
-  onDelete?: (medicalInsurance: MedicalInsurance) => void;
-  onToggleStatus?: (medicalInsurance: MedicalInsurance) => void;
+  insurance: InsuranceInterface;
+  onEdit?: (insurance: InsuranceInterface) => void;
+  onDelete?: (insurance: InsuranceInterface) => void;
+  onToggleStatus?: (insurance: InsuranceInterface) => void;
 }
 
 export default function MedicalInsurancesActions({
-  medicalInsurance,
-  insuranceTypeOptions,
+  insurance,
   onEdit,
   onDelete,
   onToggleStatus,
 }: MedicalInsurancesActionsProps) {
   const { t } = useTranslation("medicalInsurance");
-  const isActive = medicalInsurance.status === "active";
+  const [open, setOpen] = useState(false);
+  const isActive = resolveStatus(insurance) === "active";
+  const close = () => setOpen(false);
 
   return (
-    <Popover>
+    <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button
           variant="ghost"
@@ -47,9 +48,11 @@ export default function MedicalInsurancesActions({
         <div className="flex flex-col gap-1 p-2">
           {/* Editar */}
           <CreateEditMedicalInsurance
-            medicalInsurance={medicalInsurance}
-            insuranceTypeOptions={insuranceTypeOptions}
-            onConfirm={(data) => onEdit?.({ ...medicalInsurance, ...data })}
+            insurance={insurance}
+            onConfirm={(data) => {
+              onEdit?.({ ...insurance, ...data });
+              close();
+            }}
           >
             <div className="p-2 cursor-pointer rounded-lg hover:bg-accent/70 dark:hover:text-background transition text-sm text-center flex items-center justify-center gap-2">
               <Pencil className="h-4 w-4" />
@@ -59,8 +62,11 @@ export default function MedicalInsurancesActions({
 
           {/* Cambiar Estado */}
           <ToggleStatusMedicalInsurance
-            medicalInsurance={medicalInsurance}
-            onConfirm={() => onToggleStatus?.(medicalInsurance)}
+            insurance={insurance}
+            onConfirm={() => {
+              onToggleStatus?.(insurance);
+              close();
+            }}
           >
             <div
               className={`p-2 cursor-pointer rounded-lg transition text-sm text-center flex items-center justify-center gap-2 ${
@@ -80,8 +86,11 @@ export default function MedicalInsurancesActions({
 
           {/* Eliminar */}
           <DeleteMedicalInsurance
-            medicalInsurance={medicalInsurance}
-            onConfirm={() => onDelete?.(medicalInsurance)}
+            insurance={insurance}
+            onConfirm={() => {
+              onDelete?.(insurance);
+              close();
+            }}
           >
             <div className="p-2 cursor-pointer rounded-lg hover:bg-destructive/10 text-destructive transition text-sm text-center flex items-center justify-center gap-2">
               <Trash2 className="h-4 w-4" />

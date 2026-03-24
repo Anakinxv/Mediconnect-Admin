@@ -19,31 +19,40 @@ import {
 } from "@/shared/ui/pagination";
 import MCServicesStatus from "@/shared/components/MCServicesStatus";
 import MedicalInsurancesActions from "./Medicalinsurancesactions";
-import type { InsuranceTypeOption } from "./Medicalinsurancesfilters";
-
-export interface MedicalInsurance {
-  id: string;
-  name: string;
-  insuranceTypeId: string;
-  insuranceTypeName: string;
-  imageUrl?: string;
-  createdAt: string;
-  status: "active" | "inactive";
-}
+import type { InsuranceInterface } from "../hooks/useInsurance";
+import { resolveStatus } from "../pages/Medicalinsurancespage";
 
 interface MedicalInsurancesTableProps {
-  medicalInsurances: MedicalInsurance[];
-  insuranceTypeOptions: InsuranceTypeOption[];
-  onEdit?: (medicalInsurance: MedicalInsurance) => void;
-  onDelete?: (medicalInsurance: MedicalInsurance) => void;
-  onToggleStatus?: (medicalInsurance: MedicalInsurance) => void;
+  insurances: InsuranceInterface[];
+  onEdit?: (insurance: InsuranceInterface) => void;
+  onDelete?: (insurance: InsuranceInterface) => void;
+  onToggleStatus?: (insurance: InsuranceInterface) => void;
 }
 
 const PAGE_SIZE = 10;
 
+const formatDate = (dateStr: string): string => {
+  if (!dateStr) return "-";
+  try {
+    const date = dateStr.includes("T")
+      ? new Date(dateStr)
+      : (() => {
+          const [d, m, y] = dateStr.split("/");
+          return new Date(Number(y), Number(m) - 1, Number(d));
+        })();
+    if (isNaN(date.getTime())) return dateStr;
+    return date.toLocaleDateString("es-DO", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    });
+  } catch {
+    return dateStr;
+  }
+};
+
 export default function MedicalInsurancesTable({
-  medicalInsurances,
-  insuranceTypeOptions,
+  insurances,
   onEdit,
   onDelete,
   onToggleStatus,
@@ -51,27 +60,21 @@ export default function MedicalInsurancesTable({
   const { t } = useTranslation("medicalInsurance");
   const [page, setPage] = useState(1);
 
-  const totalPages = Math.ceil(medicalInsurances.length / PAGE_SIZE);
+  const totalPages = Math.ceil(insurances.length / PAGE_SIZE);
   const startIndex = (page - 1) * PAGE_SIZE;
-  const paginatedData = medicalInsurances.slice(
-    startIndex,
-    startIndex + PAGE_SIZE,
-  );
+  const paginatedData = insurances.slice(startIndex, startIndex + PAGE_SIZE);
 
   useEffect(() => {
     if (page > totalPages && totalPages > 0) setPage(1);
-  }, [medicalInsurances.length, page, totalPages]);
+  }, [insurances.length, page, totalPages]);
 
   return (
     <div className="w-full overflow-x-auto">
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead className="w-[260px]">
+            <TableHead className="w-[50px]">
               {t("medicalInsurances.table.insurance")}
-            </TableHead>
-            <TableHead className="w-[180px]">
-              {t("medicalInsurances.table.insuranceType")}
             </TableHead>
             <TableHead className="w-[160px]">
               {t("medicalInsurances.table.createdAt")}
@@ -84,61 +87,46 @@ export default function MedicalInsurancesTable({
           {paginatedData.length > 0 ? (
             paginatedData.map((item) => (
               <TableRow key={item.id}>
-                {/* Nombre + imagen */}
-                <TableCell className="w-[260px]">
-                  <div className="flex items-center gap-3">
-                    <div className="h-12 w-12 relative overflow-hidden rounded-full border border-primary/10 bg-muted flex items-center justify-center shrink-0">
-                      {item.imageUrl ? (
-                        <Avatar className="h-12 w-12 rounded-full overflow-hidden">
-                          <AvatarImage
-                            src={item.imageUrl}
-                            alt={item.name}
-                            className="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
-                          />
-                          <AvatarFallback className="bg-primary/10 text-primary font-medium text-sm">
-                            {item.name
-                              .split(" ")
-                              .map((n) => n[0])
-                              .join("")}
-                          </AvatarFallback>
-                        </Avatar>
-                      ) : (
-                        <Avatar className="h-12 w-12 rounded-full">
-                          <AvatarFallback className="bg-primary/10 text-primary font-medium text-sm">
-                            {item.name
-                              .split(" ")
-                              .map((n) => n[0])
-                              .join("")}
-                          </AvatarFallback>
-                        </Avatar>
-                      )}
+                <TableCell className="w-[50px]">
+                  <div className="flex items-center gap-3 rounded-full px-2 py-1">
+                    <div className="relative overflow-hidden rounded-full border border-primary/10 bg-muted flex items-center justify-center shrink-0">
+                      <Avatar className="h-12 w-12 rounded-full overflow-hidden">
+                        <AvatarImage
+                          src={item.urlImage ?? ""}
+                          alt={item.nombre}
+                          className="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
+                          onError={(e) => {
+                            e.currentTarget.style.display = "none";
+                          }}
+                        />
+                        <AvatarFallback className="bg-primary/10 text-primary font-medium text-sm">
+                          {item.nombre
+                            .split(" ")
+                            .map((n) => n[0])
+                            .join("")}
+                        </AvatarFallback>
+                      </Avatar>
                     </div>
-                    <span className="font-medium">{item.name}</span>
+                    <span className="font-medium">{item.nombre}</span>
                   </div>
                 </TableCell>
 
-                {/* Tipo de Seguro */}
-                <TableCell className="w-[180px]">
-                  <span className="font-medium text-primary">
-                    {item.insuranceTypeName}
+                <TableCell className="w-[160px]">
+                  <span className="font-medium">
+                    {formatDate(item.creadoEn)}
                   </span>
                 </TableCell>
 
-                {/* Fecha */}
-                <TableCell className="w-[160px]">
-                  <span className="font-medium">{item.createdAt}</span>
-                </TableCell>
-
-                {/* Estado */}
                 <TableCell className="w-[130px]">
-                  <MCServicesStatus status={item.status} variant="default" />
+                  <MCServicesStatus
+                    status={resolveStatus(item)}
+                    variant="default"
+                  />
                 </TableCell>
 
-                {/* Acciones */}
                 <TableCell className="w-[80px]">
                   <MedicalInsurancesActions
-                    medicalInsurance={item}
-                    insuranceTypeOptions={insuranceTypeOptions}
+                    insurance={item}
                     onEdit={onEdit}
                     onDelete={onDelete}
                     onToggleStatus={onToggleStatus}
@@ -149,7 +137,7 @@ export default function MedicalInsurancesTable({
           ) : (
             <TableRow>
               <TableCell
-                colSpan={5}
+                colSpan={4} // Cambia a 4 columnas
                 className="text-center py-8 text-muted-foreground"
               >
                 {t("medicalInsurances.table.noData")}

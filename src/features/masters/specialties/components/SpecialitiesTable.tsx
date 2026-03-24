@@ -81,15 +81,15 @@ export default function SpecialitiesTable({
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead className="w-[60px]">ID</TableHead>
+            {/* <TableHead className="w-[60px]">ID</TableHead> */}
             <TableHead className="w-[220px]">
               {t("specialities.table.name", "Nombre")}
             </TableHead>
             <TableHead className="w-[300px]">
-              {t("specialities.table.description", "Descripción")}
+              {t("specialties.table.description", "Descripción")}
             </TableHead>
             <TableHead className="w-[160px]">
-              {t("specialities.table.createdAt", "Fecha de Creación")}
+              {t("specialties.table.createdAt", "Fecha de Creación")}
             </TableHead>
             <TableHead className="w-[130px]">
               {t("table.status", "Estado")}
@@ -103,9 +103,9 @@ export default function SpecialitiesTable({
           {paginatedData.length > 0 ? (
             paginatedData.map((speciality, index) => (
               <TableRow key={speciality.id}>
-                <TableCell className="text-muted-foreground text-sm">
+                {/* <TableCell className="text-muted-foreground text-sm">
                   {speciality.id}
-                </TableCell>
+                </TableCell> */}
                 <TableCell className="w-[220px]">
                   <span className="font-medium">{speciality.nombre}</span>
                 </TableCell>
@@ -138,11 +138,11 @@ export default function SpecialitiesTable({
           ) : (
             <TableRow>
               <TableCell
-                colSpan={6}
+                colSpan={5} // Cambia a 5 columnas
                 className="text-center py-8 text-muted-foreground"
               >
                 {t(
-                  "specialities.table.noData",
+                  "specialties.table.noData",
                   "No hay especialidades registradas",
                 )}
               </TableCell>
