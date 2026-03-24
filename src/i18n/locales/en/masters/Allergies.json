@@ -8,7 +8,8 @@
     "delete": "Delete",
     "edit": "Edit",
     "deactivate": "Deactivate",
-    "activate": "Activate"
+    "activate": "Activate",
+    "registrationDate": "Creation Date"
   },
   "allergies": {
     "title": "Allergies",
@@ -21,13 +22,19 @@
       "createdAt": "Creation Date",
       "noData": "No allergies registered"
     },
-    "status": { "active": "Active", "inactive": "Inactive" },
-    "filters": { "allStatus": "All statuses", "selectStatus": "Select status" },
+    "status": {
+      "active": "Active",
+      "inactive": "Inactive"
+    },
+    "filters": {
+      "allStatus": "All statuses",
+      "selectStatus": "Select status"
+    },
     "metrics": {
       "total": "Total",
       "totalSubtitle": "Registered allergies",
       "active": "Active",
-      "activeSubtitle": "Currently available",
+      "activeSubtitle": "Available in catalog",
       "inactive": "Inactive",
       "inactiveSubtitle": "Not available"
     },
@@ -37,9 +44,9 @@
       "editTitle": "Edit Allergy",
       "editDescription": "Modify the allergy details.",
       "activateTitle": "Activate Allergy",
-      "activateDescription": "Are you sure you want to activate \"{{name}}\"?",
+      "activateDescription": "Are you sure you want to activate \"{{name}}\"? It will be available again in the catalog.",
       "deactivateTitle": "Deactivate Allergy",
-      "deactivateDescription": "Are you sure you want to deactivate \"{{name}}\"?",
+      "deactivateDescription": "Are you sure you want to deactivate \"{{name}}\"? It will not be available in the catalog while inactive.",
       "deleteTitle": "Delete Allergy",
       "deleteDescription": "Are you sure you want to delete \"{{name}}\"? This action cannot be undone."
     },
@@ -55,10 +62,14 @@
     },
     "toast": {
       "createSuccess": "Allergy created successfully",
+      "createError": "Error creating the allergy",
       "editSuccess": "Allergy updated successfully",
+      "editError": "Error updating the allergy",
       "activated": "\"{{name}}\" was activated successfully",
       "deactivated": "\"{{name}}\" was deactivated successfully",
+      "statusError": "Error changing the status",
       "deleteSuccess": "\"{{name}}\" was deleted successfully",
+      "deleteError": "Error deleting the allergy",
       "aborted": "Operation cancelled",
       "statusAborted": "Status change cancelled",
       "deleteAborted": "Deletion cancelled"

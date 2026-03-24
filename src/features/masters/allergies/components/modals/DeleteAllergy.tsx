@@ -1,10 +1,9 @@
 import { useTranslation } from "react-i18next";
 import { MCModalBase } from "@/shared/components/MCModalBase";
-import { useGlobalUIStore } from "@/stores/useGlobalUIStore";
-import type { Allergy } from "../AllergiesTable";
+import type { AllergyInterface } from "../../hooks/useAllergies";
 
 interface DeleteAllergyProps {
-  allergy: Allergy;
+  allergy: AllergyInterface;
   onConfirm: () => void;
   children: React.ReactNode;
 }
@@ -15,39 +14,22 @@ export default function DeleteAllergy({
   children,
 }: DeleteAllergyProps) {
   const { t } = useTranslation("allergies");
-  const setToast = useGlobalUIStore((s) => s.setToast);
-
-  const handleConfirm = () => {
-    onConfirm();
-    setToast({
-      message: t("allergies.toast.deleteSuccess", { name: allergy.name }),
-      type: "success",
-      open: true,
-    });
-  };
-
-  const handleSecondary = () => {
-    setToast({
-      message: t("allergies.toast.deleteAborted"),
-      type: "info",
-      open: true,
-    });
-  };
 
   return (
     <MCModalBase
       id={`delete-allergy-${allergy.id}`}
-      title={t("allergies.modal.deleteTitle")}
+      title={t("allergies.modal.deleteTitle", "Eliminar Alergia")}
       description={t("allergies.modal.deleteDescription", {
-        name: allergy.name,
+        name: allergy.nombre,
+        defaultValue:
+          '¿Estás seguro de que deseas eliminar "{{name}}"? Esta acción no se puede deshacer.',
       })}
       trigger={children}
       variant="warning"
       size="smWide"
-      onConfirm={handleConfirm}
-      onSecondary={handleSecondary}
-      confirmText={t("table.delete")}
-      secondaryText={t("table.cancel")}
+      onConfirm={onConfirm}
+      confirmText={t("table.delete", "Eliminar")}
+      secondaryText={t("table.cancel", "Cancelar")}
     >
       <></>
     </MCModalBase>

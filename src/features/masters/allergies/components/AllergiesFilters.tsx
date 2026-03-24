@@ -16,26 +16,29 @@ export default function AllergiesFilters({
   const { t } = useTranslation("allergies");
 
   const statusOptions = [
-    { value: "all", label: t("allergies.filters.allStatus") },
-    { value: "active", label: t("allergies.status.active") },
-    { value: "inactive", label: t("allergies.status.inactive") },
+    {
+      value: "all",
+      label: t("allergies.filters.allStatus", "Todos los estados"),
+    },
+    { value: "active", label: t("allergies.status.active", "Activa") },
+    { value: "inactive", label: t("allergies.status.inactive", "Inactiva") },
   ];
 
   return (
     <div className="flex flex-col gap-4">
       <MCFilterSelect
         name="status"
-        label={t("table.status")}
+        label={t("table.status", "Estado")}
         value={filters.status}
         onChange={(value) =>
           onFiltersChange({ status: Array.isArray(value) ? value[0] : value })
         }
         options={statusOptions}
-        placeholder={t("allergies.filters.selectStatus")}
+        placeholder={t("allergies.filters.selectStatus", "Seleccionar estado")}
         size="small"
       />
       <MCFilterDates
-        label={t("allergies.table.createdAt")}
+        label={t("allergies.table.createdAt", "Fecha de Creación")}
         value={filters.dateRange}
         onChange={(dateRange) => onFiltersChange({ dateRange })}
         size="small"

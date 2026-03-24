@@ -8,7 +8,8 @@
     "delete": "Eliminar",
     "edit": "Editar",
     "deactivate": "Desactivar",
-    "activate": "Activar"
+    "activate": "Activar",
+    "registrationDate": "Fecha de Creación"
   },
   "allergies": {
     "title": "Alergias",
@@ -21,7 +22,10 @@
       "createdAt": "Fecha de Creación",
       "noData": "No hay alergias registradas"
     },
-    "status": { "active": "Activo", "inactive": "Inactivo" },
+    "status": {
+      "active": "Activa",
+      "inactive": "Inactiva"
+    },
     "filters": {
       "allStatus": "Todos los estados",
       "selectStatus": "Seleccionar estado"
@@ -30,7 +34,7 @@
       "total": "Total",
       "totalSubtitle": "Alergias registradas",
       "active": "Activas",
-      "activeSubtitle": "Disponibles actualmente",
+      "activeSubtitle": "Disponibles en el catálogo",
       "inactive": "Inactivas",
       "inactiveSubtitle": "No disponibles"
     },
@@ -40,9 +44,9 @@
       "editTitle": "Editar Alergia",
       "editDescription": "Modifica los datos de la alergia.",
       "activateTitle": "Activar Alergia",
-      "activateDescription": "¿Estás seguro de que deseas activar \"{{name}}\"?",
+      "activateDescription": "¿Estás seguro de que deseas activar \"{{name}}\"? Estará disponible nuevamente en el catálogo.",
       "deactivateTitle": "Desactivar Alergia",
-      "deactivateDescription": "¿Estás seguro de que deseas desactivar \"{{name}}\"?",
+      "deactivateDescription": "¿Estás seguro de que deseas desactivar \"{{name}}\"? No estará disponible en el catálogo mientras esté inactiva.",
       "deleteTitle": "Eliminar Alergia",
       "deleteDescription": "¿Estás seguro de que deseas eliminar \"{{name}}\"? Esta acción no se puede deshacer."
     },
@@ -58,10 +62,14 @@
     },
     "toast": {
       "createSuccess": "Alergia creada correctamente",
+      "createError": "Error al crear la alergia",
       "editSuccess": "Alergia actualizada correctamente",
+      "editError": "Error al actualizar la alergia",
       "activated": "\"{{name}}\" fue activada correctamente",
       "deactivated": "\"{{name}}\" fue desactivada correctamente",
+      "statusError": "Error al cambiar el estado",
       "deleteSuccess": "\"{{name}}\" fue eliminada correctamente",
+      "deleteError": "Error al eliminar la alergia",
       "aborted": "Operación cancelada",
       "statusAborted": "Cambio de estado cancelado",
       "deleteAborted": "Eliminación cancelada"

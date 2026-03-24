@@ -14,152 +14,198 @@ import {
   EmptyDescription,
   EmptyContent,
 } from "@/shared/ui/empty";
-import { AlertCircle, CheckCircle, XCircle, Filter, Plus } from "lucide-react";
-import AllergiesTable, { type Allergy } from "../components/AllergiesTable";
+import { ShieldAlert, CheckCircle, XCircle, Filter, Plus } from "lucide-react";
+import AllergiesTable from "../components/AllergiesTable";
 import AllergiesFilters from "../components/AllergiesFilters";
 import CreateEditAllergy from "../components/modals/CreateEditAllergy";
+import { useGlobalUIStore } from "@/stores/useGlobalUIStore";
+import {
+  useGetAllergies,
+  useCreateAllergy,
+  useUpdateAllergy,
+  useDeleteAllergy,
+  useToggleAllergyStatus,
+  type AllergyInterface,
+  type GetAllergiesParams,
+} from "../hooks/useAllergies";
 
-const mockAllergies: Allergy[] = [
-  {
-    id: "1",
-    name: "Polen",
-    description: "Alergia al polen de plantas y árboles. Común en primavera.",
-    createdAt: "10/01/2025",
-    status: "active",
-  },
-  {
-    id: "2",
-    name: "Ácaros",
-    description: "Alergia a los ácaros del polvo doméstico.",
-    createdAt: "12/01/2025",
-    status: "active",
-  },
-  {
-    id: "3",
-    name: "Mariscos",
-    description: "Reacción alérgica a crustáceos y moluscos.",
-    createdAt: "15/01/2025",
-    status: "active",
-  },
-  {
-    id: "4",
-    name: "Penicilina",
-    description: "Alergia al antibiótico penicilina y derivados.",
-    createdAt: "18/01/2025",
-    status: "active",
-  },
-  {
-    id: "5",
-    name: "Látex",
-    description:
-      "Alergia al látex natural presente en guantes y productos médicos.",
-    createdAt: "20/01/2025",
-    status: "active",
-  },
-  {
-    id: "6",
-    name: "Gluten",
-    description: "Intolerancia al gluten asociada a celiaquía.",
-    createdAt: "22/01/2025",
-    status: "inactive",
-  },
-  {
-    id: "7",
-    name: "Cacahuates",
-    description: "Alergia severa a los cacahuates, puede causar anafilaxia.",
-    createdAt: "25/01/2025",
-    status: "active",
-  },
-  {
-    id: "8",
-    name: "Ibuprofeno",
-    description: "Reacción alérgica al antiinflamatorio ibuprofeno.",
-    createdAt: "28/01/2025",
-    status: "inactive",
-  },
-];
+export const resolveStatus = (
+  item: AllergyInterface,
+): "active" | "inactive" => {
+  const raw = (item.status ?? item.estado ?? "").toLowerCase();
+  return raw === "active" || raw === "activa" ? "active" : "inactive";
+};
+
+const parseDate = (dateStr: string) => {
+  if (!dateStr) return new Date(NaN);
+  if (dateStr.includes("T")) return new Date(dateStr);
+  const [day, month, year] = dateStr.split("/");
+  if (!day || !month || !year) return new Date(NaN);
+  return new Date(Number(year), Number(month) - 1, Number(day));
+};
+
+const matchesDateRange = (dateStr: string, range?: [Date, Date]): boolean => {
+  if (!range) return true;
+  const date = parseDate(dateStr);
+  date.setHours(0, 0, 0, 0);
+  const start = new Date(range[0]);
+  start.setHours(0, 0, 0, 0);
+  const end = new Date(range[1]);
+  end.setHours(23, 59, 59, 999);
+  return date >= start && date <= end;
+};
 
 function AllergiesPage() {
   const { t } = useTranslation("allergies");
   const isMobile = useIsMobile();
+  const setToast = useGlobalUIStore((s) => s.setToast);
+  const setIsLoading = useGlobalUIStore((s) => s.setIsLoading);
 
-  const [allergies, setAllergies] = useState<Allergy[]>(mockAllergies);
   const [searchTerm, setSearchTerm] = useState("");
   const [filters, setFilters] = useState({
     status: "all",
     dateRange: undefined as [Date, Date] | undefined,
   });
 
-  const activeFiltersCount = Object.entries(filters).filter(([key, value]) => {
-    if (key === "dateRange") return value !== undefined;
-    return value !== "all";
-  }).length;
+  const activeFiltersCount = useMemo(() => {
+    let count = 0;
+    if (filters.status !== "all") count++;
+    if (filters.dateRange) count++;
+    return count;
+  }, [filters]);
 
-  const clearFilters = () =>
+  const clearFilters = () => {
     setFilters({ status: "all", dateRange: undefined });
-
-  const parseDate = (dateStr: string) => {
-    const [day, month, year] = dateStr.split("/");
-    return new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+    setSearchTerm("");
   };
 
-  const matchesDateRange = (dateStr: string, range?: [Date, Date]): boolean => {
-    if (!range) return true;
-    const date = parseDate(dateStr);
-    date.setHours(0, 0, 0, 0);
-    const start = new Date(range[0]);
-    start.setHours(0, 0, 0, 0);
-    const end = new Date(range[1]);
-    end.setHours(23, 59, 59, 999);
-    return date >= start && date <= end;
-  };
+  const apiParams = useMemo<GetAllergiesParams>(
+    () => ({
+      nombre: searchTerm?.trim() || undefined,
+      estado:
+        filters.status === "active"
+          ? "Activa"
+          : filters.status === "inactive"
+            ? "Inactiva"
+            : undefined,
+      pagina: 1,
+      limite: 100,
+      translate_fields: ["nombre", "descripcion"],
+    }),
+    [searchTerm, filters.status],
+  );
+
+  const { data: apiAllergies = [] } = useGetAllergies(apiParams);
+  const createMutation = useCreateAllergy();
+  const updateMutation = useUpdateAllergy();
+  const deleteMutation = useDeleteAllergy();
+  const toggleMutation = useToggleAllergyStatus();
+
+  const safeAllergies = Array.isArray(apiAllergies) ? apiAllergies : [];
 
   const filteredAllergies = useMemo(
     () =>
-      allergies.filter((item) => {
-        const matchesSearch =
-          item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          item.description.toLowerCase().includes(searchTerm.toLowerCase());
-        const matchesStatus =
-          filters.status === "all" || item.status === filters.status;
-        const matchesDate = matchesDateRange(item.createdAt, filters.dateRange);
-        return matchesSearch && matchesStatus && matchesDate;
-      }),
-    [searchTerm, filters, allergies],
+      safeAllergies.filter((item) =>
+        matchesDateRange(item.creadoEn, filters.dateRange),
+      ),
+    [safeAllergies, filters.dateRange],
   );
 
+  // ── Handlers ──────────────────────────────────────────────────────────────
+
   const handleCreate = (data: { name: string; description: string }) => {
-    setAllergies((prev) => [
+    setIsLoading(true);
+    createMutation.mutate(
+      { nombre: data.name, descripcion: data.description },
       {
-        id: String(Date.now()),
-        name: data.name,
-        description: data.description,
-        createdAt: new Date().toLocaleDateString("es-DO"),
-        status: "active",
+        onSuccess: () =>
+          setToast({
+            message: t("allergies.toast.createSuccess"),
+            type: "success",
+            open: true,
+          }),
+        onError: () =>
+          setToast({
+            message: t("allergies.toast.createError"),
+            type: "error",
+            open: true,
+          }),
+        onSettled: () => setIsLoading(false),
       },
-      ...prev,
-    ]);
+    );
   };
 
-  const handleEdit = (updated: Allergy) =>
-    setAllergies((prev) =>
-      prev.map((item) => (item.id === updated.id ? updated : item)),
+  const handleEdit = (updated: AllergyInterface) => {
+    setIsLoading(true);
+    updateMutation.mutate(
+      {
+        id: updated.id,
+        nombre: updated.nombre,
+        descripcion: updated.descripcion,
+      },
+      {
+        onSuccess: () =>
+          setToast({
+            message: t("allergies.toast.editSuccess"),
+            type: "success",
+            open: true,
+          }),
+        onError: () =>
+          setToast({
+            message: t("allergies.toast.editError"),
+            type: "error",
+            open: true,
+          }),
+        onSettled: () => setIsLoading(false),
+      },
     );
+  };
 
-  const handleDelete = (target: Allergy) =>
-    setAllergies((prev) => prev.filter((item) => item.id !== target.id));
+  const handleDelete = (target: AllergyInterface) => {
+    setIsLoading(true);
+    deleteMutation.mutate(target.id, {
+      onSuccess: () =>
+        setToast({
+          message: t("allergies.toast.deleteSuccess", { name: target.nombre }),
+          type: "success",
+          open: true,
+        }),
+      onError: () =>
+        setToast({
+          message: t("allergies.toast.deleteError"),
+          type: "error",
+          open: true,
+        }),
+      onSettled: () => setIsLoading(false),
+    });
+  };
 
-  const handleToggleStatus = (target: Allergy) =>
-    setAllergies((prev) =>
-      prev.map((item) =>
-        item.id === target.id
-          ? {
-              ...item,
-              status: item.status === "active" ? "inactive" : "active",
-            }
-          : item,
-      ),
+  const handleToggleStatus = (target: AllergyInterface) => {
+    const isActive = resolveStatus(target) === "active";
+    setIsLoading(true);
+    toggleMutation.mutate(
+      { id: target.id, estado: isActive ? "Inactiva" : "Activa" },
+      {
+        onSuccess: () =>
+          setToast({
+            message: isActive
+              ? t("allergies.toast.deactivated", { name: target.nombre })
+              : t("allergies.toast.activated", { name: target.nombre }),
+            type: "success",
+            open: true,
+          }),
+        onError: () =>
+          setToast({
+            message: t("allergies.toast.statusError"),
+            type: "error",
+            open: true,
+          }),
+        onSettled: () => setIsLoading(false),
+      },
     );
+  };
+
+  // ── Sub-components ────────────────────────────────────────────────────────
 
   const searchComponent = (
     <div className="w-full sm:w-auto sm:min-w-[200px] lg:min-w-[250px]">
@@ -176,15 +222,15 @@ function AllergiesPage() {
       onClick={async () => {
         await MCGeneratePDF({
           columns: [
-            { title: t("allergies.table.name"), key: "name" },
-            { title: t("allergies.table.description"), key: "description" },
-            { title: t("table.status"), key: "status" },
-            { title: t("allergies.table.createdAt"), key: "createdAt" },
+            { title: t("allergies.table.name"), key: "nombre" },
+            { title: t("allergies.table.description"), key: "descripcion" },
+            { title: t("table.status"), key: "estadoLabel" },
+            { title: t("allergies.table.createdAt"), key: "creadoEn" },
           ],
           data: filteredAllergies.map((item) => ({
             ...item,
-            status:
-              item.status === "active"
+            estadoLabel:
+              resolveStatus(item) === "active"
                 ? t("allergies.status.active")
                 : t("allergies.status.inactive"),
           })),
@@ -227,7 +273,7 @@ function AllergiesPage() {
             {activeFiltersCount > 0 ? (
               <Filter className={isMobile ? "w-5 h-5" : "w-7 h-7"} />
             ) : (
-              <AlertCircle className={isMobile ? "w-5 h-5" : "w-7 h-7"} />
+              <ShieldAlert className={isMobile ? "w-5 h-5" : "w-7 h-7"} />
             )}
             <EmptyTitle
               className={`font-semibold ${isMobile ? "text-lg" : "text-xl"}`}
@@ -238,7 +284,9 @@ function AllergiesPage() {
             </EmptyTitle>
           </span>
           <EmptyDescription
-            className={`text-muted-foreground text-center max-w-md mx-auto ${isMobile ? "text-sm" : "text-base"}`}
+            className={`text-muted-foreground text-center max-w-md mx-auto ${
+              isMobile ? "text-sm" : "text-base"
+            }`}
           >
             {activeFiltersCount > 0
               ? t("allergies.empty.noResultsDescription")
@@ -265,22 +313,36 @@ function AllergiesPage() {
     </Empty>
   );
 
+  const tableComponent =
+    filteredAllergies.length === 0 ? (
+      emptyState
+    ) : (
+      <AllergiesTable
+        allergies={filteredAllergies}
+        onEdit={handleEdit}
+        onDelete={handleDelete}
+        onToggleStatus={handleToggleStatus}
+      />
+    );
+
   const metrics = [
     {
       title: t("allergies.metrics.total"),
-      value: allergies.length,
-      icon: <AlertCircle size={30} />,
+      value: safeAllergies.length,
+      icon: <ShieldAlert size={30} />,
       subtitle: t("allergies.metrics.totalSubtitle"),
     },
     {
       title: t("allergies.metrics.active"),
-      value: allergies.filter((i) => i.status === "active").length,
+      value: safeAllergies.filter((item) => resolveStatus(item) === "active")
+        .length,
       icon: <CheckCircle size={30} />,
       subtitle: t("allergies.metrics.activeSubtitle"),
     },
     {
       title: t("allergies.metrics.inactive"),
-      value: allergies.filter((i) => i.status === "inactive").length,
+      value: safeAllergies.filter((item) => resolveStatus(item) === "inactive")
+        .length,
       icon: <XCircle size={30} />,
       subtitle: t("allergies.metrics.inactiveSubtitle"),
     },
@@ -290,18 +352,7 @@ function AllergiesPage() {
     <MCTablesLayouts
       title={t("allergies.title")}
       metrics={metrics}
-      tableComponent={
-        filteredAllergies.length === 0 ? (
-          emptyState
-        ) : (
-          <AllergiesTable
-            allergies={filteredAllergies}
-            onEdit={handleEdit}
-            onDelete={handleDelete}
-            onToggleStatus={handleToggleStatus}
-          />
-        )
-      }
+      tableComponent={tableComponent}
       searchComponent={searchComponent}
       pdfGeneratorComponent={pdfGeneratorComponent}
       filterComponent={filterComponent}
