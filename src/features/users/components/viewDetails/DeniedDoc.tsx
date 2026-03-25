@@ -1,4 +1,4 @@
-import React, { useCallback, useRef } from "react";
+import React, { useCallback, useMemo, useRef, useState } from "react";
 import MCTextArea from "@/shared/components/forms/MCTextArea";
 import { MCModalBase } from "@/shared/components/MCModalBase";
 import { useTranslation } from "react-i18next";
@@ -29,6 +29,12 @@ export default function DeniedDoc({
   const setToast = useGlobalUIStore((s) => s.setToast);
 
   const submitRef = useRef<HTMLButtonElement>(null);
+  const [rejectionReason, setRejectionReason] = useState("");
+
+  const isConfirmDisabled = useMemo(
+    () => rejectionReason.trim().length === 0,
+    [rejectionReason],
+  );
 
   const handleConfirm = useCallback(() => {
     submitRef.current?.click();
@@ -46,14 +52,9 @@ export default function DeniedDoc({
   const onSubmit = useCallback(
     (values: { rejectionReason: string }) => {
       onConfirmReject(values.rejectionReason);
-      setToast({
-        message: t("verification.reject.success"),
-        type: "success",
-        open: true,
-      });
       unlockBodyScroll();
     },
-    [onConfirmReject, setToast, t],
+    [onConfirmReject],
   );
 
   return (
@@ -68,6 +69,7 @@ export default function DeniedDoc({
       confirmText={t("verification.reject.confirm")}
       secondaryText={t("verification.reject.cancel")}
       description={t("verification.reject.description")}
+      disabledConfirm={isConfirmDisabled}
     >
       <MCFormWrapper
         defaultValues={{ rejectionReason: "" }}
@@ -83,6 +85,9 @@ export default function DeniedDoc({
           showCharCount
           rows={4}
           maxRows={10}
+          onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
+            setRejectionReason(e.target.value)
+          }
         />
         <button ref={submitRef} type="submit" className="hidden" />
       </MCFormWrapper>

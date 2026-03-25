@@ -19,69 +19,66 @@ import DoctorsTable, { type Doctor } from "../components/doctor/DoctorsTable";
 import DoctorFilters from "../components/filters/DoctorFilters";
 import { useNavigate } from "react-router-dom";
 import { ROUTES } from "@/router/routes";
+import { useGlobalUIStore } from "@/stores/useGlobalUIStore";
+import {
+  useGetDoctorsAdmin,
+  resolveVerificationStatus,
+  mapStatusToApi,
+  type DoctorAdminListItem,
+  type GetDoctorsAdminParams,
+} from "../hooks/doctors/useDoctors";
 
-const mockDoctors: Doctor[] = [
-  {
-    id: "1",
-    name: "Francisco Madera",
-    image: "https://randomuser.me/api/portraits/men/1.jpg",
-    status: "pending",
-    registrationDate: "11/10/2025",
-    phone: "809-432-9532",
-    email: "francisco.m@correo.com",
-    specialty: "Cardiología",
-  },
-  {
-    id: "2",
-    name: "Emmanuel Jimenez",
-    image: "https://randomuser.me/api/portraits/men/2.jpg",
-    status: "pending",
-    registrationDate: "11/10/2025",
-    phone: "809-432-9532",
-    email: "emmanuelj@correo.com",
-    specialty: "Neurología",
-  },
-  {
-    id: "3",
-    name: "Derek Hernandez",
-    image: "https://randomuser.me/api/portraits/men/3.jpg",
-    status: "approved",
-    registrationDate: "11/10/2025",
-    phone: "809-432-9532",
-    email: "derekh@correo.com",
-    specialty: "Dermatología",
-  },
-  {
-    id: "4",
-    name: "Jackson Martinez",
-    image: "https://randomuser.me/api/portraits/men/4.jpg",
-    status: "approved",
-    registrationDate: "11/10/2025",
-    phone: "809-432-9532",
-    email: "jacksonm@correo.com",
-    specialty: "Pediatría",
-  },
-  {
-    id: "5",
-    name: "Gabriela Melo",
-    image: "https://randomuser.me/api/portraits/women/5.jpg",
-    status: "pending",
-    registrationDate: "11/10/2025",
-    phone: "809-432-9532",
-    email: "gabrielam@correo.com",
-    specialty: "Ginecología",
-  },
-  {
-    id: "6",
-    name: "Juan Olivo",
-    image: "https://randomuser.me/api/portraits/men/6.jpg",
-    status: "rejected",
-    registrationDate: "11/10/2025",
-    phone: "809-432-9532",
-    email: "juanolivo@correo.com",
-    specialty: "Traumatología",
-  },
-];
+// ─── Mapper API → Doctor (interfaz de la tabla) ───────────────────────────────
+
+const formatDate = (dateStr: string): string => {
+  if (!dateStr) return "-";
+  try {
+    const d = new Date(dateStr);
+    if (isNaN(d.getTime())) return dateStr;
+    return d.toLocaleDateString("es-DO", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    });
+  } catch {
+    return dateStr;
+  }
+};
+
+const mapDoctorToTableRow = (doctor: DoctorAdminListItem): Doctor => ({
+  id: doctor.id.toString(),
+  name: `${doctor.nombre} ${doctor.apellido}`,
+  image: doctor.usuario?.fotoPerfil,
+  status: resolveVerificationStatus(doctor.estadoVerificacion),
+  registrationDate: formatDate(doctor.creadoEn),
+  phone: doctor.usuario?.telefono ?? "-",
+  email: doctor.usuario?.email ?? "-",
+  specialty:
+    doctor.especialidades.find((e) => e.es_principal)?.nombre ??
+    doctor.especialidades[0]?.nombre ??
+    "-",
+});
+
+const parseDate = (dateStr: string) => {
+  if (!dateStr) return new Date(NaN);
+  if (dateStr.includes("T")) return new Date(dateStr);
+  const [d, m, y] = dateStr.split("/");
+  if (!d || !m || !y) return new Date(NaN);
+  return new Date(Number(y), Number(m) - 1, Number(d));
+};
+
+const matchesDateRange = (dateStr: string, range?: [Date, Date]): boolean => {
+  if (!range) return true;
+  const date = parseDate(dateStr);
+  date.setHours(0, 0, 0, 0);
+  const start = new Date(range[0]);
+  start.setHours(0, 0, 0, 0);
+  const end = new Date(range[1]);
+  end.setHours(23, 59, 59, 999);
+  return date >= start && date <= end;
+};
+
+// ─── Page ─────────────────────────────────────────────────────────────────────
 
 function DoctorsPage() {
   const { t } = useTranslation("common");
@@ -95,58 +92,60 @@ function DoctorsPage() {
     dateRange: undefined as [Date, Date] | undefined,
   });
 
-  const activeFiltersCount = Object.entries(filters).filter(([key, value]) => {
-    if (key === "dateRange") return value !== undefined;
-    return value !== "all" && value !== "";
-  }).length;
+  const activeFiltersCount = useMemo(() => {
+    let count = 0;
+    if (filters.status !== "all") count++;
+    if (filters.specialty !== "all" && filters.specialty !== "") count++;
+    if (filters.dateRange) count++;
+    return count;
+  }, [filters]);
 
-  const clearFilters = () =>
+  const clearFilters = () => {
     setFilters({ status: "all", specialty: "all", dateRange: undefined });
-
-  const parseDate = (dateStr: string) => {
-    const [day, month, year] = dateStr.split("/");
-    return new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+    setSearchTerm("");
   };
 
-  const matchesCustomDateRange = (
-    dateStr: string,
-    range?: [Date, Date],
-  ): boolean => {
-    if (!range) return true;
-    const reg = parseDate(dateStr);
-    reg.setHours(0, 0, 0, 0);
-    const start = new Date(range[0]);
-    start.setHours(0, 0, 0, 0);
-    const end = new Date(range[1]);
-    end.setHours(23, 59, 59, 999);
-    return reg >= start && reg <= end;
-  };
+  // ── Params para la API (nombre + estadoVerificacion server-side) ─────────
+  const apiParams = useMemo<GetDoctorsAdminParams>(
+    () => ({
+      nombre: searchTerm?.trim() || undefined,
+      estadoVerificacion: mapStatusToApi(filters.status),
+      pagina: 1,
+      limite: 100,
+    }),
+    [searchTerm, filters.status],
+  );
 
+  const { data: apiDoctors = [] } = useGetDoctorsAdmin(apiParams);
+
+  const safeDoctors = Array.isArray(apiDoctors) ? apiDoctors : [];
+
+  // ── Mapeo API → tabla ────────────────────────────────────────────────────
+  const tableDoctors = useMemo(
+    () => safeDoctors.map(mapDoctorToTableRow),
+    [safeDoctors],
+  );
+
+  // ── Filtros client-side (specialty + dateRange, API no los soporta igual) ─
   const filteredDoctors = useMemo(
     () =>
-      mockDoctors.filter((doctor) => {
-        const matchesSearch =
-          doctor.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          doctor.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          doctor.phone.includes(searchTerm) ||
-          doctor.specialty.toLowerCase().includes(searchTerm.toLowerCase());
-        const matchesStatus =
-          filters.status === "all" || doctor.status === filters.status;
+      tableDoctors.filter((doctor) => {
         const matchesSpecialty =
           filters.specialty === "all" ||
+          filters.specialty === "" ||
           doctor.specialty
             .toLowerCase()
             .includes(filters.specialty.toLowerCase());
-        const matchesDate = matchesCustomDateRange(
+        const matchesDate = matchesDateRange(
           doctor.registrationDate,
           filters.dateRange,
         );
-        return (
-          matchesSearch && matchesStatus && matchesSpecialty && matchesDate
-        );
+        return matchesSpecialty && matchesDate;
       }),
-    [searchTerm, filters],
+    [tableDoctors, filters.specialty, filters.dateRange],
   );
+
+  // ─── Sub-components ───────────────────────────────────────────────────────
 
   const searchComponent = (
     <div className="w-full sm:w-auto sm:min-w-[200px] lg:min-w-[250px]">
@@ -165,14 +164,14 @@ function DoctorsPage() {
           columns: [
             { title: t("doctors.table.doctor"), key: "name" },
             { title: t("doctors.table.specialty"), key: "specialty" },
-            { title: t("table.status"), key: "status" },
+            { title: t("table.status"), key: "statusLabel" },
             { title: t("table.registrationDate"), key: "registrationDate" },
             { title: t("table.phone"), key: "phone" },
             { title: t("table.email"), key: "email" },
           ],
           data: filteredDoctors.map((doctor) => ({
             ...doctor,
-            status: t(`doctors.status.${doctor.status}`),
+            statusLabel: t(`doctors.status.${doctor.status}`),
           })),
           fileName: "doctores",
           title: t("doctors.title"),
@@ -224,18 +223,11 @@ function DoctorsPage() {
         </div>
       </EmptyHeader>
       <EmptyContent>
-        <div className="flex flex-col items-center gap-3">
-          {activeFiltersCount > 0 && (
-            <MCButton
-              variant="outline"
-              onClick={clearFilters}
-              className={isMobile ? "px-4 py-2" : "px-6 py-2"}
-              size="sm"
-            >
-              {t("doctors.empty.clearFilters")}
-            </MCButton>
-          )}
-        </div>
+        {activeFiltersCount > 0 && (
+          <MCButton variant="outline" onClick={clearFilters} size="sm">
+            {t("doctors.empty.clearFilters")}
+          </MCButton>
+        )}
       </EmptyContent>
     </Empty>
   );
@@ -252,28 +244,37 @@ function DoctorsPage() {
       />
     );
 
+  // ── Métricas (sobre safeDoctors completos, sin filtros de fecha/specialty) ─
   const metrics = [
     {
       title: t("doctors.metrics.total"),
-      value: mockDoctors.filter((d) => d.status === "approved").length,
+      value: safeDoctors.filter(
+        (d) => resolveVerificationStatus(d.estadoVerificacion) === "approved",
+      ).length,
       icon: <UserCheck size={30} />,
       subtitle: t("doctors.metrics.totalSubtitle"),
     },
     {
       title: t("doctors.metrics.pending"),
-      value: mockDoctors.filter((d) => d.status === "pending").length,
+      value: safeDoctors.filter(
+        (d) => resolveVerificationStatus(d.estadoVerificacion) === "pending",
+      ).length,
       icon: <Clock size={30} />,
       subtitle: t("doctors.metrics.pendingSubtitle"),
     },
     {
       title: t("doctors.metrics.rejected"),
-      value: mockDoctors.filter((d) => d.status === "rejected").length,
+      value: safeDoctors.filter(
+        (d) => resolveVerificationStatus(d.estadoVerificacion) === "rejected",
+      ).length,
       icon: <UserX size={30} />,
       subtitle: t("doctors.metrics.rejectedSubtitle"),
     },
     {
       title: t("doctors.metrics.approved"),
-      value: mockDoctors.filter((d) => d.status === "approved").length,
+      value: safeDoctors.filter(
+        (d) => resolveVerificationStatus(d.estadoVerificacion) === "approved",
+      ).length,
       icon: <Stethoscope size={30} />,
       subtitle: t("doctors.metrics.approvedSubtitle"),
     },

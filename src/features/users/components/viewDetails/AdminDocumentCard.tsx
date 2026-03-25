@@ -25,11 +25,13 @@ interface AdminDocumentCardProps {
   onRejectAll?: (feedback: string) => void;
   docStatuses?: Record<string, VerificationStatus>;
   docFeedbacks?: Record<string, string>;
-  /** "success" (default) para docs estándar · "warning" para certificaciones u otras secciones críticas */
   approveVariant?: "decide" | "warning";
+  showBulkActions?: boolean; // <- nuevo: activar "aprobar/rechazar todos"
+  bulkActionsMinCount?: number; // <- nuevo: mínimo para mostrar acciones masivas
 }
 
 const formatFileSize = (bytes: number) => {
+  if (!bytes || bytes === 0) return "-";
   if (bytes < 1024) return `${bytes} B`;
   if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
@@ -49,6 +51,8 @@ export default function AdminDocumentCard({
   docStatuses = {},
   docFeedbacks = {},
   approveVariant = "decide",
+  showBulkActions = false,
+  bulkActionsMinCount = 3, // "más de 2"
 }: AdminDocumentCardProps) {
   const { t } = useTranslation("common");
   const isMobile = useIsMobile();
@@ -119,6 +123,15 @@ export default function AdminDocumentCard({
     : 0;
 
   const showGlobalActions = currentStatus === "PENDING";
+  const showSingleActions = !isArray && currentStatus === "PENDING";
+
+  const showArrayBulkActions =
+    isArray &&
+    currentStatus === "PENDING" &&
+    showBulkActions &&
+    documents.length >= bulkActionsMinCount;
+
+  const showActions = showSingleActions || showArrayBulkActions;
 
   return (
     <>
@@ -239,11 +252,13 @@ export default function AdminDocumentCard({
                         </p>
                       )}
 
+                      {/* ✅ Preview del documento — div en lugar de button para evitar nested button */}
                       {doc.type.startsWith("image/") ? (
-                        <img
-                          src={doc.url}
-                          alt={doc.name}
-                          className="w-12 h-12 md:w-16 md:h-16 rounded-lg object-cover cursor-pointer border mt-2"
+                        // Imagen — abre el carrusel
+                        <div
+                          role="button"
+                          tabIndex={0}
+                          className="mt-2 w-fit cursor-pointer"
                           onClick={() => {
                             setCarouselStartIndex(
                               imageDocuments.findIndex(
@@ -252,8 +267,20 @@ export default function AdminDocumentCard({
                             );
                             setCarouselOpen(true);
                           }}
-                        />
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter" || e.key === " ")
+                              setCarouselOpen(true);
+                          }}
+                        >
+                          <img
+                            src={doc.url}
+                            alt={doc.name}
+                            className="w-12 h-12 md:w-16 md:h-16 rounded-lg object-cover border hover:opacity-80 transition-opacity"
+                          />
+                        </div>
                       ) : (
+                        // PDF u otro — abre el modal de preview
+                        // ✅ trigger es un <div role="button">, NO un <button>
                         <PreviewDocumentsDialog
                           documentUrl={doc.url}
                           documentType={doc.type}
@@ -262,7 +289,7 @@ export default function AdminDocumentCard({
                           <div
                             role="button"
                             tabIndex={0}
-                            className="mt-2 flex items-center gap-2 px-2 md:px-3 py-1 md:py-1.5 rounded-lg bg-primary/10 hover:bg-primary/20 transition-colors text-xs md:text-sm font-medium text-primary cursor-pointer"
+                            className="mt-2 flex items-center gap-2 px-2 md:px-3 py-1 md:py-1.5 rounded-lg bg-primary/10 hover:bg-primary/20 transition-colors text-xs md:text-sm font-medium text-primary cursor-pointer w-fit"
                           >
                             <Eye className="w-3 h-3 md:w-4 md:h-4" />
                             Ver documento
@@ -271,25 +298,26 @@ export default function AdminDocumentCard({
                       )}
                     </div>
 
-                    {/* Individual approve / reject — only when pending */}
+                    {/* Acciones individuales — solo cuando pendiente */}
                     {docStatus === "PENDING" && (
-                      <div className="flex flex-col justify-center gap-4 h-full">
+                      <div className="flex flex-col justify-center gap-2 h-full">
                         <AcceptDoc
                           id={`approve-doc-${index}`}
                           documentTitle={doc.name}
                           variant={approveVariant}
                           onConfirmApprove={() => onApprove && onApprove(doc)}
                         >
-                          <MCButton
-                            size="s"
-                            className="flex items-center gap-2 justify-center"
+                          {/* ✅ div en lugar de MCButton para evitar nested button */}
+                          <div
+                            role="button"
+                            tabIndex={0}
+                            className="flex items-center gap-1.5 justify-center px-3 py-1.5 rounded-lg bg-primary text-primary-foreground text-xs font-medium cursor-pointer hover:bg-primary/90 transition-colors"
                           >
-                            <CircleCheck className="w-4 h-4" />
+                            <CircleCheck className="w-3.5 h-3.5" />
                             Aprobar
-                          </MCButton>
+                          </div>
                         </AcceptDoc>
 
-                        {/* ── Reject individual doc via DeniedDoc modal ── */}
                         <DeniedDoc
                           id={`reject-doc-${index}`}
                           documentTitle={doc.name}
@@ -297,14 +325,15 @@ export default function AdminDocumentCard({
                             onReject && onReject(doc, reason)
                           }
                         >
-                          <MCButton
-                            variant="outlineDelete"
-                            size="s"
-                            className="flex items-center gap-2 justify-center"
+                          {/* ✅ div en lugar de MCButton */}
+                          <div
+                            role="button"
+                            tabIndex={0}
+                            className="flex items-center gap-1.5 justify-center px-3 py-1.5 rounded-lg border border-destructive text-destructive text-xs font-medium cursor-pointer hover:bg-destructive/10 transition-colors"
                           >
-                            <CircleSlash className="w-4 h-4" />
+                            <CircleSlash className="w-3.5 h-3.5" />
                             Rechazar
-                          </MCButton>
+                          </div>
                         </DeniedDoc>
                       </div>
                     )}
@@ -315,27 +344,34 @@ export default function AdminDocumentCard({
           </div>
         )}
 
-        {/* Single document preview */}
+        {/* Preview de documento singular */}
         {!isArray && document && (
           <div>
             {document.type.startsWith("image/") ? (
-              <button
-                className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-primary/10 hover:bg-primary/20 transition-colors text-sm font-medium text-primary"
+              // ✅ div en lugar de button
+              <div
+                role="button"
+                tabIndex={0}
+                className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-primary/10 hover:bg-primary/20 transition-colors text-sm font-medium text-primary cursor-pointer w-fit"
                 onClick={() => setCarouselOpen(true)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") setCarouselOpen(true);
+                }}
               >
                 <Eye className="w-4 h-4" />
                 Ver documento
-              </button>
+              </div>
             ) : (
               <PreviewDocumentsDialog
                 documentUrl={document.url}
                 documentType={document.type}
                 documentName={document.name}
               >
+                {/* ✅ div en lugar de button */}
                 <div
                   role="button"
                   tabIndex={0}
-                  className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-primary/10 hover:bg-primary/20 transition-colors text-sm font-medium text-primary cursor-pointer"
+                  className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-primary/10 hover:bg-primary/20 transition-colors text-sm font-medium text-primary cursor-pointer w-fit"
                 >
                   <Eye className="w-4 h-4" />
                   Ver documento
@@ -345,10 +381,9 @@ export default function AdminDocumentCard({
           </div>
         )}
 
-        {/* Global actions — hidden once the overall status is resolved */}
-        {showGlobalActions && (
+        {/* Acciones (single o masivas) */}
+        {showActions && (
           <div className="flex flex-col sm:flex-row gap-2 pt-3 border-t border-primary/10">
-            {/* ── Reject all / reject single via DeniedDoc modal ── */}
             <DeniedDoc
               id={`reject-all-${title}`}
               documentTitle={title}
@@ -357,14 +392,14 @@ export default function AdminDocumentCard({
                 else onReject?.(null, reason);
               }}
             >
-              <MCButton
-                variant="outlineDelete"
-                size={isMobile ? "sm" : "sm"}
-                className="flex-1 flex items-center gap-2 justify-center"
+              <div
+                role="button"
+                tabIndex={0}
+                className="flex-1 flex items-center gap-2 justify-center px-4 py-2 rounded-lg border border-destructive text-destructive text-sm font-medium cursor-pointer hover:bg-destructive/10 transition-colors"
               >
                 <CircleSlash className="w-4 h-4" />
                 {isArray ? "Rechazar todos" : "Rechazar"}
-              </MCButton>
+              </div>
             </DeniedDoc>
 
             <AcceptDoc
@@ -376,19 +411,20 @@ export default function AdminDocumentCard({
                 else onApprove && document && onApprove(document);
               }}
             >
-              <MCButton
-                size={isMobile ? "sm" : "sm"}
-                className="flex-1 flex items-center gap-2 justify-center"
+              <div
+                role="button"
+                tabIndex={0}
+                className="flex-1 flex items-center gap-2 justify-center px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-medium cursor-pointer hover:bg-primary/90 transition-colors"
               >
                 <CircleCheck className="w-4 h-4" />
                 {isArray ? "Aprobar todos" : "Aprobar"}
-              </MCButton>
+              </div>
             </AcceptDoc>
           </div>
         )}
       </div>
 
-      {/* Image carousel */}
+      {/* Carrusel de imágenes */}
       <ImageCarouselModal
         images={imageDocuments.map((d) => d.url)}
         open={carouselOpen}

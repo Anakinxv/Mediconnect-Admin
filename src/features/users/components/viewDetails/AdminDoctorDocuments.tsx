@@ -1,217 +1,334 @@
-import { useEffect, useState } from "react";
+import { useMemo } from "react";
 import DocumentCard from "./AdminDocumentCard";
-import { useVerifyInfoStore } from "@/stores/useVerifyInfoStore";
-import type { DoctorDocuments, UploadedFile } from "@/types/Documents";
+import type { UploadedFileWithStatus, UploadedFile } from "@/types/Documents";
 import type { VerificationStatus } from "./Verificationconstants";
+import {
+  useGetPendingAcciones,
+  useRevisarAccion,
+} from "../../hooks/doctors/useAcciones";
+import {
+  resolveDocumentStatus,
+  type DocumentoAdmin,
+} from "../../hooks/doctors/useDoctors";
+import { useGlobalUIStore } from "@/stores/useGlobalUIStore";
+import { useTranslation } from "react-i18next";
 
-const initialDoctorDocuments: DoctorDocuments = {
-  identityDocumentFile: {
-    url: "#",
-    name: "cedula-identificacion.pdf",
-    type: "application/pdf",
-    size: 1.8 * 1024 * 1024,
-    uploadedAt: "Subido el 15 Oct 2025",
-    verificationStatus: "PENDING",
-    feedback: "En revisión",
-  },
-  academicTitle: {
-    url: "#",
-    name: "titulo-universitario.pdf",
-    type: "application/pdf",
-    size: 2.3 * 1024 * 1024,
-    uploadedAt: "Subido el 15 Oct 2025",
-    verificationStatus: "PENDING",
-    feedback: "En revisión",
-  },
-  certifications: [
-    {
-      url: "#",
-      name: "certificacion-residencia-medica.pdf",
-      type: "application/pdf",
-      size: 1.8 * 1024 * 1024,
-      uploadedAt: "Subido el 15 Oct 2025",
-    },
-    {
-      url: "#",
-      name: "certificacion-cardiologia-invasiva.pdf",
-      type: "application/pdf",
-      size: 2.1 * 1024 * 1024,
-      uploadedAt: "Subido el 20 Nov 2025",
-    },
-    {
-      url: "#",
-      name: "certificacion-medicina-interna.pdf",
-      type: "application/pdf",
-      size: 1.5 * 1024 * 1024,
-      uploadedAt: "Subido el 05 Dic 2025",
-    },
-    {
-      url: "#",
-      name: "certificacion-ultrasonido-cardiaco.pdf",
-      type: "application/pdf",
-      size: 3.2 * 1024 * 1024,
-      uploadedAt: "Subido el 10 Dic 2025",
-    },
-    {
-      url: "#",
-      name: "certificacion-soporte-vital-avanzado.pdf",
-      type: "application/pdf",
-      size: 0.9 * 1024 * 1024,
-      uploadedAt: "Subido el 22 Dic 2025",
-    },
-  ],
-  certificationsStatus: "PENDING",
-  certificationsFeedback: undefined,
-};
+interface AdminDoctorDocumentsViewProps {
+  documents: DocumentoAdmin[];
+  doctorId: number;
+}
 
-export default function AdminDoctorDocumentsView() {
-  const { doctorDocuments, setDoctorDocuments } = useVerifyInfoStore();
+// ─── Mapper ──────────────────────────────────────────────────────────────────
 
-  // Per-certification individual statuses & feedbacks, keyed by doc.name
-  const [certStatuses, setCertStatuses] = useState<
-    Record<string, VerificationStatus>
-  >({});
-  const [certFeedbacks, setCertFeedbacks] = useState<Record<string, string>>(
-    {},
+const mapDocumentoToUploadedFile = (
+  doc: DocumentoAdmin,
+): UploadedFileWithStatus => ({
+  url: doc.urlArchivo,
+  name: doc.nombreOriginal,
+  type: doc.tipoMime,
+  size: 0,
+  uploadedAt: doc.estadoRevision === "Pendiente" ? "Pendiente de revisión" : "",
+  verificationStatus: resolveDocumentStatus(doc.estadoRevision),
+  feedback: doc.comentarioAdmin ?? undefined,
+});
+
+const groupDocuments = (docs: DocumentoAdmin[]) => {
+  const certificaciones = docs.filter(
+    (d) => d.tipoDocumento === "certificacion",
+  );
+  const identityDoc = docs.find((d) => d.tipoDocumento === "foto_documento");
+  const titleDoc = docs.find((d) => d.tipoDocumento === "titulo_academico");
+
+  const otherDocs = docs.filter(
+    (d) =>
+      d.tipoDocumento !== "certificacion" &&
+      d.tipoDocumento !== "foto_documento" &&
+      d.tipoDocumento !== "titulo_academico",
   );
 
-  useEffect(() => {
-    if (!doctorDocuments) setDoctorDocuments(initialDoctorDocuments);
-  }, [doctorDocuments, setDoctorDocuments]);
+  return { certificaciones, identityDoc, titleDoc, otherDocs };
+};
 
-  if (!doctorDocuments) return null;
+// ─── Componente ──────────────────────────────────────────────────────────────
 
-  // ─── Identity document handlers ───────────────────────────────────────────
-  const handleApproveIdentity = () => {
-    setDoctorDocuments({
-      ...doctorDocuments,
-      identityDocumentFile: {
-        ...doctorDocuments.identityDocumentFile,
-        verificationStatus: "APPROVED",
-        feedback: "Documento verificado correctamente.",
+export default function AdminDoctorDocumentsView({
+  documents,
+  doctorId,
+}: AdminDoctorDocumentsViewProps) {
+  const { t } = useTranslation("common");
+  const setToast = useGlobalUIStore((s) => s.setToast);
+  const revisarMutation = useRevisarAccion();
+
+  const { data: acciones = [] } = useGetPendingAcciones({ limite: 100 });
+
+  // ── Mapa documentoId → accionId ──────────────────────────────────────────
+  const { accionByDocumentoId, accionByTipoDocumento } = useMemo(() => {
+    const documentIds = new Set(documents.map((d) => d.id));
+    const documentTipos = new Set(documents.map((d) => d.tipoDocumento));
+
+    const byDocFiltered: Record<number, number> = {};
+    const byTipoFiltered: Record<string, number> = {};
+    const byDocFallback: Record<number, number> = {};
+    const byTipoFallback: Record<string, number> = {};
+
+    acciones.forEach((accion) => {
+      // Filtrado por doctor (ideal)
+      if (accion.doctorId === doctorId) {
+        if (documentIds.has(accion.documentoId)) {
+          byDocFiltered[accion.documentoId] = accion.id;
+        }
+        if (documentTipos.has(accion.tipoDocumento)) {
+          byTipoFiltered[accion.tipoDocumento] = accion.id;
+        }
+      }
+
+      // Fallback global
+      if (documentIds.has(accion.documentoId)) {
+        byDocFallback[accion.documentoId] = accion.id;
+      }
+      if (documentTipos.has(accion.tipoDocumento)) {
+        byTipoFallback[accion.tipoDocumento] = accion.id;
+      }
+    });
+
+    const finalByDoc =
+      Object.keys(byDocFiltered).length > 0 ? byDocFiltered : byDocFallback;
+    const finalByTipo =
+      Object.keys(byTipoFiltered).length > 0 ? byTipoFiltered : byTipoFallback;
+
+    return {
+      accionByDocumentoId: finalByDoc,
+      accionByTipoDocumento: finalByTipo,
+    };
+  }, [acciones, doctorId, documents]);
+
+  const getAccionIdSeguro = (doc: DocumentoAdmin): number | null => {
+    const idCrudo =
+      accionByDocumentoId[doc.id] ?? accionByTipoDocumento[doc.tipoDocumento];
+    const accionIdSeguro = Number(idCrudo);
+
+    if (!accionIdSeguro || Number.isNaN(accionIdSeguro)) return null;
+    return accionIdSeguro;
+  };
+
+  // ── Handlers ─────────────────────────────────────────────────────────────
+
+  const handleApprove = (doc: DocumentoAdmin) => {
+    const accionIdSeguro = getAccionIdSeguro(doc);
+
+    if (!accionIdSeguro) {
+      setToast({
+        message: t(
+          "verification.approve.noAction",
+          "No hay acción pendiente para este documento",
+        ),
+        type: "error",
+        open: true,
+      });
+      return;
+    }
+
+    revisarMutation.mutate(
+      {
+        accionId: accionIdSeguro,
+        decision: "Aprobada",
+        comentario: "Documento verificado correctamente",
       },
-    });
-  };
-
-  const handleRejectIdentity = (
-    _doc: UploadedFile | null,
-    feedback: string,
-  ) => {
-    setDoctorDocuments({
-      ...doctorDocuments,
-      identityDocumentFile: {
-        ...doctorDocuments.identityDocumentFile,
-        verificationStatus: "REJECTED",
-        feedback,
+      {
+        onSuccess: () => {
+          setToast({
+            message: t("verification.approve.success", "Documento aprobado"),
+            type: "success",
+            open: true,
+          });
+        },
+        onError: () => {
+          setToast({
+            message: t(
+              "verification.approve.error",
+              "Error al aprobar el documento",
+            ),
+            type: "error",
+            open: true,
+          });
+        },
       },
-    });
+    );
   };
 
-  // ─── Academic title handlers ───────────────────────────────────────────────
-  const handleApproveTitle = () => {
-    if (!doctorDocuments.academicTitle) return;
-    setDoctorDocuments({
-      ...doctorDocuments,
-      academicTitle: {
-        ...doctorDocuments.academicTitle,
-        verificationStatus: "APPROVED",
-        feedback: "Título verificado correctamente.",
-      },
-    });
-  };
-
-  const handleRejectTitle = (_doc: UploadedFile | null, feedback: string) => {
-    if (!doctorDocuments.academicTitle) return;
-    setDoctorDocuments({
-      ...doctorDocuments,
-      academicTitle: {
-        ...doctorDocuments.academicTitle,
-        verificationStatus: "REJECTED",
-        feedback,
-      },
-    });
-  };
-
-  // ─── Certifications — individual handlers ─────────────────────────────────
-  const handleApproveOneCert = (doc: UploadedFile) => {
-    setCertStatuses((prev) => ({ ...prev, [doc.name]: "APPROVED" }));
-    setCertFeedbacks((prev) => {
-      const next = { ...prev };
-      delete next[doc.name];
-      return next;
-    });
-  };
-
-  const handleRejectOneCert = (doc: UploadedFile | null, feedback: string) => {
+  const handleReject = (doc: DocumentoAdmin | null, feedback: string) => {
     if (!doc) return;
-    setCertStatuses((prev) => ({ ...prev, [doc.name]: "REJECTED" }));
-    setCertFeedbacks((prev) => ({ ...prev, [doc.name]: feedback }));
+
+    const accionIdSeguro = getAccionIdSeguro(doc);
+
+    if (!accionIdSeguro) {
+      setToast({
+        message: t(
+          "verification.reject.noAction",
+          "No hay acción pendiente para este documento",
+        ),
+        type: "error",
+        open: true,
+      });
+      return;
+    }
+
+    revisarMutation.mutate(
+      { accionId: accionIdSeguro, decision: "Rechazada", comentario: feedback },
+      {
+        onSuccess: () =>
+          setToast({
+            message: t("verification.reject.success", "Documento rechazado"),
+            type: "success",
+            open: true,
+          }),
+        onError: () => {
+          setToast({
+            message: t(
+              "verification.reject.error",
+              "Error al rechazar el documento",
+            ),
+            type: "error",
+            open: true,
+          });
+        },
+      },
+    );
   };
 
-  // ─── Certifications — bulk handlers ───────────────────────────────────────
-  const handleApproveAllCerts = () => {
-    const allApproved: Record<string, VerificationStatus> = {};
-    (doctorDocuments.certifications ?? []).forEach((d) => {
-      allApproved[d.name] = "APPROVED";
-    });
-    setCertStatuses(allApproved);
-    setDoctorDocuments({
-      ...doctorDocuments,
-      certificationsStatus: "APPROVED",
-      certificationsFeedback: "Todas las certificaciones han sido aprobadas.",
-    });
+  const makeApproveHandler =
+    (docAdminRef: DocumentoAdmin) => (_uploadedFile: UploadedFile) => {
+      handleApprove(docAdminRef);
+    };
+
+  const makeRejectHandler =
+    (docAdminRef: DocumentoAdmin | null) =>
+    (_uploadedFile: UploadedFile | null, reason: string) => {
+      handleReject(docAdminRef, reason);
+    };
+
+  const handleApproveAllCertificaciones = (certDocs: DocumentoAdmin[]) => {
+    certDocs.forEach((doc) => handleApprove(doc));
   };
 
-  const handleRejectAllCerts = (feedback: string) => {
-    const allRejected: Record<string, VerificationStatus> = {};
-    const allFeedbacks: Record<string, string> = {};
-    (doctorDocuments.certifications ?? []).forEach((d) => {
-      allRejected[d.name] = "REJECTED";
-      allFeedbacks[d.name] = feedback;
-    });
-    setCertStatuses(allRejected);
-    setCertFeedbacks(allFeedbacks);
-    setDoctorDocuments({
-      ...doctorDocuments,
-      certificationsStatus: "REJECTED",
-      certificationsFeedback: feedback,
-    });
+  const handleRejectAllCertificaciones = (
+    certDocs: DocumentoAdmin[],
+    reason: string,
+  ) => {
+    certDocs.forEach((doc) => handleReject(doc, reason));
   };
+
+  // ── Render ────────────────────────────────────────────────────────────────
+
+  const { certificaciones, identityDoc, titleDoc, otherDocs } =
+    groupDocuments(documents);
+
+  // Mapeos para el bloque masivo de certificaciones (solo se usará si hay > 1)
+  const certMapped: UploadedFile[] = certificaciones.map((d) => ({
+    url: d.urlArchivo,
+    name: d.nombreOriginal,
+    type: d.tipoMime,
+    size: 0,
+    uploadedAt: "",
+  }));
+
+  const certDocStatuses: Record<string, VerificationStatus> = {};
+  const certDocFeedbacks: Record<string, string> = {};
+
+  certificaciones.forEach((d) => {
+    certDocStatuses[d.nombreOriginal] = resolveDocumentStatus(d.estadoRevision);
+    if (d.comentarioAdmin)
+      certDocFeedbacks[d.nombreOriginal] = d.comentarioAdmin;
+  });
+
+  const certParentStatus: VerificationStatus = certificaciones.some(
+    (d) => resolveDocumentStatus(d.estadoRevision) === "REJECTED",
+  )
+    ? "REJECTED"
+    : certificaciones.every(
+          (d) => resolveDocumentStatus(d.estadoRevision) === "APPROVED",
+        ) && certificaciones.length > 0
+      ? "APPROVED"
+      : "PENDING";
 
   return (
     <div className="space-y-4">
-      {/* Identity document */}
-      <DocumentCard
-        title="Documento de Identidad"
-        document={doctorDocuments.identityDocumentFile}
-        onApprove={handleApproveIdentity}
-        onReject={handleRejectIdentity}
-      />
-
-      {/* Academic title */}
-      {doctorDocuments.academicTitle && (
+      {/* Documento de Identidad (individual) */}
+      {identityDoc && (
         <DocumentCard
-          title="Título Académico"
-          document={doctorDocuments.academicTitle}
-          onApprove={handleApproveTitle}
-          onReject={handleRejectTitle}
+          title={t("verification.documents.identity", "Documento de Identidad")}
+          document={mapDocumentoToUploadedFile(identityDoc)}
+          onApprove={makeApproveHandler(identityDoc)}
+          onReject={makeRejectHandler(identityDoc)}
         />
       )}
 
-      {/* Certifications — individual approve/reject per cert */}
-      <DocumentCard
-        title="Certificaciones Adicionales"
-        documents={doctorDocuments.certifications ?? []}
-        isArray
-        arrayParentStatus={doctorDocuments.certificationsStatus ?? "PENDING"}
-        arrayParentFeedback={doctorDocuments.certificationsFeedback}
-        onApprove={handleApproveOneCert}
-        onReject={handleRejectOneCert}
-        onApproveAll={handleApproveAllCerts}
-        onRejectAll={handleRejectAllCerts}
-        docStatuses={certStatuses}
-        docFeedbacks={certFeedbacks}
-      />
+      {/* Título Académico (individual) */}
+      {titleDoc && (
+        <DocumentCard
+          title={t("verification.documents.academicTitle", "Título Académico")}
+          document={mapDocumentoToUploadedFile(titleDoc)}
+          onApprove={makeApproveHandler(titleDoc)}
+          onReject={makeRejectHandler(titleDoc)}
+        />
+      )}
+
+      {/* Certificaciones (Individual si solo hay 1) */}
+      {certificaciones.length === 1 && (
+        <DocumentCard
+          title={t("verification.documents.certifications", "Certificaciones")}
+          document={mapDocumentoToUploadedFile(certificaciones[0])}
+          onApprove={makeApproveHandler(certificaciones[0])}
+          onReject={makeRejectHandler(certificaciones[0])}
+        />
+      )}
+
+      {/* Certificaciones (Bloque masivo/array si hay más de 1) */}
+      {certificaciones.length > 1 && (
+        <DocumentCard
+          title={t("verification.documents.certifications", "Certificaciones")}
+          documents={certMapped}
+          isArray
+          arrayParentStatus={certParentStatus}
+          docStatuses={certDocStatuses}
+          docFeedbacks={certDocFeedbacks}
+          onApprove={(uploadedFile) => {
+            const match = certificaciones.find(
+              (d) => d.nombreOriginal === uploadedFile.name,
+            );
+            if (match) handleApprove(match);
+          }}
+          onReject={(uploadedFile, reason) => {
+            const match = uploadedFile
+              ? certificaciones.find(
+                  (d) => d.nombreOriginal === uploadedFile.name,
+                )
+              : null;
+            if (match) handleReject(match, reason);
+          }}
+          onApproveAll={() => handleApproveAllCertificaciones(certificaciones)}
+          onRejectAll={(reason) =>
+            handleRejectAllCertificaciones(certificaciones, reason)
+          }
+        />
+      )}
+
+      {/* Otros Documentos */}
+      {otherDocs.map((doc) => (
+        <DocumentCard
+          key={doc.id}
+          title={doc.tipoDocumento.replace(/_/g, " ")}
+          document={mapDocumentoToUploadedFile(doc)}
+          onApprove={makeApproveHandler(doc)}
+          onReject={makeRejectHandler(doc)}
+        />
+      ))}
+
+      {documents.length === 0 && (
+        <p className="text-sm text-muted-foreground text-center py-6">
+          {t("verification.documents.noDocs", "No hay documentos disponibles")}
+        </p>
+      )}
     </div>
   );
 }

@@ -24,11 +24,6 @@ export default function AcceptDoc({
 
   const handleConfirm = () => {
     onConfirmApprove();
-    setToast({
-      message: t("verification.approve.success"),
-      type: "success",
-      open: true,
-    });
   };
 
   const handleSecondary = () => {

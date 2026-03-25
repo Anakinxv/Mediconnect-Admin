@@ -1,75 +1,115 @@
 import React, { useState } from "react";
+import { useParams } from "react-router-dom";
 import MCDashboardContent from "@/shared/layout/MCDashboardContent";
-import { useVerifyInfoStore } from "@/stores/useVerifyInfoStore";
-import { mockDoctorData, mockCenterData } from "@/data/verifyInfoMock";
 import VerificationProgressSidebar from "../components/viewDetails/VerificationProgressSidebar";
 import AdminIdentificationCard from "../components/viewDetails/AdminIdentificationCard";
 import DocumentsSection from "../components/viewDetails/DocumentsSection";
 import AdminDoctorDocumentsView from "../components/viewDetails/AdminDoctorDocuments";
-import AdminCenterDocumentsView from "../components/viewDetails/AdminCenterDocuments";
 import type { VerificationStatus } from "../components/viewDetails/Verificationconstants";
+import {
+  useGetDoctorAdminDetail,
+  resolveDocumentStatus,
+  type DoctorDetailAdmin,
+} from "../hooks/doctors/useDoctors";
+import type { DoctorPersonalInfo } from "@/schema/verifyInfo.schema";
 
-function ViewDetailsPage({ isDoctor = true }: { isDoctor?: boolean }) {
-  const [activeTab, setActiveTab] = useState("identificacion");
-  const { doctorInfo, centerInfo, doctorDocuments, centerDocuments } =
-    useVerifyInfoStore();
+// ─── Mapper API → DoctorPersonalInfo ─────────────────────────────────────────
+// ⚠️  El API devuelve "En revisión" (no "pendiente"), por eso mapeamos
+//     cualquier valor no reconocido a "PENDING" como fallback.
 
-  const currentInfo = isDoctor
-    ? doctorInfo || mockDoctorData
-    : centerInfo || mockCenterData;
+const mapToDoctorPersonalInfo = (
+  doctor: DoctorDetailAdmin,
+): DoctorPersonalInfo => {
+  const primaryEsp = doctor.especialidades.find((e) => e.es_principal);
+  const secondaryEsp = doctor.especialidades.find((e) => !e.es_principal);
 
-  const currentStatus: VerificationStatus = currentInfo.verificationStatus;
-
-  const getDocumentsStatus = (): VerificationStatus => {
-    if (isDoctor && doctorDocuments) {
-      const statuses = [
-        doctorDocuments.identityDocumentFile?.verificationStatus,
-        doctorDocuments.academicTitle?.verificationStatus,
-        doctorDocuments.certificationsStatus,
-      ].filter(Boolean) as VerificationStatus[];
-      if (!statuses.length) return "PENDING";
-      if (statuses.some((s) => s === "REJECTED")) return "REJECTED";
-      if (statuses.every((s) => s === "APPROVED")) return "APPROVED";
-    }
-    if (!isDoctor && centerDocuments) {
-      return (
-        centerDocuments.healthCertificateFile?.verificationStatus || "PENDING"
-      );
-    }
+  const resolveStatus = (
+    raw: string,
+  ): DoctorPersonalInfo["verificationStatus"] => {
+    const v = raw?.toLowerCase().trim();
+    if (v === "aprobado" || v === "approved") return "APPROVED";
+    if (v === "rechazado" || v === "rejected") return "REJECTED";
+    // "En revisión", "Pendiente", o cualquier otro valor → PENDING
     return "PENDING";
   };
 
-  const documentsStatus = getDocumentsStatus();
+  return {
+    firstName: doctor.nombre,
+    lastName: doctor.apellido,
+    gender: doctor.genero,
+    email: doctor.usuario.email,
+    nationality: doctor.nacionalidad,
+    identificationNumber: doctor.numeroDocumentoIdentificacion,
+    phone: doctor.usuario.telefono,
+    address: doctor.ubicaciones[0]?.direccionCompleta ?? "",
+    primarySpecialty: primaryEsp?.especialidades?.nombre ?? "-",
+    secondarySpecialty: secondaryEsp?.especialidades?.nombre ?? "-",
+    medicalLicense: doctor.exequatur,
+    verificationStatus: resolveStatus(doctor.estadoVerificacion),
+  };
+};
 
-  const getProgressData = () => {
-    const identificationApproved = currentStatus === "APPROVED" ? 1 : 0;
+// ─── Cálculo del progreso ─────────────────────────────────────────────────────
 
-    if (isDoctor) {
-      const docStatuses: VerificationStatus[] = [
-        doctorDocuments?.identityDocumentFile?.verificationStatus ?? "PENDING",
-        doctorDocuments?.academicTitle?.verificationStatus ?? "PENDING",
-        doctorDocuments?.certificationsStatus ?? "PENDING",
-      ];
-      const docsApproved = docStatuses.filter((s) => s === "APPROVED").length;
-      const totalSteps = 1 + docStatuses.length; // identificación + 3 docs
-      const completedSteps = identificationApproved + docsApproved;
-      const percentage = Math.round((completedSteps / totalSteps) * 100);
+const getProgressData = (
+  identificationStatus: VerificationStatus,
+  docStatuses: VerificationStatus[],
+) => {
+  const identOk = identificationStatus === "APPROVED" ? 1 : 0;
+  const docsApproved = docStatuses.filter((s) => s === "APPROVED").length;
+  const totalSteps = 1 + docStatuses.length;
+  const completedSteps = identOk + docsApproved;
+  const percentage =
+    totalSteps > 0 ? Math.round((completedSteps / totalSteps) * 100) : 0;
+  return { completedSteps, totalSteps, percentage };
+};
 
-      return { completedSteps, totalSteps, percentage };
+// ─── Page ─────────────────────────────────────────────────────────────────────
+
+function ViewDetailsPage() {
+  const { doctorId } = useParams<{ doctorId: string }>();
+  const [activeTab, setActiveTab] = useState("identificacion");
+
+  const id = doctorId ? parseInt(doctorId, 10) : null;
+  const {
+    data: doctorDetail,
+    isLoading,
+    refetch,
+  } = useGetDoctorAdminDetail(id);
+
+  const handleTabChange = (tab: string) => {
+    setActiveTab(tab);
+    if (tab === "documentos") {
+      refetch();
     }
-
-    const centerDocApproved =
-      centerDocuments?.healthCertificateFile?.verificationStatus === "APPROVED"
-        ? 1
-        : 0;
-    const totalSteps = 2; // identificación + documento del centro
-    const completedSteps = identificationApproved + centerDocApproved;
-    const percentage = Math.round((completedSteps / totalSteps) * 100);
-
-    return { completedSteps, totalSteps, percentage };
   };
 
-  const progress = getProgressData();
+  if (isLoading || !doctorDetail) {
+    return (
+      <MCDashboardContent mainWidth="w-[100%]" noBg>
+        <div className="flex items-center justify-center min-h-[60vh] text-muted-foreground">
+          Cargando...
+        </div>
+      </MCDashboardContent>
+    );
+  }
+
+  const doctorInfo = mapToDoctorPersonalInfo(doctorDetail);
+  const currentStatus = doctorInfo.verificationStatus;
+
+  const docStatuses = doctorDetail.documentos.map((doc) =>
+    resolveDocumentStatus(doc.estadoRevision),
+  );
+
+  const documentsStatus: VerificationStatus = docStatuses.some(
+    (s) => s === "REJECTED",
+  )
+    ? "REJECTED"
+    : docStatuses.every((s) => s === "APPROVED") && docStatuses.length > 0
+      ? "APPROVED"
+      : "PENDING";
+
+  const progress = getProgressData(currentStatus, docStatuses);
 
   return (
     <MCDashboardContent mainWidth="w-[100%]" noBg>
@@ -80,8 +120,8 @@ function ViewDetailsPage({ isDoctor = true }: { isDoctor?: boolean }) {
               activeTab={activeTab}
               currentStatus={currentStatus}
               documentsStatus={documentsStatus}
-              isDoctor={isDoctor}
-              onTabChange={setActiveTab}
+              isDoctor={true}
+              onTabChange={handleTabChange}
               progressPercentage={progress.percentage}
               completedSteps={progress.completedSteps}
               totalSteps={progress.totalSteps}
@@ -89,21 +129,21 @@ function ViewDetailsPage({ isDoctor = true }: { isDoctor?: boolean }) {
             <main className="mt-4 sm:mt-0">
               {activeTab === "identificacion" && (
                 <AdminIdentificationCard
-                  isDoctor={isDoctor}
+                  isDoctor={true}
                   currentStatus={currentStatus}
-                  currentInfo={currentInfo}
+                  currentInfo={doctorInfo}
+                  doctorId={doctorDetail.usuarioId}
                 />
               )}
               {activeTab === "documentos" && (
                 <DocumentsSection
-                  isDoctor={isDoctor}
+                  isDoctor={true}
                   currentStatus={documentsStatus}
                 >
-                  {isDoctor ? (
-                    <AdminDoctorDocumentsView />
-                  ) : (
-                    <AdminCenterDocumentsView />
-                  )}
+                  <AdminDoctorDocumentsView
+                    documents={doctorDetail.documentos}
+                    doctorId={doctorDetail.usuarioId}
+                  />
                 </DocumentsSection>
               )}
             </main>

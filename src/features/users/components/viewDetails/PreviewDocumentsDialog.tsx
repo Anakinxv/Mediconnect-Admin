@@ -18,15 +18,14 @@ function PreviewDocumentsDialog({
     if (!documentUrl) {
       return (
         <div className="flex items-center justify-center h-[90vh] text-muted-foreground">
-          <span>No document to preview</span>
+          <span>No hay documento para previsualizar</span>
         </div>
       );
     }
 
-    // Verificar si es imagen usando documentType primero, luego la extensión como fallback
     const isImage =
       documentType?.startsWith("image/") ||
-      documentUrl.match(/\.(jpg|jpeg|png|gif|webp)$/i);
+      /\.(jpg|jpeg|png|gif|webp)$/i.test(documentUrl);
 
     if (isImage) {
       return (
@@ -40,12 +39,11 @@ function PreviewDocumentsDialog({
       );
     }
 
-    // Verificar si es PDF usando documentType primero, luego la extensión
     const isPdf =
-      documentType === "application/pdf" || documentUrl.match(/\.pdf$/i);
+      documentType === "application/pdf" || /\.pdf$/i.test(documentUrl);
 
     if (isPdf) {
-      // Si es un blob local o file local, solo mostrar botón para abrir en nueva pestaña
+      // Blob o file local — no previsualizable inline
       if (documentUrl.startsWith("blob:") || documentUrl.startsWith("file:")) {
         return (
           <div className="flex flex-col items-center justify-center h-[90vh] gap-4">
@@ -56,8 +54,9 @@ function PreviewDocumentsDialog({
               </h3>
               <p className="text-muted-foreground mb-4">
                 Los archivos PDF subidos localmente no se pueden previsualizar
-                aquí. Haz clic para abrirlo en una nueva pestaña.
+                aquí.
               </p>
+              {/* ✅ <a> en lugar de <button> para evitar nested button */}
               <a
                 href={documentUrl}
                 target="_blank"
@@ -70,12 +69,13 @@ function PreviewDocumentsDialog({
           </div>
         );
       }
-      // Si es una URL pública, mostrar en iframe
+
+      // URL pública — iframe
       return (
         <div className="h-[90vh] w-full bg-transparent rounded-lg overflow-hidden">
           <iframe
             src={documentUrl}
-            className="w-full h-full border-0 rounded-lg bg-transparent custom-iframe-scroll"
+            className="w-full h-full border-0 rounded-lg bg-transparent"
             title={documentName || "PDF Document"}
             style={{ background: "transparent" }}
           />
@@ -83,24 +83,25 @@ function PreviewDocumentsDialog({
       );
     }
 
-    // Otros tipos de archivo
+    // Otros tipos
     return (
       <div className="flex flex-col items-center justify-center h-[90vh] gap-4">
         <div className="text-6xl text-muted-foreground">📄</div>
         <div className="text-center">
           <h3 className="text-lg font-semibold mb-2">
-            {documentName || "Document"}
+            {documentName || "Documento"}
           </h3>
           <p className="text-muted-foreground mb-4">
-            Preview not available for this file type
+            Vista previa no disponible para este tipo de archivo
           </p>
+          {/* ✅ <a> en lugar de <button> */}
           <a
             href={documentUrl}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
           >
-            Open in new tab
+            Abrir en nueva pestaña
           </a>
         </div>
       </div>
@@ -111,6 +112,10 @@ function PreviewDocumentsDialog({
     <MCModalBase
       id="previewDocumentsDialog"
       title={documentName || "Vista previa del documento"}
+      // ✅ El trigger debe ser un elemento NO-button para evitar
+      // <button><button></button></button>. Si children ya es un <div>,
+      // MCModalBase lo envolverá correctamente. Si es un <button>, convertirlo
+      // en <div role="button"> en el sitio donde se use este componente.
       trigger={children}
       size="xl"
     >
