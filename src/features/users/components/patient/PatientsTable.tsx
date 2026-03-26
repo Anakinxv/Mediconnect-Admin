@@ -23,15 +23,15 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/shared/ui/tooltip";
-import { UserStatusBadge, type UserStatus } from "../UserStates";
 import UserAction from "../UserAction";
 import ViewDetailsPatientDialog from "./ViewDetailsPatientDialog";
+import MCServicesStatus from "@/shared/components/MCServicesStatus"; // Importante
 
 export interface Patient {
   id: string;
   name: string;
   image?: string;
-  status: UserStatus;
+  status?: string; // Propiedad añadida
   registrationDate: string;
   phone: string;
   email: string;
@@ -47,6 +47,15 @@ const PAGE_SIZE = 10;
 const truncate = (text: string | undefined, maxLength: number = 28): string => {
   if (!text) return "";
   return text.length > maxLength ? `${text.substring(0, maxLength)}...` : text;
+};
+
+// Helper adaptado para los pacientes
+const resolveStatus = (item: Patient): string => {
+  const raw =
+    item.status ||
+    (item as unknown as Record<string, string>).estado ||
+    "inactive";
+  return raw;
 };
 
 export default function PatientsTable({
@@ -72,6 +81,7 @@ export default function PatientsTable({
             <TableHead className="w-[250px]">
               {t("patients.table.patient")}
             </TableHead>
+            {/* Nueva columna de Estado */}
             <TableHead className="w-[130px]">{t("table.status")}</TableHead>
             <TableHead className="w-[160px]">
               {t("table.registrationDate")}
@@ -115,8 +125,12 @@ export default function PatientsTable({
                     <span className="font-medium">{patient.name}</span>
                   </div>
                 </TableCell>
+                {/* Renderizado del Badge de Estado */}
                 <TableCell className="w-[130px]">
-                  <UserStatusBadge status={patient.status} />
+                  <MCServicesStatus
+                    status={resolveStatus(patient)}
+                    variant="default"
+                  />
                 </TableCell>
                 <TableCell className="w-[160px]">
                   <span className="font-medium">
@@ -154,7 +168,7 @@ export default function PatientsTable({
           ) : (
             <TableRow>
               <TableCell
-                colSpan={5}
+                colSpan={5} // Actualizado a 5 columnas
                 className="text-center py-8 text-muted-foreground"
               >
                 {t("patients.table.noData")}
@@ -163,6 +177,7 @@ export default function PatientsTable({
           )}
         </TableBody>
       </Table>
+      {/* Paginación se mantiene igual */}
       {totalPages > 1 && (
         <Pagination className="mt-4">
           <PaginationContent>

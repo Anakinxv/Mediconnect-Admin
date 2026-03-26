@@ -14,68 +14,64 @@ import {
   EmptyContent,
 } from "@/shared/ui/empty";
 import MCButton from "@/shared/components/forms/MCButton";
-import { UserCheck, UserX, Clock, Filter, Users } from "lucide-react";
+import { Filter, Users } from "lucide-react";
 import PatientsTable, {
   type Patient,
 } from "../components/patient/PatientsTable";
 import PatientFilters from "../components/filters/Patientfilters";
+import {
+  useGetPatientsAdmin,
+  type PatientAdminListItem,
+  type GetPatientsAdminParams,
+} from "../hooks/patients/usePatients";
 
-const mockPatients: Patient[] = [
-  {
-    id: "1",
-    name: "Francisco Madera",
-    image: "https://randomuser.me/api/portraits/men/1.jpg",
-    status: "pending",
-    registrationDate: "11/10/2025",
-    phone: "809-432-9532",
-    email: "francisco.m@correo.com",
-  },
-  {
-    id: "2",
-    name: "Emmanuel Jimenez",
-    image: "https://randomuser.me/api/portraits/men/2.jpg",
-    status: "pending",
-    registrationDate: "11/10/2025",
-    phone: "809-432-9532",
-    email: "emmanuelj@correo.com",
-  },
-  {
-    id: "3",
-    name: "Derek Hernandez",
-    image: "https://randomuser.me/api/portraits/men/3.jpg",
-    status: "approved",
-    registrationDate: "11/10/2025",
-    phone: "809-432-9532",
-    email: "derekh@correo.com",
-  },
-  {
-    id: "4",
-    name: "Jackson Martinez",
-    image: "https://randomuser.me/api/portraits/men/4.jpg",
-    status: "approved",
-    registrationDate: "11/10/2025",
-    phone: "809-432-9532",
-    email: "jacksonm@correo.com",
-  },
-  {
-    id: "5",
-    name: "Gabriela Melo",
-    image: "https://randomuser.me/api/portraits/women/5.jpg",
-    status: "pending",
-    registrationDate: "11/10/2025",
-    phone: "809-432-9532",
-    email: "gabrielam@correo.com",
-  },
-  {
-    id: "6",
-    name: "Juan Olivo",
-    image: "https://randomuser.me/api/portraits/men/6.jpg",
-    status: "rejected",
-    registrationDate: "11/10/2025",
-    phone: "809-432-9532",
-    email: "juanolivo@correo.com",
-  },
-];
+// ─── Mappers ──────────────────────────────────────────────────────────────────
+
+const formatDate = (dateStr: string): string => {
+  if (!dateStr) return "-";
+  try {
+    const d = new Date(dateStr);
+    if (isNaN(d.getTime())) return dateStr;
+    return d.toLocaleDateString("es-DO", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    });
+  } catch {
+    return dateStr;
+  }
+};
+
+const mapPatientToTableRow = (patient: PatientAdminListItem): Patient => ({
+  id: patient.usuarioId.toString(),
+  name: `${patient.nombre} ${patient.apellido}`.trim(),
+  image: patient.fotoPerfil ?? undefined,
+  status: patient.estado, // Añadimos el estado aquí
+  registrationDate: formatDate(patient.creadoEn),
+  phone: patient.telefono ?? "-",
+  email: patient.email ?? "-",
+});
+
+const parseDate = (dateStr: string) => {
+  if (!dateStr) return new Date(NaN);
+  if (dateStr.includes("T")) return new Date(dateStr);
+  const [d, m, y] = dateStr.split("/");
+  if (!d || !m || !y) return new Date(NaN);
+  return new Date(Number(y), Number(m) - 1, Number(d));
+};
+
+const matchesDateRange = (dateStr: string, range?: [Date, Date]): boolean => {
+  if (!range) return true;
+  const date = parseDate(dateStr);
+  date.setHours(0, 0, 0, 0);
+  const start = new Date(range[0]);
+  start.setHours(0, 0, 0, 0);
+  const end = new Date(range[1]);
+  end.setHours(23, 59, 59, 999);
+  return date >= start && date <= end;
+};
+
+// ─── Página ───────────────────────────────────────────────────────────────────
 
 function PatientsPage() {
   const { t } = useTranslation("common");
@@ -83,53 +79,55 @@ function PatientsPage() {
 
   const [searchTerm, setSearchTerm] = useState("");
   const [filters, setFilters] = useState({
-    status: "all",
     dateRange: undefined as [Date, Date] | undefined,
+    status: "all", // Nuevo estado para el filtro
   });
 
-  const activeFiltersCount = Object.entries(filters).filter(([key, value]) => {
-    if (key === "dateRange") return value !== undefined;
-    return value !== "all" && value !== "";
-  }).length;
+  const activeFiltersCount =
+    (filters.dateRange ? 1 : 0) + (filters.status !== "all" ? 1 : 0);
 
-  const clearFilters = () =>
-    setFilters({ status: "all", dateRange: undefined });
-
-  const parseDate = (dateStr: string) => {
-    const [day, month, year] = dateStr.split("/");
-    return new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+  const clearFilters = () => {
+    setFilters({ dateRange: undefined, status: "all" });
+    setSearchTerm("");
   };
 
-  const matchesCustomDateRange = (
-    dateStr: string,
-    range?: [Date, Date],
-  ): boolean => {
-    if (!range) return true;
-    const reg = parseDate(dateStr);
-    reg.setHours(0, 0, 0, 0);
-    const start = new Date(range[0]);
-    start.setHours(0, 0, 0, 0);
-    const end = new Date(range[1]);
-    end.setHours(23, 59, 59, 999);
-    return reg >= start && reg <= end;
-  };
+  // Parámetros API: Pasamos el estado al backend
+  const apiParams = useMemo<GetPatientsAdminParams>(
+    () => ({
+      nombre: searchTerm?.trim() || undefined,
+      estado: filters.status !== "all" ? filters.status : undefined,
+      pagina: 1,
+      limite: 100,
+    }),
+    [searchTerm, filters.status],
+  );
 
+  const { data: apiPatients = [] } = useGetPatientsAdmin(apiParams);
+
+  const safePatients = Array.isArray(apiPatients) ? apiPatients : [];
+
+  const tablePatients = useMemo(
+    () => safePatients.map(mapPatientToTableRow),
+    [safePatients],
+  );
+
+  // Filtros combinados en el lado del cliente (para búsqueda y fechas)
   const filteredPatients = useMemo(
     () =>
-      mockPatients.filter((patient) => {
+      tablePatients.filter((patient) => {
         const matchesSearch =
           patient.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
           patient.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
           patient.phone.includes(searchTerm);
-        const matchesStatus =
-          filters.status === "all" || patient.status === filters.status;
-        const matchesDate = matchesCustomDateRange(
+
+        const matchesDate = matchesDateRange(
           patient.registrationDate,
           filters.dateRange,
         );
-        return matchesSearch && matchesStatus && matchesDate;
+
+        return matchesSearch && matchesDate;
       }),
-    [searchTerm, filters],
+    [tablePatients, searchTerm, filters.dateRange],
   );
 
   const searchComponent = (
@@ -148,15 +146,12 @@ function PatientsPage() {
         await MCGeneratePDF({
           columns: [
             { title: t("patients.table.patient"), key: "name" },
-            { title: t("table.status"), key: "status" },
+            { title: t("table.status"), key: "status" }, // Agregado al PDF
             { title: t("table.registrationDate"), key: "registrationDate" },
             { title: t("table.phone"), key: "phone" },
             { title: t("table.email"), key: "email" },
           ],
-          data: filteredPatients.map((patient) => ({
-            ...patient,
-            status: t(`patients.status.${patient.status}`),
-          })),
+          data: filteredPatients,
           fileName: "pacientes",
           title: t("patients.title"),
           subtitle: t("patients.subtitle"),
@@ -227,36 +222,15 @@ function PatientsPage() {
     filteredPatients.length === 0 ? (
       emptyState
     ) : (
-      <PatientsTable
-        patients={filteredPatients}
-        onViewDetails={(patient) => console.log("View details:", patient)}
-      />
+      <PatientsTable patients={filteredPatients} />
     );
 
   const metrics = [
     {
       title: t("patients.metrics.total"),
-      value: mockPatients.filter((p) => p.status === "approved").length,
-      icon: <UserCheck size={30} />,
-      subtitle: t("patients.metrics.totalSubtitle"),
-    },
-    {
-      title: t("patients.metrics.pending"),
-      value: mockPatients.filter((p) => p.status === "pending").length,
-      icon: <Clock size={30} />,
-      subtitle: t("patients.metrics.pendingSubtitle"),
-    },
-    {
-      title: t("patients.metrics.rejected"),
-      value: mockPatients.filter((p) => p.status === "rejected").length,
-      icon: <UserX size={30} />,
-      subtitle: t("patients.metrics.rejectedSubtitle"),
-    },
-    {
-      title: t("patients.metrics.approved"),
-      value: mockPatients.filter((p) => p.status === "approved").length,
+      value: safePatients.length,
       icon: <Users size={30} />,
-      subtitle: t("patients.metrics.approvedSubtitle"),
+      subtitle: t("patients.metrics.totalSubtitle"),
     },
   ];
 
