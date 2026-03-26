@@ -17,20 +17,30 @@ import {
   useGetPendingAcciones,
   useRevisarAccion,
 } from "../../hooks/doctors/useAcciones";
+import {
+  useGetCenterPendingAcciones,
+  useRevisarAccionCenter,
+} from "../../hooks/centers/useActions";
 import { useGlobalUIStore } from "@/stores/useGlobalUIStore";
 import { useTranslation } from "react-i18next";
 
-// ─── Tipos de documento que corresponden a documentos (no a identificación) ──
-// Si el backend usa un tipoDocumento distinto para la acción de identificación,
-// simplemente NO estará en esta lista y será recogida por el fallback.
-const DOCUMENT_TIPOS = ["foto_documento", "titulo_academico", "certificacion"];
+// Tipos que corresponden a documentos adjuntos (no a identificación del registro)
+const DOCUMENT_TIPOS = [
+  "foto_documento",
+  "titulo_academico",
+  "certificacion",
+  "certificado_sanitario",
+  "certificacion_sanitaria",
+];
 
 interface Props {
   isDoctor: boolean;
   currentStatus: VerificationStatus;
   currentInfo: DoctorPersonalInfo | CenterPersonalInfo;
-  /** usuarioId del doctor — necesario para encontrar su acción de verificación */
+  /** usuarioId del doctor */
   doctorId?: number;
+  /** usuarioId del centro */
+  centerId?: number;
 }
 
 function AdminIdentificationCard({
@@ -38,44 +48,51 @@ function AdminIdentificationCard({
   currentStatus,
   currentInfo,
   doctorId,
+  centerId,
 }: Props) {
   const { t } = useTranslation("common");
   const setToast = useGlobalUIStore((s) => s.setToast);
-  const revisarMutation = useRevisarAccion();
 
-  // ── Buscamos la acción de verificación de identidad de este doctor ────────
-  // Es la acción cuyo tipoDocumento NO es uno de los documentos conocidos,
-  // o bien la que tenga el tipoDocumento que el backend use para identificación.
-  const { data: acciones = [] } = useGetPendingAcciones({ limite: 100 });
+  // ── Hooks de acciones (doctor o centro) ──────────────────────────────────
+  const revisarDoctorMutation = useRevisarAccion();
+  const revisarCenterMutation = useRevisarAccionCenter();
+  const revisarMutation = isDoctor
+    ? revisarDoctorMutation
+    : revisarCenterMutation;
 
+  const { data: doctorAcciones = [] } = useGetPendingAcciones({ limite: 100 });
+  const { data: centerAcciones = [] } = useGetCenterPendingAcciones({
+    limite: 100,
+  });
+  const acciones = isDoctor ? doctorAcciones : centerAcciones;
+
+  const entityId = isDoctor ? doctorId : centerId;
+
+  // Buscamos la acción de verificación de identificación (no de documentos)
   const identificacionAccionId = useMemo(() => {
-    if (!doctorId) return null;
+    if (!entityId) return null;
 
-    // 1) Intento ideal: doctorId + tipo de identificación (no documento)
-    const byDoctor = acciones.find(
+    const byEntity = acciones.find(
       (a) =>
-        a.doctorId === doctorId && !DOCUMENT_TIPOS.includes(a.tipoDocumento),
+        (a.doctorId === entityId ||
+          (a as any).centroId === entityId ||
+          (a as any).usuarioId === entityId) &&
+        !DOCUMENT_TIPOS.includes(a.tipoDocumento),
     );
-    if (byDoctor?.id != null) return byDoctor.id;
+    if (byEntity?.id != null) return byEntity.id;
 
-    // 2) Fallback: cualquier acción de identificación pendiente
+    // Fallback: cualquier acción que no sea de documento
     const fallback = acciones.find(
       (a) => !DOCUMENT_TIPOS.includes(a.tipoDocumento),
     );
     return fallback?.id ?? null;
-  }, [acciones, doctorId]);
+  }, [acciones, entityId]);
 
-  // Solo se muestran acciones cuando el estado es PENDING
   const showActions = currentStatus === "PENDING";
 
   const handleApprove = () => {
     const accionIdSeguro = Number(identificacionAccionId);
-    console.log(
-      `[approve-identificacion] raw=${identificacionAccionId} -> seguro=${accionIdSeguro}`,
-    );
-
     if (!accionIdSeguro || Number.isNaN(accionIdSeguro)) {
-      console.error("No se encontró un accionId válido para identificación");
       setToast({
         message: t(
           "verification.approve.noAction",
@@ -91,7 +108,9 @@ function AdminIdentificationCard({
       {
         accionId: accionIdSeguro,
         decision: "Aprobada",
-        comentario: "Información personal verificada correctamente",
+        comentario: isDoctor
+          ? "Información personal verificada correctamente"
+          : "Información del centro verificada correctamente",
       },
       {
         onSuccess: () =>
@@ -103,14 +122,7 @@ function AdminIdentificationCard({
             type: "success",
             open: true,
           }),
-        onError: (error: any) => {
-          console.error(
-            "El backend rechazó la petición:",
-            error?.response?.data?.message ??
-              error?.response?.data ??
-              error?.message ??
-              error,
-          );
+        onError: (error: any) =>
           setToast({
             message: t(
               "verification.approve.error",
@@ -118,20 +130,14 @@ function AdminIdentificationCard({
             ),
             type: "error",
             open: true,
-          });
-        },
+          }),
       },
     );
   };
 
   const handleConfirmReject = (reason: string) => {
     const accionIdSeguro = Number(identificacionAccionId);
-    console.log(
-      `[reject-identificacion] raw=${identificacionAccionId} -> seguro=${accionIdSeguro}`,
-    );
-
     if (!accionIdSeguro || Number.isNaN(accionIdSeguro)) {
-      console.error("No se encontró un accionId válido para identificación");
       setToast({
         message: t(
           "verification.reject.noAction",
@@ -144,11 +150,7 @@ function AdminIdentificationCard({
     }
 
     revisarMutation.mutate(
-      {
-        accionId: accionIdSeguro,
-        decision: "Rechazada",
-        comentario: reason,
-      },
+      { accionId: accionIdSeguro, decision: "Rechazada", comentario: reason },
       {
         onSuccess: () =>
           setToast({
@@ -159,14 +161,7 @@ function AdminIdentificationCard({
             type: "success",
             open: true,
           }),
-        onError: (error: any) => {
-          console.error(
-            "El backend rechazó la petición:",
-            error?.response?.data?.message ??
-              error?.response?.data ??
-              error?.message ??
-              error,
-          );
+        onError: () =>
           setToast({
             message: t(
               "verification.reject.error",
@@ -174,8 +169,7 @@ function AdminIdentificationCard({
             ),
             type: "error",
             open: true,
-          });
-        },
+          }),
       },
     );
   };
@@ -201,7 +195,6 @@ function AdminIdentificationCard({
           <CenterReadOnlyView data={currentInfo as CenterPersonalInfo} />
         )}
 
-        {/* Acciones — solo cuando PENDING */}
         {showActions && (
           <div className="flex flex-col sm:flex-row justify-end gap-3 mt-6 sm:mt-8 pt-4 border-t border-primary/10">
             <DeniedDoc

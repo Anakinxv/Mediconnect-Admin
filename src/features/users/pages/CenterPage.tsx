@@ -26,69 +26,63 @@ import CentersTable, { type Center } from "../components/center/CentersTable";
 import CenterFilters from "../components/filters/CenterFilters";
 import { useNavigate } from "react-router-dom";
 import { ROUTES } from "@/router/routes";
+import {
+  useGetCentersAdmin,
+  resolveCenterVerificationStatus,
+  mapCenterStatusToApi,
+  buildDireccionCompleta,
+  type CenterAdminListItem,
+  type GetCentersAdminParams,
+} from "../hooks/centers/useCenters";
 
-const mockCenters: Center[] = [
-  {
-    id: "1",
-    name: "Hospital General Santo Domingo",
-    image: "https://images.unsplash.com/photo-1586773860418-d37222d8fce3?w=400",
-    status: "approved",
-    registrationDate: "11/10/2025",
-    phone: "809-432-9532",
-    email: "info@hospitalgeneralsd.com",
-    centerType: "Hospital",
-  },
-  {
-    id: "2",
-    name: "Clínica Dr. Raúl Báez Duarte",
-    image: "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=400",
-    status: "pending",
-    registrationDate: "11/10/2025",
-    phone: "809-432-9533",
-    email: "contacto@clinicabaez.com",
-    centerType: "Clínica",
-  },
-  {
-    id: "3",
-    name: "Centro Médico Plaza de la Salud",
-    image: "https://images.unsplash.com/photo-1551601651-2a8555f1a136?w=400",
-    status: "approved",
-    registrationDate: "11/10/2025",
-    phone: "809-432-9534",
-    email: "info@plazadelasalud.com",
-    centerType: "Centro Especializado",
-  },
-  {
-    id: "4",
-    name: "Laboratorio Referencia",
-    image: "https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=400",
-    status: "approved",
-    registrationDate: "11/10/2025",
-    phone: "809-432-9535",
-    email: "resultados@labreferencia.com",
-    centerType: "Laboratorio",
-  },
-  {
-    id: "5",
-    name: "Centro de Diagnóstico Avanzado",
-    image: "https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=400",
-    status: "pending",
-    registrationDate: "11/10/2025",
-    phone: "809-432-9536",
-    email: "citas@diagnosticoavanzado.com",
-    centerType: "Centro de Diagnóstico",
-  },
-  {
-    id: "6",
-    name: "Farmacia Nacional Central",
-    image: "https://images.unsplash.com/photo-1631549916768-4119b2e5f926?w=400",
-    status: "rejected",
-    registrationDate: "11/10/2025",
-    phone: "809-432-9537",
-    email: "info@farmacianacional.com",
-    centerType: "Farmacia",
-  },
-];
+// ─── Mapper API → Center (interfaz de la tabla) ───────────────────────────────
+
+const formatDate = (dateStr: string): string => {
+  if (!dateStr) return "-";
+  try {
+    const d = new Date(dateStr);
+    if (isNaN(d.getTime())) return dateStr;
+    return d.toLocaleDateString("es-DO", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    });
+  } catch {
+    return dateStr;
+  }
+};
+
+const mapCenterToTableRow = (center: CenterAdminListItem): Center => ({
+  id: center.usuarioId.toString(),
+  name: center.nombreComercial,
+  image: center.usuario.fotoPerfil ?? undefined,
+  status: resolveCenterVerificationStatus(center.estadoVerificacion),
+  registrationDate: formatDate(center.creadoEn),
+  phone: center.usuario.telefono ?? "-",
+  email: center.usuario.email ?? "-",
+  centerType: center.tipoCentro?.nombre ?? "-",
+});
+
+const parseDate = (dateStr: string) => {
+  if (!dateStr) return new Date(NaN);
+  if (dateStr.includes("T")) return new Date(dateStr);
+  const [d, m, y] = dateStr.split("/");
+  if (!d || !m || !y) return new Date(NaN);
+  return new Date(Number(y), Number(m) - 1, Number(d));
+};
+
+const matchesDateRange = (dateStr: string, range?: [Date, Date]): boolean => {
+  if (!range) return true;
+  const date = parseDate(dateStr);
+  date.setHours(0, 0, 0, 0);
+  const start = new Date(range[0]);
+  start.setHours(0, 0, 0, 0);
+  const end = new Date(range[1]);
+  end.setHours(23, 59, 59, 999);
+  return date >= start && date <= end;
+};
+
+// ─── Page ─────────────────────────────────────────────────────────────────────
 
 function CenterPage() {
   const { t } = useTranslation("common");
@@ -102,58 +96,59 @@ function CenterPage() {
     dateRange: undefined as [Date, Date] | undefined,
   });
 
-  const activeFiltersCount = Object.entries(filters).filter(([key, value]) => {
-    if (key === "dateRange") return value !== undefined;
-    return value !== "all" && value !== "";
-  }).length;
+  const activeFiltersCount = useMemo(() => {
+    let count = 0;
+    if (filters.status !== "all") count++;
+    if (filters.centerType !== "all" && filters.centerType !== "") count++;
+    if (filters.dateRange) count++;
+    return count;
+  }, [filters]);
 
-  const clearFilters = () =>
+  const clearFilters = () => {
     setFilters({ status: "all", centerType: "all", dateRange: undefined });
-
-  const parseDate = (dateStr: string) => {
-    const [day, month, year] = dateStr.split("/");
-    return new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+    setSearchTerm("");
   };
 
-  const matchesCustomDateRange = (
-    dateStr: string,
-    range?: [Date, Date],
-  ): boolean => {
-    if (!range) return true;
-    const reg = parseDate(dateStr);
-    reg.setHours(0, 0, 0, 0);
-    const start = new Date(range[0]);
-    start.setHours(0, 0, 0, 0);
-    const end = new Date(range[1]);
-    end.setHours(23, 59, 59, 999);
-    return reg >= start && reg <= end;
-  };
+  // nombre server-side; estadoVerificacion server-side; centerType y dateRange client-side
+  const apiParams = useMemo<GetCentersAdminParams>(
+    () => ({
+      nombre: searchTerm?.trim() || undefined,
+      estadoVerificacion: mapCenterStatusToApi(filters.status),
+      pagina: 1,
+      limite: 100,
+    }),
+    [searchTerm, filters.status],
+  );
 
+  const { data: apiCenters = [] } = useGetCentersAdmin(apiParams);
+
+  const safeCenters = Array.isArray(apiCenters) ? apiCenters : [];
+
+  const tableCenters = useMemo(
+    () => safeCenters.map(mapCenterToTableRow),
+    [safeCenters],
+  );
+
+  // Filtros client-side: centerType + dateRange
   const filteredCenters = useMemo(
     () =>
-      mockCenters.filter((center) => {
-        const matchesSearch =
-          center.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          center.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          center.phone.includes(searchTerm) ||
-          center.centerType.toLowerCase().includes(searchTerm.toLowerCase());
-        const matchesStatus =
-          filters.status === "all" || center.status === filters.status;
+      tableCenters.filter((center) => {
         const matchesCenterType =
           filters.centerType === "all" ||
+          filters.centerType === "" ||
           center.centerType
             .toLowerCase()
             .includes(filters.centerType.toLowerCase());
-        const matchesDate = matchesCustomDateRange(
+        const matchesDate = matchesDateRange(
           center.registrationDate,
           filters.dateRange,
         );
-        return (
-          matchesSearch && matchesStatus && matchesCenterType && matchesDate
-        );
+        return matchesCenterType && matchesDate;
       }),
-    [searchTerm, filters],
+    [tableCenters, filters.centerType, filters.dateRange],
   );
+
+  // ─── Sub-components ───────────────────────────────────────────────────────
 
   const searchComponent = (
     <div className="w-full sm:w-auto sm:min-w-[200px] lg:min-w-[250px]">
@@ -172,14 +167,14 @@ function CenterPage() {
           columns: [
             { title: t("centers.table.center"), key: "name" },
             { title: t("centers.table.centerType"), key: "centerType" },
-            { title: t("table.status"), key: "status" },
+            { title: t("table.status"), key: "statusLabel" },
             { title: t("table.registrationDate"), key: "registrationDate" },
             { title: t("table.phone"), key: "phone" },
             { title: t("table.email"), key: "email" },
           ],
           data: filteredCenters.map((center) => ({
             ...center,
-            status: t(`centers.status.${center.status}`),
+            statusLabel: t(`centers.status.${center.status}`),
           })),
           fileName: "centros-medicos",
           title: t("centers.title"),
@@ -231,18 +226,11 @@ function CenterPage() {
         </div>
       </EmptyHeader>
       <EmptyContent>
-        <div className="flex flex-col items-center gap-3">
-          {activeFiltersCount > 0 && (
-            <MCButton
-              variant="outline"
-              onClick={clearFilters}
-              className={isMobile ? "px-4 py-2" : "px-6 py-2"}
-              size="sm"
-            >
-              {t("centers.empty.clearFilters")}
-            </MCButton>
-          )}
-        </div>
+        {activeFiltersCount > 0 && (
+          <MCButton variant="outline" onClick={clearFilters} size="sm">
+            {t("centers.empty.clearFilters")}
+          </MCButton>
+        )}
       </EmptyContent>
     </Empty>
   );
@@ -262,25 +250,37 @@ function CenterPage() {
   const metrics = [
     {
       title: t("centers.metrics.total"),
-      value: mockCenters.filter((c) => c.status === "approved").length,
+      value: safeCenters.filter(
+        (c) =>
+          resolveCenterVerificationStatus(c.estadoVerificacion) === "approved",
+      ).length,
       icon: <CheckCircle size={30} />,
       subtitle: t("centers.metrics.totalSubtitle"),
     },
     {
       title: t("centers.metrics.pending"),
-      value: mockCenters.filter((c) => c.status === "pending").length,
+      value: safeCenters.filter(
+        (c) =>
+          resolveCenterVerificationStatus(c.estadoVerificacion) === "pending",
+      ).length,
       icon: <Clock size={30} />,
       subtitle: t("centers.metrics.pendingSubtitle"),
     },
     {
       title: t("centers.metrics.rejected"),
-      value: mockCenters.filter((c) => c.status === "rejected").length,
+      value: safeCenters.filter(
+        (c) =>
+          resolveCenterVerificationStatus(c.estadoVerificacion) === "rejected",
+      ).length,
       icon: <XCircle size={30} />,
       subtitle: t("centers.metrics.rejectedSubtitle"),
     },
     {
       title: t("centers.metrics.approved"),
-      value: mockCenters.filter((c) => c.status === "approved").length,
+      value: safeCenters.filter(
+        (c) =>
+          resolveCenterVerificationStatus(c.estadoVerificacion) === "approved",
+      ).length,
       icon: <Building size={30} />,
       subtitle: t("centers.metrics.approvedSubtitle"),
     },

@@ -112,10 +112,6 @@ function PreviewDocumentsDialog({
     <MCModalBase
       id="previewDocumentsDialog"
       title={documentName || "Vista previa del documento"}
-      // ✅ El trigger debe ser un elemento NO-button para evitar
-      // <button><button></button></button>. Si children ya es un <div>,
-      // MCModalBase lo envolverá correctamente. Si es un <button>, convertirlo
-      // en <div role="button"> en el sitio donde se use este componente.
       trigger={children}
       size="xl"
     >
