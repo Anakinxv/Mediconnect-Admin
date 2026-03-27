@@ -47,7 +47,7 @@ export default function AcceptDoc({
       onSecondary={handleSecondary}
       confirmText={t("verification.approve.confirm")}
       secondaryText={t("verification.approve.cancel")}
-      description="¿Seguro que quieres aprobar este documento? Una vez aprobado, no podrás modificar el estado del mismo."
+      description={t("verification.approve.description")}
     >
       <></>
     </MCModalBase>

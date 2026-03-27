@@ -1,8 +1,4 @@
 {
-  "validation": {
-    "show": "Mostrar",
-    "hide": "Ocultar"
-  },
   "navbar": {
     "home": "Inicio",
     "appointments": "Citas",
@@ -72,6 +68,8 @@
     "viewMap": "Ver Mapa"
   },
   "validation": {
+    "show": "Mostrar",
+    "hide": "Ocultar",
     "emailRequired": "El correo electrónico es obligatorio",
     "emailInvalid": "El correo electrónico no es válido",
     "passwordMin": "La contraseña debe tener al menos 8 caracteres",
@@ -85,8 +83,6 @@
     "invalidPatientMessageConfig": "Configuración de mensajes a pacientes inválida",
     "invalidCenterMessageConfig": "Configuración de mensajes a centros inválida",
     "invalidDoctorMessageConfig": "Configuración de mensajes a doctores inválida",
-    "show": "Mostrar",
-    "hide": "Ocultar",
     "firstNameRequired": "El nombre es obligatorio",
     "lastNameRequired": "Los apellidos son obligatorios",
     "genderRequired": "El género es obligatorio",
@@ -133,7 +129,6 @@
       "passwordRequired": "La contraseña es obligatoria"
     }
   },
-
   "changePassword": {
     "title": "Cambiar contraseña",
     "description": "Ingresa tu contraseña actual y la nueva contraseña que deseas establecer.",
@@ -152,7 +147,6 @@
       "match": "Las contraseñas no coinciden"
     }
   },
-
   "changeEmail": {
     "title": "Cambiar correo electrónico",
     "description": "Ingresa tu nueva dirección de correo. Te enviaremos un código de verificación.",
@@ -165,7 +159,6 @@
       "invalid": "Correo inválido"
     }
   },
-
   "verifyEmail": {
     "title": "Verifica tu nuevo correo",
     "instructions": "Ingresa el código de verificación que enviamos a",
@@ -240,6 +233,33 @@
       "pending": "Tu documento está en revisión. Te avisaremos cuando haya una respuesta.",
       "approved": "¡Tu información fue aceptada!"
     },
+    "approve": {
+      "title": "Aprobar documento",
+      "aborted": "Aprobación cancelada",
+      "confirm": "Sí, aprobar",
+      "cancel": "Cancelar",
+      "noAction": "No hay acción pendiente para este documento",
+      "success": "Documento aprobado exitosamente",
+      "error": "Error al aprobar el documento",
+      "description": "¿Seguro que quieres aprobar este documento? Una vez aprobado, no podrás modificar el estado del mismo.",
+      "approveButton": "Aprobar",
+      "approveAll": "Aprobar todos"
+    },
+    "reject": {
+      "title": "Rechazar documento",
+      "aborted": "Rechazo cancelado",
+      "confirm": "Sí, rechazar",
+      "cancel": "Cancelar",
+      "description": "Por favor, indica el motivo del rechazo. Esta información será visible para el usuario.",
+      "reasonPlaceholder": "Escribe el motivo del rechazo...",
+      "reasonRequired": "El motivo del rechazo es obligatorio",
+      "reasonTooLong": "El motivo no puede superar los 300 caracteres",
+      "noAction": "No hay acción pendiente para este documento",
+      "success": "Documento rechazado exitosamente",
+      "error": "Error al rechazar el documento",
+      "rejectButton": "Rechazar",
+      "rejectAll": "Rechazar todos"
+    },
     "identification": {
       "title": "Identificación Personal",
       "centerTitle": "Información del Centro",
@@ -263,17 +283,24 @@
       "resubmitPersonal": "Reenviar Datos Personales",
       "resubmitCenter": "Reenviar Información del Centro",
       "cancel": "Cancelar",
-      "submit": "Enviar"
+      "submit": "Enviar",
+      "personalTitle": "Identificación Personal",
+      "rejectInfo": "Rechazar Información",
+      "personalComment": "Información personal verificada correctamente",
+      "centerComment": "Información del centro verificada correctamente"
     },
     "documents": {
       "title": "Documentos",
       "doctorTitle": "Documentos del Doctor",
       "centerTitle": "Documentos del Centro",
       "description": "Documentos enviados para verificación",
+      "identity": "Documento de Identidad",
       "identityDocument": "Documento de Identidad",
-      "academicTitle": "Título Universitario",
+      "academicTitle": "Título Académico",
+      "certifications": "Certificaciones",
       "additionalCertifications": "Certificaciones Adicionales",
-      "healthCertificate": "Certificado de Salud",
+      "healthCertificate": "Certificado Sanitario",
+      "noDocs": "No hay documentos disponibles",
       "loading": "Cargando documentos..."
     },
     "documentsSection": {
@@ -363,6 +390,11 @@
         "gynecology": "Ginecología"
       }
     }
+  },
+  "filters": {
+    "all": "Todos",
+    "active": "Activo",
+    "inactive": "Inactivo"
   },
   "ui": {
     "toggle": {
@@ -597,7 +629,6 @@
     "noExperience": "Experiencia no especificada",
     "acceptedInsurances": "Seguros aceptados",
     "noLanguages": "Idiomas no especificados",
-
     "title": "Doctores",
     "subtitle": "Gestión de doctores registrados en el sistema",
     "searchPlaceholder": "Buscar por nombre, email, teléfono o especialidad...",
@@ -650,13 +681,11 @@
       "approvedSubtitle": "Total de doctores registrados en el sistema"
     }
   },
-
   "userStatus": {
     "approved": "Aprobado",
     "rejected": "Rechazado",
     "pending": "Pendiente"
   },
-
   "table": {
     "actions": "Acciones",
     "status": "Estado",
@@ -665,7 +694,6 @@
     "phone": "Teléfono",
     "email": "Email"
   },
-
   "centers": {
     "title": "Centros de Salud",
     "subtitle": "Gestión de centros de salud registrados en el sistema",
@@ -719,7 +747,6 @@
       "approvedSubtitle": "Total de centros registrados en el sistema"
     }
   },
-
   "patients": {
     "title": "Pacientes",
     "subtitle": "Gestión de pacientes registrados en el sistema",
@@ -752,17 +779,16 @@
       "clearFilters": "Limpiar filtros"
     },
     "metrics": {
-      "total": "Pacientes Aprobados",
-      "totalSubtitle": "Total de pacientes aprobados en el sistema",
+      "total": "Pacientes Registrados",
+      "totalSubtitle": "Total de pacientes registrados en el sistema",
       "pending": "Pacientes Pendientes",
       "pendingSubtitle": "Pacientes en espera de revisión",
       "rejected": "Pacientes Rechazados",
       "rejectedSubtitle": "Pacientes con solicitud rechazada",
-      "approved": "Total Pacientes",
-      "approvedSubtitle": "Total de pacientes registrados en el sistema"
+      "approved": "Pacientes Aprobados",
+      "approvedSubtitle": "Total de pacientes aprobados en el sistema"
     }
   },
-
   "patientDetails": {
     "title": "Detalles del Paciente",
     "personalInfo": "Información Personal",
@@ -776,69 +802,5 @@
     "phone": "Teléfono móvil",
     "email": "Correo electrónico",
     "address": "Dirección Física"
-  },
-
-  "doctors": {
-    "profile": "Ver perfil",
-    "schedule": "Agendar cita",
-    "history": "Historial",
-    "lastAppointment": "Última cita",
-    "experience": "{{years}} año de experiencia",
-    "experience_plural": "{{years}} años de experiencia",
-    "noExperience": "Experiencia no especificada",
-    "acceptedInsurances": "Seguros aceptados",
-    "noLanguages": "Idiomas no especificados",
-
-    "title": "Doctores",
-    "subtitle": "Gestión de doctores registrados en el sistema",
-    "searchPlaceholder": "Buscar por nombre, email, teléfono o especialidad...",
-    "table": {
-      "doctor": "Doctor",
-      "specialty": "Especialidad",
-      "noData": "No hay doctores para mostrar"
-    },
-    "status": {
-      "approved": "Aprobado",
-      "pending": "Pendiente",
-      "rejected": "Rechazado"
-    },
-    "filters": {
-      "status": "Estado",
-      "selectStatus": "Seleccionar estado",
-      "allStatus": "Todos los estados",
-      "specialty": "Especialidad",
-      "selectSpecialty": "Seleccionar especialidad",
-      "allSpecialties": "Todas las especialidades",
-      "dateRange": "Rango de fechas"
-    },
-    "specialties": {
-      "cardiologia": "Cardiología",
-      "dermatologia": "Dermatología",
-      "neurologia": "Neurología",
-      "pediatria": "Pediatría",
-      "psiquiatria": "Psiquiatría",
-      "traumatologia": "Traumatología",
-      "ginecologia": "Ginecología",
-      "oftalmologia": "Oftalmología",
-      "otorrinolaringologia": "Otorrinolaringología",
-      "urologia": "Urología"
-    },
-    "empty": {
-      "noResults": "Sin resultados",
-      "noDoctors": "Sin doctores registrados",
-      "noResultsDescription": "No hay doctores que coincidan con los filtros aplicados. Intenta ajustar los criterios de búsqueda.",
-      "noDoctorsDescription": "Aún no hay doctores registrados en el sistema.",
-      "clearFilters": "Limpiar filtros"
-    },
-    "metrics": {
-      "total": "Doctores Aprobados",
-      "totalSubtitle": "Total de doctores aprobados en el sistema",
-      "pending": "Doctores Pendientes",
-      "pendingSubtitle": "Doctores en espera de revisión",
-      "rejected": "Doctores Rechazados",
-      "rejectedSubtitle": "Doctores con solicitud rechazada",
-      "approved": "Total Doctores",
-      "approvedSubtitle": "Total de doctores registrados en el sistema"
-    }
   }
 }

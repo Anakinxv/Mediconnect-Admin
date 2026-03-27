@@ -161,27 +161,34 @@ export default function AdminDocumentCard({
             {isArray ? (
               <>
                 <p className="text-sm text-muted-foreground mt-0.5">
-                  {documents.length} archivo(s) subido(s)
+                  {t("verification.adminCard.filesUploaded", {
+                    count: documents.length,
+                  })}
                   {documents.length > 0 && (
                     <span className="ml-2 text-xs">
                       {approvedCount > 0 && (
                         <span className="text-status-approved font-medium">
-                          {approvedCount} aprobado{approvedCount > 1 ? "s" : ""}
+                          {t("verification.adminCard.approved", {
+                            count: approvedCount,
+                          })}
                         </span>
                       )}
                       {rejectedCount > 0 && (
                         <span
                           className={`text-status-rejected font-medium ${approvedCount > 0 ? " · " : ""}`}
                         >
-                          {rejectedCount} rechazado
-                          {rejectedCount > 1 ? "s" : ""}
+                          {t("verification.adminCard.rejected", {
+                            count: rejectedCount,
+                          })}
                         </span>
                       )}
                       {pendingCount > 0 && (
                         <span
                           className={`text-status-pending font-medium ${approvedCount > 0 || rejectedCount > 0 ? " · " : ""}`}
                         >
-                          {pendingCount} pendiente{pendingCount > 1 ? "s" : ""}
+                          {t("verification.adminCard.pending", {
+                            count: pendingCount,
+                          })}
                         </span>
                       )}
                     </span>
@@ -294,7 +301,7 @@ export default function AdminDocumentCard({
                             className="mt-2 flex items-center gap-2 px-2 md:px-3 py-1 md:py-1.5 rounded-lg bg-primary/10 hover:bg-primary/20 transition-colors text-xs md:text-sm font-medium text-primary cursor-pointer w-fit"
                           >
                             <Eye className="w-3 h-3 md:w-4 md:h-4" />
-                            Ver documento
+                            {t("verification.adminCard.viewDocument")}
                           </div>
                         </PreviewDocumentsDialog>
                       )}
@@ -316,7 +323,7 @@ export default function AdminDocumentCard({
                             className="flex items-center gap-1.5 justify-center px-3 py-1.5 rounded-lg bg-primary text-primary-foreground text-xs font-medium cursor-pointer hover:bg-primary/90 transition-colors"
                           >
                             <CircleCheck className="w-3.5 h-3.5" />
-                            Aprobar
+                            {t("verification.approve.approveButton")}
                           </div>
                         </AcceptDoc>
 
@@ -334,7 +341,7 @@ export default function AdminDocumentCard({
                             className="flex items-center gap-1.5 justify-center px-3 py-1.5 rounded-lg border border-destructive text-destructive text-xs font-medium cursor-pointer hover:bg-destructive/10 transition-colors"
                           >
                             <CircleSlash className="w-3.5 h-3.5" />
-                            Rechazar
+                            {t("verification.reject.rejectButton")}
                           </div>
                         </DeniedDoc>
                       </div>
@@ -361,7 +368,7 @@ export default function AdminDocumentCard({
                 }}
               >
                 <Eye className="w-4 h-4" />
-                Ver documento
+                {t("verification.adminCard.viewDocument")}
               </div>
             ) : (
               <PreviewDocumentsDialog
@@ -376,7 +383,7 @@ export default function AdminDocumentCard({
                   className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-primary/10 hover:bg-primary/20 transition-colors text-sm font-medium text-primary cursor-pointer w-fit"
                 >
                   <Eye className="w-4 h-4" />
-                  Ver documento
+                  {t("verification.adminCard.viewDocument")}
                 </div>
               </PreviewDocumentsDialog>
             )}
@@ -400,7 +407,9 @@ export default function AdminDocumentCard({
                 className="flex-1 flex items-center gap-2 justify-center px-4 py-2 rounded-lg border border-destructive text-destructive text-sm font-medium cursor-pointer hover:bg-destructive/10 transition-colors"
               >
                 <CircleSlash className="w-4 h-4" />
-                {isArray ? "Rechazar todos" : "Rechazar"}
+                {isArray
+                  ? t("verification.reject.rejectAll")
+                  : t("verification.reject.rejectButton")}
               </div>
             </DeniedDoc>
 
@@ -419,7 +428,9 @@ export default function AdminDocumentCard({
                 className="flex-1 flex items-center gap-2 justify-center px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-medium cursor-pointer hover:bg-primary/90 transition-colors"
               >
                 <CircleCheck className="w-4 h-4" />
-                {isArray ? "Aprobar todos" : "Aprobar"}
+                {isArray
+                  ? t("verification.approve.approveAll")
+                  : t("verification.approve.approveButton")}
               </div>
             </AcceptDoc>
           </div>

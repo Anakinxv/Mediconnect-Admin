@@ -107,7 +107,7 @@ function DoctorIdentificationCard({
       {
         accionId: accionIdSeguro,
         decision: "Aprobada",
-        comentario: "Información personal verificada correctamente",
+        comentario: t("verification.identification.personalComment"),
       },
       {
         onSuccess: () =>
@@ -177,10 +177,9 @@ function DoctorIdentificationCard({
         <div className="flex flex-col sm:flex-row justify-end gap-3 mt-6 sm:mt-8 pt-4 border-t border-primary/10">
           <DeniedDoc
             id="reject-info-doctor"
-            documentTitle="Identificación Personal"
+            documentTitle={t("verification.identification.personalTitle")}
             onConfirmReject={handleConfirmReject}
           >
-            {/* ✅ div — evita <button> anidado dentro del trigger del dialog */}
             <div
               role="button"
               tabIndex={0}
@@ -191,16 +190,15 @@ function DoctorIdentificationCard({
               className="w-full sm:w-auto flex items-center gap-2 justify-center px-4 py-2 rounded-lg border border-destructive text-destructive text-sm font-medium cursor-pointer hover:bg-destructive/10 transition-colors"
             >
               <CircleSlash className="w-4 h-4" />
-              Rechazar Información
+              {t("verification.identification.rejectInfo")}
             </div>
           </DeniedDoc>
 
           <AcceptDoc
             id="approve-info-doctor"
-            documentTitle="Identificación Personal"
+            documentTitle={t("verification.identification.personalTitle")}
             onConfirmApprove={handleApprove}
           >
-            {/* ✅ div — evita <button> anidado */}
             <div
               role="button"
               tabIndex={0}
@@ -211,7 +209,7 @@ function DoctorIdentificationCard({
               className="w-full sm:w-auto flex items-center gap-2 justify-center px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-medium cursor-pointer hover:bg-primary/90 transition-colors"
             >
               <CircleCheck className="w-4 h-4" />
-              Aprobar
+              {t("verification.approve.approveButton")}
             </div>
           </AcceptDoc>
         </div>
@@ -270,7 +268,7 @@ function CenterIdentificationCard({
       {
         accionId: accionIdSeguro,
         decision: "Aprobada",
-        comentario: "Información del centro verificada correctamente",
+        comentario: t("verification.identification.centerComment"),
       },
       {
         onSuccess: () =>
@@ -340,10 +338,9 @@ function CenterIdentificationCard({
         <div className="flex flex-col sm:flex-row justify-end gap-3 mt-6 sm:mt-8 pt-4 border-t border-primary/10">
           <DeniedDoc
             id="reject-info-center"
-            documentTitle="Información del Centro"
+            documentTitle={t("verification.identification.centerTitle")}
             onConfirmReject={handleConfirmReject}
           >
-            {/* ✅ div — evita <button> anidado */}
             <div
               role="button"
               tabIndex={0}
@@ -354,16 +351,15 @@ function CenterIdentificationCard({
               className="w-full sm:w-auto flex items-center gap-2 justify-center px-4 py-2 rounded-lg border border-destructive text-destructive text-sm font-medium cursor-pointer hover:bg-destructive/10 transition-colors"
             >
               <CircleSlash className="w-4 h-4" />
-              Rechazar Información
+              {t("verification.identification.rejectInfo")}
             </div>
           </DeniedDoc>
 
           <AcceptDoc
             id="approve-info-center"
-            documentTitle="Información del Centro"
+            documentTitle={t("verification.identification.centerTitle")}
             onConfirmApprove={handleApprove}
           >
-            {/* ✅ div — evita <button> anidado */}
             <div
               role="button"
               tabIndex={0}
@@ -374,7 +370,7 @@ function CenterIdentificationCard({
               className="w-full sm:w-auto flex items-center gap-2 justify-center px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-medium cursor-pointer hover:bg-primary/90 transition-colors"
             >
               <CircleCheck className="w-4 h-4" />
-              Aprobar
+              {t("verification.approve.approveButton")}
             </div>
           </AcceptDoc>
         </div>
@@ -400,7 +396,9 @@ function AdminIdentificationCard({
       <CardContent className="p-4 sm:p-6">
         <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 mb-2">
           <h2 className="text-lg sm:text-xl font-semibold">
-            {isDoctor ? "Identificación Personal" : "Información del Centro"}
+            {isDoctor
+              ? t("verification.identification.personalTitle")
+              : t("verification.identification.centerTitle")}
           </h2>
           <StatusBadge
             label={t(
