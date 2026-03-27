@@ -314,9 +314,9 @@ export default function AdminDoctorDocumentsView({
       )}
 
       {/* Otros Documentos */}
-      {otherDocs.map((doc) => (
+      {otherDocs.map((doc, index) => (
         <DocumentCard
-          key={doc.id}
+          key={`${doc.id ?? "no-id"}-${doc.urlArchivo ?? "no-url"}-${doc.nombreOriginal ?? "no-name"}-${index}`}
           title={doc.tipoDocumento.replace(/_/g, " ")}
           document={mapDocumentoToUploadedFile(doc)}
           onApprove={makeApproveHandler(doc)}

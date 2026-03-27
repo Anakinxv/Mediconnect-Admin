@@ -2,14 +2,12 @@ import api from "@/config/axios-client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useGlobalUIStore } from "@/stores/useGlobalUIStore";
 
-// ─── Interfaces ───────────────────────────────────────────────────────────────
-
 export interface AccionInterface {
   id: number;
   documentoId: number;
   doctorId: number;
   tipoDocumento: string;
-  estado: string; // "Pendiente" | "Aprobada" | "Rechazada"
+  estado: string;
   creadoEn: string;
   doctor?: {
     nombre: string;
@@ -31,18 +29,20 @@ export type RevisarAccionPayload = {
 
 const QUERY_KEY = "acciones";
 
-// ─── Hooks ────────────────────────────────────────────────────────────────────
-
 export const useGetPendingAcciones = (params?: {
   tipoDocumento?: string;
   limite?: number;
 }) => {
   return useQuery<AccionInterface[]>({
     queryKey: [QUERY_KEY, "pendientes", params],
+    staleTime: 0,
+    gcTime: 30_000,
+
+    refetchIntervalInBackground: false,
     queryFn: async () => {
       const { data } = await api.get("/acciones/pendientes", { params });
-      // Asegúrate de retornar el arreglo dependiendo de cómo venga estructurado (ej. data.data o data)
-      return data.data || data;
+      const list = data?.data ?? data?.acciones ?? data;
+      return Array.isArray(list) ? list : [];
     },
   });
 };
@@ -57,8 +57,6 @@ export const useRevisarAccion = () => {
       decision,
       comentario,
     }: RevisarAccionPayload) => {
-      setIsLoading(true);
-
       const payload = {
         decision,
         comentario:
@@ -68,20 +66,20 @@ export const useRevisarAccion = () => {
             : "Rechazado por el administrador"),
       };
 
-      // accionId viaja estrictamente en la URL, payload viaja en el body
       const { data } = await api.patch(
         `/acciones/${accionId}/revisar`,
         payload,
       );
       return data;
     },
-    onSettled: () => {
-      setIsLoading(false);
-    },
+    onMutate: () => setIsLoading(true),
+    onSettled: () => setIsLoading(false),
     onSuccess: () => {
-      // Refrescamos las acciones pendientes y los datos del doctor
+      // Invalida acciones pendientes
       queryClient.invalidateQueries({ queryKey: [QUERY_KEY] });
-      queryClient.invalidateQueries({ queryKey: ["doctores"] });
+      // ✅ Keys correctos de useDoctors.ts
+      queryClient.invalidateQueries({ queryKey: ["doctorAdminDetail"] });
+      queryClient.invalidateQueries({ queryKey: ["doctorsAdmin"] });
     },
   });
 };

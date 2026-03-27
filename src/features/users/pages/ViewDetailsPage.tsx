@@ -22,8 +22,6 @@ import type {
 } from "@/schema/verifyInfo.schema";
 
 // ─── Props ────────────────────────────────────────────────────────────────────
-// La ruta de doctores pasa doctorId, la de centros pasa centerId.
-// El componente recibe isDoctor para saber cuál usar.
 
 interface ViewDetailsPageProps {
   isDoctor?: boolean;
@@ -79,6 +77,7 @@ const mapToCenterPersonalInfo = (
     province: location.provincia ?? "-",
     municipality: location.municipio ?? "-",
     email: center.usuario.email,
+    // telefono puede ser undefined en la API → fallback a "-"
     phone: center.usuario.telefono ?? "-",
     website: center.sitio_web ?? "",
     rnc: center.rnc,
@@ -105,24 +104,18 @@ const getProgressData = (
   return { completedSteps, totalSteps, percentage };
 };
 
-// ─── Sub-componentes internos ─────────────────────────────────────────────────
+// ─── DoctorView ───────────────────────────────────────────────────────────────
 
 function DoctorView({ doctorId }: { doctorId: number }) {
   const [activeTab, setActiveTab] = useState("identificacion");
-  const { data, isLoading, refetch } = useGetDoctorAdminDetail(doctorId);
+  const { data, refetch } = useGetDoctorAdminDetail(doctorId);
 
   const handleTabChange = (tab: string) => {
     setActiveTab(tab);
     if (tab === "documentos") refetch();
   };
 
-  if (isLoading || !data) {
-    return (
-      <div className="flex items-center justify-center min-h-[60vh] text-muted-foreground">
-        Cargando...
-      </div>
-    );
-  }
+  if (!data) return null;
 
   const doctorInfo = mapToDoctorPersonalInfo(data);
   const currentStatus = doctorInfo.verificationStatus;
@@ -175,28 +168,34 @@ function DoctorView({ doctorId }: { doctorId: number }) {
   );
 }
 
+// ─── CenterView ───────────────────────────────────────────────────────────────
+
 function CenterView({ centerId }: { centerId: number }) {
   const [activeTab, setActiveTab] = useState("identificacion");
-  const { data, isLoading, refetch } = useGetCenterAdminDetail(centerId);
+  const { data, refetch } = useGetCenterAdminDetail(centerId);
 
   const handleTabChange = (tab: string) => {
     setActiveTab(tab);
     if (tab === "documentos") refetch();
   };
 
-  if (isLoading || !data) {
-    return (
-      <div className="flex items-center justify-center min-h-[60vh] text-muted-foreground">
-        Cargando...
-      </div>
-    );
-  }
+  if (!data) return null;
 
   const centerInfo = mapToCenterPersonalInfo(data);
   const currentStatus = centerInfo.verificationStatus;
 
-  // El centro tiene un solo documento: certificacion_sanitaria
-  const certStatus: VerificationStatus = currentStatus;
+  // Derivar estado del documento desde documentos_centros (más preciso que estadoVerificacion)
+  const docActivo = data.documentos_centros?.find(
+    (d) => d.estado !== "Eliminado",
+  );
+  const certStatus: VerificationStatus = docActivo
+    ? docActivo.estado_revision?.toLowerCase() === "aprobado"
+      ? "APPROVED"
+      : docActivo.estado_revision?.toLowerCase() === "rechazado"
+        ? "REJECTED"
+        : "PENDING"
+    : currentStatus;
+
   const docStatuses: VerificationStatus[] = data.certificacion_sanitaria
     ? [certStatus]
     : [];
@@ -236,9 +235,10 @@ function CenterView({ centerId }: { centerId: number }) {
         {activeTab === "documentos" && (
           <DocumentsSection isDoctor={false} currentStatus={documentsStatus}>
             <AdminCenterDocumentsView
-              certificacionUrl={data.certificacion_sanitaria}
+              certificacionUrl={data.certificacion_sanitaria ?? ""}
               certStatus={certStatus}
               centerId={data.usuarioId}
+              documentosCentro={data.documentos_centros}
             />
           </DocumentsSection>
         )}
@@ -250,16 +250,11 @@ function CenterView({ centerId }: { centerId: number }) {
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 function ViewDetailsPage({ isDoctor = true }: ViewDetailsPageProps) {
-  // Ambas rutas coexisten — solo uno de los params tendrá valor
   const { doctorId, centerId } = useParams<{
     doctorId?: string;
     centerId?: string;
   }>();
 
-  // Determina qué flujo usar:
-  // - si llega doctorId → doctor
-  // - si llega centerId → centro
-  // - si no hay params, cae al prop isDoctor
   const effectiveIsDoctor = doctorId ? true : centerId ? false : isDoctor;
 
   const parsedId = effectiveIsDoctor

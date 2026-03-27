@@ -2,8 +2,6 @@ import api from "@/config/axios-client";
 import { useQuery } from "@tanstack/react-query";
 import { useGlobalUIStore } from "@/stores/useGlobalUIStore";
 
-// ─── Interfaces ───────────────────────────────────────────────────────────────
-
 export interface DoctorAdminListItem {
   id: number;
   usuarioId: number;
@@ -130,7 +128,6 @@ export const resolveVerificationStatus = (
   const v = estadoVerificacion?.toLowerCase().trim();
   if (v === "aprobado" || v === "approved") return "approved";
   if (v === "rechazado" || v === "rejected") return "rejected";
-  // "En revisión", "Pendiente", "pendiente", "en revisión" → pending
   return "pending";
 };
 
@@ -147,12 +144,12 @@ export const resolveDocumentStatus = (
   const v = estadoRevision?.toLowerCase().trim();
   if (v === "aprobado" || v === "approved") return "APPROVED";
   if (v === "rechazado" || v === "rejected") return "REJECTED";
-  // "Pendiente", "En revisión", etc. → PENDING
   return "PENDING";
 };
 
-const QUERY_KEY_LIST = "doctorsAdmin";
-const QUERY_KEY_DETAIL = "doctorAdminDetail";
+// ✅ Keys exportados como constantes para consistencia
+export const QUERY_KEY_LIST = "doctorsAdmin";
+export const QUERY_KEY_DETAIL = "doctorAdminDetail";
 
 // ─── Hooks ────────────────────────────────────────────────────────────────────
 
@@ -169,6 +166,10 @@ export const useGetDoctorsAdmin = (params?: GetDoctorsAdminParams) => {
 
   return useQuery<DoctorAdminListItem[]>({
     queryKey: [QUERY_KEY_LIST, language, stableParams],
+    staleTime: 0,
+    gcTime: 30_000,
+
+    refetchIntervalInBackground: false, // ✅ Solo si la pestaña está activa
     queryFn: async () => {
       setIsLoading(true);
       try {
@@ -192,6 +193,8 @@ export const useGetDoctorAdminDetail = (id: number | null) => {
     enabled: !!id,
     staleTime: 0,
     gcTime: 30_000,
+    refetchInterval: 1000 * 20, // ✅ Polling cada 20 segundos (detalle más crítico)
+    refetchIntervalInBackground: false,
     queryFn: async () => {
       setIsLoading(true);
       try {

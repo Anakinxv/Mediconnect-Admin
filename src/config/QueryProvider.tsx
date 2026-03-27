@@ -18,15 +18,12 @@ export const QueryProvider = ({ children }: QueryProviderProps) => {
       new QueryClient({
         queryCache: new QueryCache({
           onError: (error, query) => {
-            // Error global de queries.
-            // Aquí puedes conectar un toast/snackbar/logger central.
             console.error("Query error:", query.queryKey, error);
           },
         }),
 
         mutationCache: new MutationCache({
           onError: (error, _variables, _context, mutation) => {
-            // Error global de mutations.
             console.error(
               "Mutation error:",
               mutation.options.mutationKey,
@@ -37,12 +34,12 @@ export const QueryProvider = ({ children }: QueryProviderProps) => {
 
         defaultOptions: {
           queries: {
-            staleTime: 1000 * 60 * 5, // 5 min: evita refetch innecesario
-            gcTime: 1000 * 60 * 30, // 30 min: cuánto vive en caché sin uso
+            staleTime: 0, // ✅ Siempre considera datos viejos
+            gcTime: 1000 * 60 * 30,
             retry: 1,
-            refetchOnWindowFocus: false,
+            refetchOnWindowFocus: true, // ✅ Refresca al volver a la ventana
             refetchOnReconnect: true,
-            refetchOnMount: false,
+            refetchOnMount: true, // ✅ Refresca al montar el componente
           },
           mutations: {
             retry: 0,

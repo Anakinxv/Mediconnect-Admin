@@ -401,6 +401,7 @@ function MapScheduleLocation({
       <AnimatePresence>
         {isFullscreen && (
           <motion.div
+            key="map-fullscreen"
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.95 }}
@@ -510,6 +511,7 @@ function MapScheduleLocation({
       <AnimatePresence>
         {!isFullscreen && (
           <motion.div
+            key="map-normal"
             initial={{ opacity: 0, scale: 1.05 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 1.05 }}
@@ -588,6 +590,7 @@ function MapScheduleLocation({
 
         {!isFullscreen && (
           <SelectedAddressBadge
+            key="map-selected-address-badge"
             addressData={selectedLocationAddress}
             fullscreen={false}
           />
@@ -595,6 +598,7 @@ function MapScheduleLocation({
 
         {showAddressInfo && !multipleLocations && (
           <div
+            key="map-address-info"
             className={`flex ${
               isMobile ? "flex-wrap gap-4 justify-between" : "justify-between"
             } mt-4`}

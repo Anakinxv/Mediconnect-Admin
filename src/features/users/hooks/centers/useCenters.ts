@@ -2,7 +2,20 @@ import api from "@/config/axios-client";
 import { useQuery } from "@tanstack/react-query";
 import { useGlobalUIStore } from "@/stores/useGlobalUIStore";
 
-// ─── Interfaces ───────────────────────────────────────────────────────────────
+export interface DocumentoCentroAdmin {
+  id_documento_centro: number;
+  id_centro_salud: number;
+  tipo_documento: string;
+  url_archivo: string;
+  nombre_original: string;
+  tipo_mime: string;
+  tamanio_bytes: string | null;
+  descripcion: string | null;
+  estado: string;
+  creado_en: string;
+  actualizado_en: string | null;
+  estado_revision: string;
+}
 
 export interface CenterAdminListItem {
   usuarioId: number;
@@ -10,19 +23,18 @@ export interface CenterAdminListItem {
   rnc: string;
   tipoCentroId: number;
   ubicacionId: number;
-  estadoVerificacion: string; // "En revisión" | "Aprobado" | "Rechazado"
+  estadoVerificacion: string;
   estado: string;
   creadoEn: string;
   actualizadoEn: string;
-  certificacion_sanitaria: string;
-  sitio_web: string | null;
-  descripcion: string;
-  foto_perfil: string | null;
+  sitio_web?: string;
+  descripcion?: string;
+  foto_perfil?: string | null;
   usuario: {
     id: number;
     email: string;
     telefono: string;
-    fotoPerfil: string | null;
+    fotoPerfil?: string | null;
     emailVerificado: boolean;
   };
   tipoCentro: {
@@ -31,24 +43,92 @@ export interface CenterAdminListItem {
   };
   ubicacion: {
     id: number;
+    barrioId: number;
     direccion: string;
-    nombre: string | null;
+    codigoPostal?: string | null;
+    estado: string;
+    barrio: {
+      id: number;
+      nombre: string;
+      seccionId: number;
+      seccion: {
+        id: number;
+        nombre: string;
+      };
+    };
+  };
+  documentos_centros: DocumentoCentroAdmin[];
+  idAccionRegistro?: number;
+  comentarioVerificacion?: string | null;
+  estadoAccionVerificacion?: string | null;
+  fechaResolucionVerificacion?: string | null;
+}
+
+export interface CenterDetailAdmin {
+  usuarioId: number;
+  nombreComercial: string;
+  rnc: string;
+  tipoCentroId: number;
+  ubicacionId: number;
+  estadoVerificacion: string;
+  estado: string;
+  creadoEn: string;
+  actualizadoEn: string;
+  sitio_web?: string;
+  descripcion?: string;
+  foto_perfil?: string | null;
+  usuario: {
+    id: number;
+    email: string;
+    telefono: string | undefined;
+    fotoPerfil?: string | null;
+    emailVerificado: boolean;
+  };
+  tipoCentro: {
+    id: number;
+    nombre: string;
+    estado?: string;
+    creadoEn?: string;
+  };
+  ubicacion: {
+    id: number;
+    barrioId: number;
+    direccion: string;
+    codigoPostal?: string | null;
+    estado: string;
+    creadoEn: string;
+    id_doctor?: number | null;
+    nombre?: string | null;
+    barrio: {
+      id: number;
+      seccionId: number;
+      nombre: string;
+      estado: string;
+      creadoEn: string;
+      seccion: {
+        id: number;
+        distritoMunicipalId?: number | null;
+        nombre: string;
+        estado: string;
+        creadoEn: string;
+        id_municipio?: number;
+      };
+    };
+    latitud?: number;
+    longitud?: number;
     barrioNombre?: string;
     municipioNombre?: string;
     provinciaNombre?: string;
     direccionCompleta?: string;
-    latitud?: number | null;
-    longitud?: number | null;
-    barrio?: {
-      nombre: string;
-      seccion?: { nombre: string };
-    };
   };
-}
-
-export interface CenterDetailAdmin extends CenterAdminListItem {
-  // El detalle devuelve los mismos campos que la lista
-  // pero con ubicacion más completa (incluye latitud/longitud/direccionCompleta)
+  documentos_centros: DocumentoCentroAdmin[];
+  certificacion_sanitaria?: string;
+  id_documento_certificado?: number;
+  estado_documento_certificado?: string;
+  idAccionRegistro?: number;
+  comentarioVerificacion?: string | null;
+  estadoAccionVerificacion?: string | null;
+  fechaResolucionVerificacion?: string | null;
 }
 
 export type GetCentersAdminParams = {
@@ -63,41 +143,42 @@ export type GetCentersAdminParams = {
   translate_fields?: string[];
 };
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ─── Resolvers ────────────────────────────────────────────────────────────────
 
-export const resolveCenterVerificationStatus = (
+export const resolveVerificationStatus = (
   estadoVerificacion: string,
 ): "pending" | "approved" | "rejected" => {
   const v = estadoVerificacion?.toLowerCase().trim();
   if (v === "aprobado" || v === "approved") return "approved";
   if (v === "rechazado" || v === "rejected") return "rejected";
-  // "En revisión", "Pendiente", cualquier otro valor
   return "pending";
 };
+
+export const resolveCenterVerificationStatus = resolveVerificationStatus;
 
 export const mapCenterStatusToApi = (status: string): string | undefined => {
   if (status === "approved") return "Aprobado";
   if (status === "rejected") return "Rechazado";
-  if (status === "pending") return "En revisión";
+  if (status === "pending") return "Pendiente";
   return undefined;
 };
 
-/** Construye la dirección completa desde los campos disponibles */
 export const buildDireccionCompleta = (
-  ubicacion: CenterAdminListItem["ubicacion"],
+  center: Pick<CenterAdminListItem, "ubicacion">,
 ): string => {
-  if (ubicacion.direccionCompleta) return ubicacion.direccionCompleta;
+  const { ubicacion } = center;
+  if (!ubicacion) return "-";
   const parts = [
     ubicacion.direccion,
-    ubicacion.barrioNombre ?? ubicacion.barrio?.nombre,
-    ubicacion.municipioNombre,
-    ubicacion.provinciaNombre,
+    ubicacion.barrio?.nombre,
+    ubicacion.barrio?.seccion?.nombre,
   ].filter(Boolean);
-  return parts.join(", ");
+  return parts.join(", ") || "-";
 };
 
-const QUERY_KEY_LIST = "centersAdmin";
-const QUERY_KEY_DETAIL = "centerAdminDetail";
+// ✅ Keys exportados como constantes para consistencia
+export const QUERY_KEY_LIST = "centersAdmin";
+export const QUERY_KEY_DETAIL = "centerAdminDetail";
 
 // ─── Hooks ────────────────────────────────────────────────────────────────────
 
@@ -114,6 +195,10 @@ export const useGetCentersAdmin = (params?: GetCentersAdminParams) => {
 
   return useQuery<CenterAdminListItem[]>({
     queryKey: [QUERY_KEY_LIST, language, stableParams],
+    staleTime: 0,
+    gcTime: 30_000,
+    refetchInterval: 1000 * 30, // ✅ Polling cada 30 segundos
+    refetchIntervalInBackground: false,
     queryFn: async () => {
       setIsLoading(true);
       try {
@@ -135,9 +220,10 @@ export const useGetCenterAdminDetail = (id: number | null) => {
   return useQuery<CenterDetailAdmin>({
     queryKey: [QUERY_KEY_DETAIL, id],
     enabled: !!id,
-    // ✅ URLs de Supabase firmadas expiran — no cachear
     staleTime: 0,
     gcTime: 30_000,
+
+    refetchIntervalInBackground: false,
     queryFn: async () => {
       setIsLoading(true);
       try {

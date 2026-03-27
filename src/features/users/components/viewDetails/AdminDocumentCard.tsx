@@ -107,10 +107,13 @@ export default function AdminDocumentCard({
         : "text-status-pending";
 
   const imageDocuments = isArray
-    ? documents.filter((d) => d.type.startsWith("image/"))
-    : document?.type.startsWith("image/")
+    ? documents.filter((d) => d.type.startsWith("image/") && !!d.url?.trim())
+    : document?.type.startsWith("image/") && !!document.url?.trim()
       ? [document]
       : [];
+
+  const getSafeDocKey = (doc: UploadedFile, index: number) =>
+    `${doc.url?.trim() || "no-url"}-${doc.name?.trim() || "no-name"}-${index}`;
 
   const approvedCount = isArray
     ? documents.filter((d) => getDocStatus(d) === "APPROVED").length
@@ -225,7 +228,7 @@ export default function AdminDocumentCard({
 
               return (
                 <div
-                  key={index}
+                  key={getSafeDocKey(doc, index)}
                   className={`rounded-lg md:rounded-xl border ${docStatusBorder[docStatus]} p-3 md:p-4 transition-colors`}
                 >
                   <div className="flex items-start gap-2 md:gap-3">
@@ -260,11 +263,10 @@ export default function AdminDocumentCard({
                           tabIndex={0}
                           className="mt-2 w-fit cursor-pointer"
                           onClick={() => {
-                            setCarouselStartIndex(
-                              imageDocuments.findIndex(
-                                (d) => d.url === doc.url,
-                              ),
+                            const idx = imageDocuments.findIndex(
+                              (d) => d.url === doc.url,
                             );
+                            setCarouselStartIndex(idx >= 0 ? idx : 0);
                             setCarouselOpen(true);
                           }}
                           onKeyDown={(e) => {
@@ -426,7 +428,7 @@ export default function AdminDocumentCard({
 
       {/* Carrusel de imágenes */}
       <ImageCarouselModal
-        images={imageDocuments.map((d) => d.url)}
+        images={imageDocuments.map((d) => d.url).filter((u) => !!u?.trim())}
         open={carouselOpen}
         onClose={() => setCarouselOpen(false)}
         startIndex={carouselStartIndex}

@@ -6,14 +6,27 @@ import {
   useGetCenterPendingAcciones,
   useRevisarAccionCenter,
 } from "../../hooks/centers/useActions";
+import type { DocumentoCentroAdmin } from "../../hooks/centers/useCenters";
 import { useGlobalUIStore } from "@/stores/useGlobalUIStore";
 import { useTranslation } from "react-i18next";
 
+// ─── Props ────────────────────────────────────────────────────────────────────
+
 interface AdminCenterDocumentsViewProps {
+  /** URL firmada del certificado sanitario activo */
   certificacionUrl: string;
+  /** Estado derivado del documento */
   certStatus: VerificationStatus;
+  /** usuarioId del centro */
   centerId: number;
+  /**
+   * Lista completa de documentos_centros del detalle del centro.
+   * Permite hacer match preciso por id_documento_centro con las acciones.
+   */
+  documentosCentro?: DocumentoCentroAdmin[];
 }
+
+// ─── Constantes ───────────────────────────────────────────────────────────────
 
 const CENTER_DOC_TIPOS = [
   "certificado_sanitario",
@@ -22,7 +35,22 @@ const CENTER_DOC_TIPOS = [
   "certificado",
 ];
 
-/** Extrae el nombre del archivo desde una URL de Supabase. Nunca devuelve "". */
+const getAccionActorId = (a: any): number | null =>
+  a?.usuarioId ??
+  a?.centroId ??
+  a?.doctorId ??
+  a?.perfilEmisor?.usuarioId ??
+  a?.emisor?.id ??
+  null;
+
+const isCenterDocAction = (a: any) => {
+  const tipo = (a?.tipoDocumento ?? "").toLowerCase();
+  const revision = (a?.tipoRevision ?? "").toLowerCase();
+  return CENTER_DOC_TIPOS.includes(tipo) || revision === "documento";
+};
+
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+
 function extractFileName(url: string, fallback: string): string {
   try {
     const withoutQuery = url.split("?")[0];
@@ -34,10 +62,23 @@ function extractFileName(url: string, fallback: string): string {
   }
 }
 
+function getMimeFromUrl(url: string): string {
+  if (/\.(jpg|jpeg)$/i.test(url)) return "image/jpeg";
+  if (/\.png$/i.test(url)) return "image/png";
+  if (/\.pdf$/i.test(url)) return "application/pdf";
+  if (url.includes("certificado-sanitario.pdf")) return "application/pdf";
+  if (url.includes("certificacion-sanitaria") && url.includes(".jpg"))
+    return "image/jpeg";
+  return "application/pdf";
+}
+
+// ─── Componente ───────────────────────────────────────────────────────────────
+
 export default function AdminCenterDocumentsView({
   certificacionUrl,
   certStatus,
   centerId,
+  documentosCentro = [],
 }: AdminCenterDocumentsViewProps) {
   const { t } = useTranslation("common");
   const setToast = useGlobalUIStore((s) => s.setToast);
@@ -45,46 +86,40 @@ export default function AdminCenterDocumentsView({
 
   const { data: acciones = [] } = useGetCenterPendingAcciones({ limite: 100 });
 
+  /**
+   * Estrategia de matching (de más a menos precisa):
+   * 1. documentoId === id_documento_centro del doc activo
+   * 2. entidad + tipo de documento de centro
+   * 3. solo entidad
+   * 4. fallback: primer doc de tipo centro
+   */
   const accionId = useMemo(() => {
     if (!centerId || acciones.length === 0) return null;
 
-    // 1. Coincidencia exacta: entidad + tipo doc de centro
-    const byEntityAndTipo = acciones.find(
-      (a) =>
-        (a.centroId === centerId ||
-          a.doctorId === centerId ||
-          (a as any).usuarioId === centerId) &&
-        CENTER_DOC_TIPOS.includes((a.tipoDocumento ?? "").toLowerCase()),
+    const docActivo = documentosCentro.find(
+      (d) =>
+        d.estado !== "Eliminado" &&
+        CENTER_DOC_TIPOS.includes(d.tipo_documento.toLowerCase()),
     );
-    if (byEntityAndTipo?.id != null) return byEntityAndTipo.id;
 
-    // 2. Solo por entidad (cualquier tipo)
-    const byEntity = acciones.find(
-      (a) =>
-        a.centroId === centerId ||
-        a.doctorId === centerId ||
-        (a as any).usuarioId === centerId,
+    // 1) Match exacto por documentoId
+    if (docActivo) {
+      const byDocId = acciones.find(
+        (a) => a.documentoId === docActivo.id_documento_centro,
+      );
+      if (byDocId?.id != null) return byDocId.id;
+    }
+
+    // 2) Match por entidad + acción de documento
+    const byEntityAndDoc = acciones.find(
+      (a) => getAccionActorId(a) === centerId && isCenterDocAction(a),
     );
-    if (byEntity?.id != null) return byEntity.id;
+    if (byEntityAndDoc?.id != null) return byEntityAndDoc.id;
 
-    // 3. Fallback: primer doc de tipo centro
-    const byTipo = acciones.find((a) =>
-      CENTER_DOC_TIPOS.includes((a.tipoDocumento ?? "").toLowerCase()),
-    );
-    return byTipo?.id ?? null;
-  }, [acciones, centerId]);
+    // sin fallback global para evitar cruzar acciones de otro usuario
+    return null;
+  }, [acciones, centerId, documentosCentro]);
 
-  const getMimeFromUrl = (url: string): string => {
-    if (/\.(jpg|jpeg)$/i.test(url)) return "image/jpeg";
-    if (/\.png$/i.test(url)) return "image/png";
-    if (/\.pdf$/i.test(url)) return "application/pdf";
-    if (url.includes("certificado-sanitario.pdf")) return "application/pdf";
-    if (url.includes("certificacion-sanitaria") && url.includes(".jpg"))
-      return "image/jpeg";
-    return "application/pdf";
-  };
-
-  // nombre nunca vacío → evita duplicate key "" en React
   const certName = extractFileName(
     certificacionUrl,
     `certificado-sanitario-${centerId}`,
