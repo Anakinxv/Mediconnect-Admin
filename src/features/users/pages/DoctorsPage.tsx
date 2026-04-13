@@ -49,8 +49,10 @@ const mapDoctorToTableRow = (doctor: DoctorAdminListItem): Doctor => ({
   id: doctor.id.toString(),
   name: `${doctor.nombre} ${doctor.apellido}`,
   image: doctor.usuario?.fotoPerfil,
+  // ✅ El estado de la tabla usa estadoVerificacion (estado global)
   status: resolveVerificationStatus(doctor.estadoVerificacion),
   registrationDate: formatDate(doctor.creadoEn),
+  // ✅ Mostrar "-" con nota cuando la API no devuelve usuario en lista
   phone: doctor.usuario?.telefono ?? "-",
   email: doctor.usuario?.email ?? "-",
   specialty:
@@ -105,7 +107,7 @@ function DoctorsPage() {
     setSearchTerm("");
   };
 
-  // ── Params para la API (nombre + estadoVerificacion server-side) ─────────
+  // ── Params para la API ───────────────────────────────────────────────────
   const apiParams = useMemo<GetDoctorsAdminParams>(
     () => ({
       nombre: searchTerm?.trim() || undefined,
@@ -126,7 +128,7 @@ function DoctorsPage() {
     [safeDoctors],
   );
 
-  // ── Filtros client-side (specialty + dateRange, API no los soporta igual) ─
+  // ── Filtros client-side (specialty + dateRange) ──────────────────────────
   const filteredDoctors = useMemo(
     () =>
       tableDoctors.filter((doctor) => {
@@ -244,7 +246,7 @@ function DoctorsPage() {
       />
     );
 
-  // ── Métricas (sobre safeDoctors completos, sin filtros de fecha/specialty) ─
+  // ── Métricas (sobre safeDoctors completos, sin filtros cliente) ──────────
   const metrics = [
     {
       title: t("doctors.metrics.total"),

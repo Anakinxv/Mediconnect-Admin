@@ -11,6 +11,7 @@ export interface DoctorAdminListItem {
   nacionalidad: string;
   exequatur: string;
   estadoVerificacion: string;
+  estadoInfoPersonal: string; // ✅ nuevo: estado solo de la info personal
   estado: string;
   creadoEn: string;
   calificacionPromedio: number;
@@ -62,7 +63,8 @@ export interface DoctorDetailAdmin {
   exequatur: string;
   biografia: string;
   anosExperiencia: number;
-  estadoVerificacion: string;
+  estadoVerificacion: string; // estado global (aprobado cuando info + docs OK)
+  estadoInfoPersonal: string; // ✅ nuevo: estado de la información personal únicamente
   calificacionPromedio: number;
   estado: string;
   creadoEn: string;
@@ -168,8 +170,7 @@ export const useGetDoctorsAdmin = (params?: GetDoctorsAdminParams) => {
     queryKey: [QUERY_KEY_LIST, language, stableParams],
     staleTime: 0,
     gcTime: 30_000,
-
-    refetchIntervalInBackground: false, // ✅ Solo si la pestaña está activa
+    refetchIntervalInBackground: false,
     queryFn: async () => {
       setIsLoading(true);
       try {
@@ -193,7 +194,7 @@ export const useGetDoctorAdminDetail = (id: number | null) => {
     enabled: !!id,
     staleTime: 0,
     gcTime: 30_000,
-    refetchInterval: 1000 * 20, // ✅ Polling cada 20 segundos (detalle más crítico)
+    refetchInterval: 1000 * 20,
     refetchIntervalInBackground: false,
     queryFn: async () => {
       setIsLoading(true);

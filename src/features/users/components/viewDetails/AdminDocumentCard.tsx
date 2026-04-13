@@ -10,7 +10,6 @@ import PreviewDocumentsDialog from "./PreviewDocumentsDialog";
 import DeniedDoc from "./DeniedDoc";
 import AcceptDoc from "./AcceptDoc";
 import { useTranslation } from "react-i18next";
-import { useIsMobile } from "@/lib/hooks/useIsMobile";
 
 interface AdminDocumentCardProps {
   title: string;
@@ -55,7 +54,7 @@ export default function AdminDocumentCard({
   bulkActionsMinCount = 3, // "más de 2"
 }: AdminDocumentCardProps) {
   const { t } = useTranslation("common");
-  const isMobile = useIsMobile();
+
   const [carouselOpen, setCarouselOpen] = useState(false);
   const [carouselStartIndex, setCarouselStartIndex] = useState(0);
 

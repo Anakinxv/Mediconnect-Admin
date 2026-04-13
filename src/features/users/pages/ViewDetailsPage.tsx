@@ -27,7 +27,7 @@ interface ViewDetailsPageProps {
   isDoctor?: boolean;
 }
 
-// ─── Mappers ──────────────────────────────────────────────────────────────────
+// ─── Helpers de status ────────────────────────────────────────────────────────
 
 const resolveVerifStatus = (raw: string): VerificationStatus => {
   const v = raw?.toLowerCase().trim();
@@ -36,11 +36,14 @@ const resolveVerifStatus = (raw: string): VerificationStatus => {
   return "PENDING";
 };
 
+// ─── Mappers ──────────────────────────────────────────────────────────────────
+
 const mapToDoctorPersonalInfo = (
   doctor: DoctorDetailAdmin,
 ): DoctorPersonalInfo => {
   const primaryEsp = doctor.especialidades.find((e) => e.es_principal);
   const secondaryEsp = doctor.especialidades.find((e) => !e.es_principal);
+
   return {
     firstName: doctor.nombre,
     lastName: doctor.apellido,
@@ -53,7 +56,11 @@ const mapToDoctorPersonalInfo = (
     primarySpecialty: primaryEsp?.especialidades?.nombre ?? "-",
     secondarySpecialty: secondaryEsp?.especialidades?.nombre ?? "-",
     medicalLicense: doctor.exequatur,
-    verificationStatus: resolveVerifStatus(doctor.estadoVerificacion),
+    // ✅ Usa estadoInfoPersonal (solo estado de info personal)
+    // Fallback a estadoVerificacion si el backend aún no lo devuelve
+    verificationStatus: resolveVerifStatus(
+      doctor.estadoInfoPersonal ?? doctor.estadoVerificacion,
+    ),
   };
 };
 
@@ -77,7 +84,6 @@ const mapToCenterPersonalInfo = (
     province: location.provincia ?? "-",
     municipality: location.municipio ?? "-",
     email: center.usuario.email,
-    // telefono puede ser undefined en la API → fallback a "-"
     phone: center.usuario.telefono ?? "-",
     website: center.sitio_web ?? "",
     rnc: center.rnc,
@@ -85,7 +91,10 @@ const mapToCenterPersonalInfo = (
       latitude: location.latitud ?? 18.4861,
       longitude: location.longitud ?? -69.9312,
     },
-    verificationStatus: resolveVerifStatus(center.estadoVerificacion),
+    // ✅ Para centros también se puede agregar estadoInfoPersonal cuando el backend lo soporte
+    verificationStatus: resolveVerifStatus(
+      (center as any).estadoInfoPersonal ?? center.estadoVerificacion,
+    ),
   };
 };
 
@@ -118,7 +127,12 @@ function DoctorView({ doctorId }: { doctorId: number }) {
   if (!data) return null;
 
   const doctorInfo = mapToDoctorPersonalInfo(data);
+
+  // ✅ currentStatus es el estado de la info personal (no el global)
   const currentStatus = doctorInfo.verificationStatus;
+
+  // Estado global de verificación (info + docs) para la sidebar
+  const globalStatus = resolveVerifStatus(data.estadoVerificacion);
 
   const docStatuses = data.documentos.map((doc) =>
     resolveDocumentStatus(doc.estadoRevision),
@@ -132,13 +146,15 @@ function DoctorView({ doctorId }: { doctorId: number }) {
       ? "APPROVED"
       : "PENDING";
 
+  // El progreso usa el estado de info personal + documentos
   const progress = getProgressData(currentStatus, docStatuses);
 
   return (
     <section className="flex flex-col gap-4 sm:grid sm:grid-cols-[3fr_7fr]">
       <VerificationProgressSidebar
         activeTab={activeTab}
-        currentStatus={currentStatus}
+        // ✅ La sidebar muestra el estado global del doctor
+        currentStatus={globalStatus}
         documentsStatus={documentsStatus}
         isDoctor={true}
         onTabChange={handleTabChange}
@@ -150,6 +166,7 @@ function DoctorView({ doctorId }: { doctorId: number }) {
         {activeTab === "identificacion" && (
           <AdminIdentificationCard
             isDoctor={true}
+            // ✅ El card de identificación usa el estado de info personal
             currentStatus={currentStatus}
             currentInfo={doctorInfo}
             doctorId={data.usuarioId}
@@ -182,9 +199,13 @@ function CenterView({ centerId }: { centerId: number }) {
   if (!data) return null;
 
   const centerInfo = mapToCenterPersonalInfo(data);
+
+  // ✅ Estado de info personal del centro
   const currentStatus = centerInfo.verificationStatus;
 
-  // Derivar estado del documento desde documentos_centros (más preciso que estadoVerificacion)
+  // Estado global
+  const globalStatus = resolveVerifStatus(data.estadoVerificacion);
+
   const docActivo = data.documentos_centros?.find(
     (d) => d.estado !== "Eliminado",
   );
@@ -215,7 +236,7 @@ function CenterView({ centerId }: { centerId: number }) {
     <section className="flex flex-col gap-4 sm:grid sm:grid-cols-[3fr_7fr]">
       <VerificationProgressSidebar
         activeTab={activeTab}
-        currentStatus={currentStatus}
+        currentStatus={globalStatus}
         documentsStatus={documentsStatus}
         isDoctor={false}
         onTabChange={handleTabChange}

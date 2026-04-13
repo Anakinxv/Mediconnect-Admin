@@ -323,6 +323,21 @@
       "submitAllForReview": "Enviar Todo a Revisión",
       "cancelAll": "Cancelar Todo"
     },
+    "adminCard": {
+      "filesUploaded_one": "{{count}} archivo subido",
+      "filesUploaded_other": "{{count}} archivos subidos",
+      "filesUploaded": "{{count}} archivos subidos",
+      "approved_one": "{{count}} aprobado",
+      "approved_other": "{{count}} aprobados",
+      "approved": "{{count}} aprobados",
+      "rejected_one": "{{count}} rechazado",
+      "rejected_other": "{{count}} rechazados",
+      "rejected": "{{count}} rechazados",
+      "pending_one": "{{count}} pendiente",
+      "pending_other": "{{count}} pendientes",
+      "pending": "{{count}} pendientes",
+      "viewDocument": "Ver documento"
+    },
     "forms": {
       "centerName": "Nombre del Centro",
       "centerNamePlaceholder": "Ingrese el nombre del centro",
@@ -802,5 +817,12 @@
     "phone": "Teléfono móvil",
     "email": "Correo electrónico",
     "address": "Dirección Física"
+  },
+  "adminCard": {
+    "filesUploaded": "{{count}} archivos subidos",
+    "approved": "{{count}} aprobados",
+    "rejected": "{{count}} rechazados",
+    "pending": "{{count}} pendientes",
+    "viewDocument": "Ver documento"
   }
 }

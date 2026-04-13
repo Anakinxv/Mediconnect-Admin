@@ -17,12 +17,6 @@ import {
   PaginationPrevious,
   PaginationNext,
 } from "@/shared/ui/pagination";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/shared/ui/tooltip";
 import { UserStatusBadge, type UserStatus } from "../UserStates";
 import UserAction from "../UserAction";
 
@@ -79,7 +73,6 @@ export default function DoctorsTable({
             <TableHead className="w-[160px]">
               {t("table.registrationDate")}
             </TableHead>
-            <TableHead className="w-[200px]">{t("table.contact")}</TableHead>
             <TableHead className="w-[80px]">{t("table.actions")}</TableHead>
           </TableRow>
         </TableHeader>
@@ -129,25 +122,6 @@ export default function DoctorsTable({
                 <TableCell className="w-[160px]">
                   <span className="font-medium">{doctor.registrationDate}</span>
                 </TableCell>
-                <TableCell className="w-[200px]">
-                  <div className="font-medium">{doctor.phone}</div>
-                  {doctor.email.length > 28 ? (
-                    <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <div className="text-xs text-muted-foreground cursor-help">
-                            {truncate(doctor.email)}
-                          </div>
-                        </TooltipTrigger>
-                        <TooltipContent>{doctor.email}</TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
-                  ) : (
-                    <div className="text-xs text-muted-foreground">
-                      {doctor.email}
-                    </div>
-                  )}
-                </TableCell>
                 <TableCell className="w-[80px]">
                   <UserAction onViewDetails={() => onViewDetails?.(doctor)} />
                 </TableCell>
@@ -156,7 +130,7 @@ export default function DoctorsTable({
           ) : (
             <TableRow>
               <TableCell
-                colSpan={6}
+                colSpan={5}
                 className="text-center py-8 text-muted-foreground"
               >
                 {t("doctors.table.noData")}
@@ -165,6 +139,7 @@ export default function DoctorsTable({
           )}
         </TableBody>
       </Table>
+
       {totalPages > 1 && (
         <Pagination className="mt-4">
           <PaginationContent>

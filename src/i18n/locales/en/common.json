@@ -323,6 +323,21 @@
       "submitAllForReview": "Submit All for Review",
       "cancelAll": "Cancel All"
     },
+    "adminCard": {
+      "filesUploaded_one": "{{count}} file uploaded",
+      "filesUploaded_other": "{{count}} files uploaded",
+      "filesUploaded": "{{count}} files uploaded",
+      "approved_one": "{{count}} approved",
+      "approved_other": "{{count}} approved",
+      "approved": "{{count}} approved",
+      "rejected_one": "{{count}} rejected",
+      "rejected_other": "{{count}} rejected",
+      "rejected": "{{count}} rejected",
+      "pending_one": "{{count}} pending",
+      "pending_other": "{{count}} pending",
+      "pending": "{{count}} pending",
+      "viewDocument": "View document"
+    },
     "forms": {
       "centerName": "Center Name",
       "centerNamePlaceholder": "Enter the center name",
@@ -802,5 +817,12 @@
     "phone": "Mobile Phone",
     "email": "Email Address",
     "address": "Physical Address"
+  },
+  "adminCard": {
+    "filesUploaded": "{{count}} uploaded files",
+    "approved": "{{count}} approved",
+    "rejected": "{{count}} rejected",
+    "pending": "{{count}} pending",
+    "viewDocument": "View document"
   }
 }
