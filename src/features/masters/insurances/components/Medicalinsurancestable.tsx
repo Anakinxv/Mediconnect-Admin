@@ -22,7 +22,7 @@ import MCServicesStatus from "@/shared/components/MCServicesStatus";
 import MedicalInsurancesActions from "./Medicalinsurancesactions";
 import type { InsuranceInterface } from "../hooks/useInsurance";
 import type { InsuranceTypeInterface } from "../../insuranceTypes/hooks/useInsuranceTypes";
-import { resolveStatus } from "../pages/Medicalinsurancespage";
+import { resolveStatus } from "../pages/MedicalInsurancesPage";
 
 interface MedicalInsurancesTableProps {
   insurances: InsuranceInterface[];

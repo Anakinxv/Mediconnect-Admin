@@ -11,7 +11,7 @@ import { Popover, PopoverTrigger, PopoverContent } from "@/shared/ui/popover";
 import { useTranslation } from "react-i18next";
 import type { InsuranceInterface } from "../hooks/useInsurance";
 import type { InsuranceTypeInterface } from "../../insuranceTypes/hooks/useInsuranceTypes";
-import { resolveStatus } from "../pages/Medicalinsurancespage";
+import { resolveStatus } from "../pages/MedicalInsurancesPage";
 import CreateEditMedicalInsurance from "./modals/Createeditmedicalinsurance";
 import ToggleStatusMedicalInsurance from "./modals/Togglestatusmedicalinsurance";
 import DeleteMedicalInsurance from "./modals/Deletemedicalinsurance";

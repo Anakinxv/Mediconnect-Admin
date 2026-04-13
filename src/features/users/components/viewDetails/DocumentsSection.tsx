@@ -9,11 +9,7 @@ interface DocumentsSectionProps {
   children: React.ReactNode;
 }
 
-function DocumentsSection({
-  isDoctor,
-  currentStatus,
-  children,
-}: DocumentsSectionProps) {
+function DocumentsSection({ isDoctor, children }: DocumentsSectionProps) {
   const { t } = useTranslation("common");
 
   return (

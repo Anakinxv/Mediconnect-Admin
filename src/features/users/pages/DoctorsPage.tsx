@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import { useState, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useIsMobile } from "@/lib/hooks/useIsMobile";
 import MCTablesLayouts from "@/shared/components/MCTablesLayouts";
@@ -19,7 +19,6 @@ import DoctorsTable, { type Doctor } from "../components/doctor/DoctorsTable";
 import DoctorFilters from "../components/filters/DoctorFilters";
 import { useNavigate } from "react-router-dom";
 import { ROUTES } from "@/router/routes";
-import { useGlobalUIStore } from "@/stores/useGlobalUIStore";
 import {
   useGetDoctorsAdmin,
   resolveVerificationStatus,

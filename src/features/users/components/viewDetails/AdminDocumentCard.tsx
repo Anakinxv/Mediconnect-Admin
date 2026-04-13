@@ -3,7 +3,7 @@ import { Eye, CircleCheck, CircleSlash } from "lucide-react";
 import type { UploadedFileWithStatus, UploadedFile } from "@/types/Documents";
 import StatusBadge from "./StatusBadge";
 import { type VerificationStatus, STATUS } from "./Verificationconstants";
-import MCButton from "@/shared/components/forms/MCButton";
+
 import DocumentIcon from "./DocumentIcon";
 import { ImageCarouselModal } from "./ImageCarouselModal";
 import PreviewDocumentsDialog from "./PreviewDocumentsDialog";
@@ -124,7 +124,6 @@ export default function AdminDocumentCard({
     ? documents.filter((d) => getDocStatus(d) === "PENDING").length
     : 0;
 
-  const showGlobalActions = currentStatus === "PENDING";
   const showSingleActions = !isArray && currentStatus === "PENDING";
 
   const showArrayBulkActions =

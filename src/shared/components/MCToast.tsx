@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { toast } from "sonner";
 import { Toaster } from "@/shared/ui/sonner";
 import { useGlobalUIStore } from "@/stores/useGlobalUIStore";

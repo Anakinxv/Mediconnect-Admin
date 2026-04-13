@@ -22,7 +22,7 @@ import ViewDetailsPage from "@/features/users/pages/ViewDetailsPage";
 import SpecialitiesPage from "@/features/masters/specialties/pages/SpecialitiesPage";
 import InsuranceTypesPage from "@/features/masters/insuranceTypes/pages/InsuranceTypesPage";
 import HealthCenterTypesPage from "@/features/masters/healthCenterTypes/pages/HealthCenterTypesPage";
-import MedicalInsurancesPage from "@/features/masters/insurances/pages/Medicalinsurancespage";
+import MedicalInsurancesPage from "@/features/masters/insurances/pages/MedicalInsurancesPage";
 import AllergiesPage from "@/features/masters/allergies/pages/AllergiesPage";
 import ProtectedRoute from "./ProtectedRoute";
 

@@ -38,11 +38,6 @@ interface DoctorsTableProps {
 
 const PAGE_SIZE = 10;
 
-const truncate = (text: string | undefined, maxLength: number = 28): string => {
-  if (!text) return "";
-  return text.length > maxLength ? `${text.substring(0, maxLength)}...` : text;
-};
-
 export default function DoctorsTable({
   doctors,
   onViewDetails,

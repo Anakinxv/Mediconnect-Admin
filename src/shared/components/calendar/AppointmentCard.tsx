@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { Avatar, AvatarFallback, AvatarImage } from "@/shared/ui/avatar";
-import { MCUserAvatar } from "@/shared/navigation/userMenu/MCUserAvatar";
+import { MCUserAvatar } from "@/shared/navigation/MCUserAvatar";
 import { Video, MapPin } from "lucide-react";
 import MCButton from "../forms/MCButton";
 import { useIsMobile } from "@/lib/hooks/useIsMobile";

@@ -37,11 +37,6 @@ function MCSheetProfile({ open, onOpenChange }: MCSheetProfileProps) {
   const user = useAppStore((s) => s.user);
   const setProfilePicture = useAppStore((s) => s.setProfilePicture);
 
-  const [banner, setBanner] = useState<string>(
-    "https://i.pinimg.com/736x/3b/37/46/3b3746e0878804293202d56d1dda1fe1.jpg",
-  );
-  console.log(user);
-
   const [cropModalOpen, setCropModalOpen] = useState(false);
   const [cropType, setCropType] = useState<CropType>("profile");
   const [tempImage, setTempImage] = useState<string>("");
@@ -89,7 +84,6 @@ function MCSheetProfile({ open, onOpenChange }: MCSheetProfileProps) {
         },
       );
     } else {
-      setBanner(croppedImage);
     }
   };
 

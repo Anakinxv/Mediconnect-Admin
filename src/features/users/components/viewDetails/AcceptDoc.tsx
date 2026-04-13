@@ -1,7 +1,6 @@
 import React from "react";
 import { MCModalBase } from "@/shared/components/MCModalBase";
 import { useTranslation } from "react-i18next";
-import { CircleCheck, TriangleAlert } from "lucide-react";
 import { useGlobalUIStore } from "@/stores/useGlobalUIStore";
 
 interface AcceptDocProps {

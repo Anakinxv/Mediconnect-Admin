@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import { useState, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useIsMobile } from "@/lib/hooks/useIsMobile";
 import MCTablesLayouts from "@/shared/components/MCTablesLayouts";
@@ -30,7 +30,6 @@ import {
   useGetCentersAdmin,
   resolveCenterVerificationStatus,
   mapCenterStatusToApi,
-  buildDireccionCompleta,
   type CenterAdminListItem,
   type GetCentersAdminParams,
 } from "../hooks/centers/useCenters";

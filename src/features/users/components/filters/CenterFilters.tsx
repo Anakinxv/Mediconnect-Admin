@@ -1,4 +1,3 @@
-import React from "react";
 import { useTranslation } from "react-i18next";
 import MCFilterSelect from "@/shared/components/filters/MCFilterSelect";
 import MCFilterDates from "@/shared/components/filters/MCFilterDates";

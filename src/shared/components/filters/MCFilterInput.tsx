@@ -13,7 +13,6 @@ function MCFilterInput({
   placeholder = "Buscar Médico",
   value,
   onChange,
-  mainInput = false,
 }: MCFilterInputProps) {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     onChange?.(e.target.value);

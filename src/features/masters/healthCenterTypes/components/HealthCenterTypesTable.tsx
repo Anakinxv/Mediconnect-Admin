@@ -91,7 +91,7 @@ export default function HealthCenterTypesTable({
         </TableHeader>
         <TableBody>
           {paginatedData.length > 0 ? (
-            paginatedData.map((item, index) => (
+            paginatedData.map((item) => (
               <TableRow key={item.id}>
                 <TableCell className="w-[300px]">
                   <span className="font-medium">{item.nombre}</span>

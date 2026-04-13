@@ -30,7 +30,7 @@ function MCTextArea({
   placeholder,
   value,
   onChange,
-  onBlur,
+
   onKeyDown,
   className,
   required = false,

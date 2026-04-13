@@ -62,7 +62,7 @@ export function MCModalBase({
   onSecondary,
   confirmText = "Confirmar",
   secondaryText = "Cancelar",
-  zIndex = 50,
+
   borderHeader = false,
   borderFooter = false,
   actionOne = false,

@@ -1,5 +1,4 @@
 import { Button } from "@/shared/ui/button";
-import { useIsMobile } from "@/lib/hooks/useIsMobile";
 
 type MediButtonProps = {
   children?: React.ReactNode;
@@ -33,8 +32,6 @@ function MCButton({
   iconPosition = "left",
   size = "l",
 }: MediButtonProps) {
-  const isMobile = useIsMobile();
-
   const baseStyles =
     "font-medium rounded-full transition-all duration-200 focus:outline-none active:scale-[0.98] flex items-center justify-center gap-2";
 

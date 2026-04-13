@@ -36,7 +36,6 @@ interface MCFilterSelectProps {
 }
 
 function MCFilterSelect({
-  name,
   label,
   placeholder,
   options,
