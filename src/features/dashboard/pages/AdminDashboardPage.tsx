@@ -118,20 +118,22 @@ function AdminDashboardPage() {
       {/* Main content: 3/4 columns */}
       <div className="col-span-1 md:col-span-3 flex flex-col gap-4">
         {/* KPIs */}
-        <div className="bg-background rounded-3xl p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 shadow-sm">
-          <h2 className="text-2xl font-medium text-muted-foreground">
-            {t("filters.filterBy")}
-          </h2>
-          <div className="w-full sm:w-40">
-            <MCFilterSelect
-              name="kpiPeriod"
-              options={kpiFilterOptions}
-              value={kpiPeriod}
-              onChange={(value) => setKpiPeriod(value as DataType)}
-              placeholder={t("filters.filterBy")}
-              size="small"
-              className="mb-0"
-            />
+        <div className="bg-background rounded-3xl p-4 flex flex-col sm:flex-row items-start sm:items-center sm:justify-between gap-2 shadow-sm w-full">
+          <div className="flex items-center justify-between w-full">
+            <h2 className="text-2xl font-semibold text-muted-foreground">
+              {t("filters.filterBy")}
+            </h2>
+            <div className="w-full sm:w-auto sm:ml-auto">
+              <MCFilterSelect
+                name="kpiPeriod"
+                options={kpiFilterOptions}
+                value={kpiPeriod}
+                onChange={(value) => setKpiPeriod(value as DataType)}
+                placeholder={t("filters.filterBy")}
+                size="small"
+                className="m-0 w-full sm:w-40"
+              />
+            </div>
           </div>
         </div>
 

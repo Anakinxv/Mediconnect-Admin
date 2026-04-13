@@ -140,7 +140,9 @@ function ViewDetailsPatientDialog({
               />
               <InfoItem
                 label={t("patientDetails.idNumber")}
-                value={patient?.numeroDocumentoIdentificacion}
+                value={formatDominicanCedula(
+                  patient?.numeroDocumentoIdentificacion,
+                )}
               />
               <InfoItem
                 label={t("patientDetails.bloodType")}
@@ -188,5 +190,12 @@ function ViewDetailsPatientDialog({
     </MCModalBase>
   );
 }
+
+const formatDominicanCedula = (value?: string): string => {
+  if (!value || value === "-") return value ?? "—";
+  const digits = value.replace(/\D/g, "");
+  if (digits.length !== 11) return value;
+  return `${digits.slice(0, 3)}-${digits.slice(3, 10)}-${digits.slice(10)}`;
+};
 
 export default ViewDetailsPatientDialog;

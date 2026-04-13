@@ -816,7 +816,11 @@
     "idNumber": "Número de identificación",
     "phone": "Teléfono móvil",
     "email": "Correo electrónico",
-    "address": "Dirección Física"
+    "address": "Dirección Física",
+    "age": "Edad",
+    "bloodType": "Tipo de Sangre",
+    "weight": "Peso",
+    "height": "Talla"
   },
   "adminCard": {
     "filesUploaded": "{{count}} archivos subidos",
