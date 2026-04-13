@@ -31,6 +31,7 @@ import { useLogOut } from "./hooks/useLogOut";
 
 import { useTranslation } from "react-i18next";
 import { useGlobalUIStore } from "@/stores/useGlobalUIStore";
+import { useAppStore } from "@/stores/useAppStore";
 
 import type { Theme } from "@/stores/useGlobalUISlice";
 import { useIsMobile } from "@/lib/hooks/useIsMobile";
@@ -85,6 +86,22 @@ export function AdminUserMenu() {
   const isMobile = useIsMobile();
   const navigate = useNavigate();
   const { logout } = useLogOut();
+
+  const user = useAppStore((s) => s.user);
+
+  const displayName = user?.name?.trim() || "Usuario";
+  const displayEmail = user?.email?.trim() || "-";
+  const displayPhoto = user?.profilePicture?.trim() || "";
+
+  const getInitials = (name: string) =>
+    name
+      .split(" ")
+      .filter(Boolean)
+      .slice(0, 2)
+      .map((n) => n[0]?.toUpperCase())
+      .join("") || "U";
+
+  const initials = getInitials(displayName);
 
   // Función para manejar cambio de tema
   const handleThemeChange = useCallback(
@@ -202,11 +219,11 @@ export function AdminUserMenu() {
           >
             <Avatar className="h-14 w-14 rounded-full shadow-lg transition-all">
               <AvatarImage
-                src="https://i.pinimg.com/736x/ff/e7/3f/ffe73ffe75682fec82ccd320ccb43fe9.jpg"
-                alt="emmanuel"
+                src={displayPhoto || undefined}
+                alt={displayName}
                 className="object-cover"
               />
-              <AvatarFallback className="text-xl">EM</AvatarFallback>
+              <AvatarFallback className="text-xl">{initials}</AvatarFallback>
             </Avatar>
             <div className="flex items-start gap-3 0">
               <div className="flex flex-col items-start leading-tight text-left">
@@ -215,14 +232,14 @@ export function AdminUserMenu() {
                     !open ? "text-primary" : "text-background"
                   }`}
                 >
-                  emmanuel
+                  {displayName}
                 </span>
                 <span
                   className={`text-sm font-normal max-w-35 truncate ${
                     !open ? "text-primary" : "text-background"
                   }`}
                   style={{ textOverflow: "clip" }}
-                  title="jose@gmail.com"
+                  title={displayEmail}
                 >
                   {t("userMenu.admin")}
                 </span>
@@ -263,12 +280,12 @@ export function AdminUserMenu() {
               )}
             >
               <AvatarImage
-                src="https://i.pinimg.com/736x/ff/e7/3f/ffe73ffe75682fec82ccd320ccb43fe9.jpg"
-                alt="emmanuel"
+                src={displayPhoto || undefined}
+                alt={displayName}
                 className="object-cover"
               />
               <AvatarFallback className={cn(isMobile ? "text-sm" : "text-xl")}>
-                EM
+                {initials}
               </AvatarFallback>
             </Avatar>
             <div className="flex flex-col items-start leading-tight text-left min-w-0 flex-1">
@@ -278,7 +295,7 @@ export function AdminUserMenu() {
                   isMobile ? "text-sm" : "text-base",
                 )}
               >
-                emmanuel
+                {displayName}
               </span>
               <span
                 className={cn(
@@ -286,9 +303,9 @@ export function AdminUserMenu() {
                   isMobile ? "text-xs max-w-40" : "text-sm max-w-55",
                 )}
                 style={{ textOverflow: "clip" }}
-                title="emmanuelroame@gmail.com"
+                title={displayEmail}
               >
-                emmanuelroame@gmail.com
+                {displayEmail}
               </span>
             </div>
             {/* Close button for mobile */}

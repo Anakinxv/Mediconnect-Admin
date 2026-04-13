@@ -8,7 +8,6 @@ import MCFormWrapper from "./forms/MCFormWrapper";
 import { profileSchema } from "@/schema/UserSchema";
 import MCProfileImageUploader from "./MCProfileImageUploader";
 import { Avatar, AvatarImage } from "@/shared/ui/avatar";
-import { MCUserAvatar } from "@/shared/navigation/MCUserAvatar";
 import { useTranslation } from "react-i18next";
 import { useAppStore } from "@/stores/useAppStore";
 import { useUpdateProfilePhoto } from "@/lib/hooks/useUpdateProfilePhoto";

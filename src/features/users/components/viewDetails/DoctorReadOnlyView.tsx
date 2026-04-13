@@ -15,8 +15,14 @@ const formatPhone = (phone?: string): string => {
 
 const formatExequatur = (exequatur?: string): string => {
   if (!exequatur || exequatur === "-") return "-";
-  const trimmed = exequatur.trim();
-  return /^\d+$/.test(trimmed) ? `EXQ-${trimmed}` : trimmed;
+
+  const digits = exequatur.replace(/\D/g, "");
+  if (!digits) return "-";
+
+  // Formato: 3 dígitos - resto
+  return digits.length > 3
+    ? `${digits.slice(0, 3)}-${digits.slice(3)}`
+    : digits;
 };
 
 const formatDominicanCedula = (value?: string): string => {
