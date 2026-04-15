@@ -17,9 +17,8 @@ export const useAppStore = create<AppStore>()(
         otp: state.otp,
         resetPassword: state.resetPassword,
         user: state.user,
-        // ❌ refreshToken NO va aquí — tiene su propio storage
       }),
-      // Hidrata el refreshToken desde localStorage al montar
+
       onRehydrateStorage: () => (state) => {
         if (state) {
           const stored = localStorage.getItem("auth-refresh");
@@ -39,7 +38,6 @@ export const useAppStore = create<AppStore>()(
   ),
 );
 
-// ── Sincroniza el refreshToken con localStorage cuando cambia ──────────────
 useAppStore.subscribe((state, prev) => {
   if (state.refreshToken !== prev.refreshToken) {
     if (state.refreshToken) {
