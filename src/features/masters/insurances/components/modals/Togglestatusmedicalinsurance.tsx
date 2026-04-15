@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { MCModalBase } from "@/shared/components/MCModalBase";
 import type { InsuranceInterface } from "../../hooks/useInsurance";
-import { resolveStatus } from "../../pages/MedicalInsurancesPage";
+import { resolveStatus } from "../../utils/resolveStatus";
 
 interface ToggleStatusMedicalInsuranceProps {
   insurance: InsuranceInterface;
