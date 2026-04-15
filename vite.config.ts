@@ -11,4 +11,18 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  build: {
+    chunkSizeWarningLimit: 900,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          react: ["react", "react-dom", "react-router-dom"],
+          query: ["@tanstack/react-query"],
+          i18n: ["i18next", "react-i18next"],
+          charts: ["recharts"],
+          pdf: ["jspdf", "jspdf-autotable", "html2canvas"],
+        },
+      },
+    },
+  },
 });
