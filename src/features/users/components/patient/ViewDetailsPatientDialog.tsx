@@ -144,18 +144,6 @@ function ViewDetailsPatientDialog({
                   patient?.numeroDocumentoIdentificacion,
                 )}
               />
-              <InfoItem
-                label={t("patientDetails.bloodType")}
-                value={patient?.tipoSangre}
-              />
-              <InfoItem
-                label={t("patientDetails.weight")}
-                value={patient?.peso ? `${patient.peso} kg` : "—"}
-              />
-              <InfoItem
-                label={t("patientDetails.height")}
-                value={patient?.altura ? `${patient.altura} cm` : "—"}
-              />
             </div>
           )}
         </section>
